@@ -40,6 +40,7 @@ alfa_canard = degtorad(0); % Canard maximum angle of attack
 pos_canard=x_cg; %assume fins are at CM - don't affect CP(?)
 
 %Simulink data
+or_data = readtable("project-jupiter-cc\Data\Borealis_flight.csv")
 % mcarregado = 18.48; %wet mass
 % mdescarregado = 15.576; %dry mass
 % MatrizDeInercia = [0.03616 0 0; 0 8.458 0; 0 0 8.457]; %inertia matrix
