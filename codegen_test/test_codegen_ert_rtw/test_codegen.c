@@ -7,12 +7,12 @@
  *
  * Code generated for Simulink model 'test_codegen'.
  *
- * Model version                  : 1.1
+ * Model version                  : 1.2
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * C/C++ source code generated on : Wed Oct 23 18:33:32 2024
+ * C/C++ source code generated on : Wed Oct 23 20:06:05 2024
  *
  * Target selection: ert.tlc
- * Embedded hardware selection: Intel->x86-64 (Windows64)
+ * Embedded hardware selection: ARM Compatible->ARM Cortex-M
  * Code generation objectives:
  *    1. Execution efficiency
  *    2. RAM efficiency
@@ -36,14 +36,15 @@
 #endif
 
 /* private model entry point functions */
-extern void test_codegen_derivatives(RT_MODEL *const rtM, real_T rtU_In1);
+extern void test_codegen_derivatives(RT_MODEL *const rtM, real_T
+  rtU_thisIsAnInput);
 
 /*
  * This function updates continuous states using the ODE3 fixed-step
  * solver algorithm
  */
 static void rt_ertODEUpdateContinuousStates(RTWSolverInfo *si , RT_MODEL *const
-  rtM, real_T rtU_In1, real_T *rtY_Out1)
+  rtM, real_T rtU_thisIsAnInput, real_T *rtY_thisIsAnOutput)
 {
   /* Solver Matrices */
   static const real_T rt_ODE3_A[3] = {
@@ -79,7 +80,7 @@ static void rt_ertODEUpdateContinuousStates(RTWSolverInfo *si , RT_MODEL *const
   /* Assumes that rtsiSetT and ModelOutputs are up-to-date */
   /* f0 = f(t,y) */
   rtsiSetdX(si, f0);
-  test_codegen_derivatives(rtM, rtU_In1);
+  test_codegen_derivatives(rtM, rtU_thisIsAnInput);
 
   /* f(:,2) = feval(odefile, t + hA(1), y + f*hB(:,1), args(:)(*)); */
   hB[0] = h * rt_ODE3_B[0][0];
@@ -89,8 +90,8 @@ static void rt_ertODEUpdateContinuousStates(RTWSolverInfo *si , RT_MODEL *const
 
   rtsiSetT(si, t + h*rt_ODE3_A[0]);
   rtsiSetdX(si, f1);
-  test_codegen_step(rtM, rtU_In1, rtY_Out1);
-  test_codegen_derivatives(rtM, rtU_In1);
+  test_codegen_step(rtM, rtU_thisIsAnInput, rtY_thisIsAnOutput);
+  test_codegen_derivatives(rtM, rtU_thisIsAnInput);
 
   /* f(:,3) = feval(odefile, t + hA(2), y + f*hB(:,2), args(:)(*)); */
   for (i = 0; i <= 1; i++) {
@@ -103,8 +104,8 @@ static void rt_ertODEUpdateContinuousStates(RTWSolverInfo *si , RT_MODEL *const
 
   rtsiSetT(si, t + h*rt_ODE3_A[1]);
   rtsiSetdX(si, f2);
-  test_codegen_step(rtM, rtU_In1, rtY_Out1);
-  test_codegen_derivatives(rtM, rtU_In1);
+  test_codegen_step(rtM, rtU_thisIsAnInput, rtY_thisIsAnOutput);
+  test_codegen_derivatives(rtM, rtU_thisIsAnInput);
 
   /* tnew = t + hA(3);
      ynew = y + f*hB(:,3); */
@@ -121,7 +122,8 @@ static void rt_ertODEUpdateContinuousStates(RTWSolverInfo *si , RT_MODEL *const
 }
 
 /* Model step function */
-void test_codegen_step(RT_MODEL *const rtM, real_T rtU_In1, real_T *rtY_Out1)
+void test_codegen_step(RT_MODEL *const rtM, real_T rtU_thisIsAnInput, real_T
+  *rtY_thisIsAnOutput)
 {
   DW *rtDW = rtM->dwork;
   X *rtX = rtM->contStates;
@@ -138,20 +140,23 @@ void test_codegen_step(RT_MODEL *const rtM, real_T rtU_In1, real_T *rtY_Out1)
 
   /* Gain: '<S39>/Filter Coefficient' incorporates:
    *  Gain: '<S29>/Derivative Gain'
-   *  Inport: '<Root>/In1'
+   *  Inport: '<Root>/thisIsAnInput'
    *  Integrator: '<S31>/Filter'
    *  Sum: '<S31>/SumD'
    */
-  rtDW->FilterCoefficient = (0.0 * rtU_In1 - rtX->Filter_CSTATE) * 100.0;
+  rtDW->FilterCoefficient = (0.0 * rtU_thisIsAnInput - rtX->Filter_CSTATE) *
+    100.0;
 
-  /* Outport: '<Root>/Out1' incorporates:
-   *  Inport: '<Root>/In1'
+  /* Outport: '<Root>/thisIsAnOutput' incorporates:
+   *  Inport: '<Root>/thisIsAnInput'
    *  Integrator: '<S36>/Integrator'
    *  Sum: '<S45>/Sum'
    */
-  *rtY_Out1 = (rtU_In1 + rtX->Integrator_CSTATE) + rtDW->FilterCoefficient;
+  *rtY_thisIsAnOutput = (rtU_thisIsAnInput + rtX->Integrator_CSTATE) +
+    rtDW->FilterCoefficient;
   if (rtmIsMajorTimeStep(rtM)) {
-    rt_ertODEUpdateContinuousStates(&rtM->solverInfo, rtM, rtU_In1, rtY_Out1);
+    rt_ertODEUpdateContinuousStates(&rtM->solverInfo, rtM, rtU_thisIsAnInput,
+      rtY_thisIsAnOutput);
 
     /* Update absolute time for base rate */
     /* The "clockTick0" counts the number of times the code of this task has
@@ -165,16 +170,16 @@ void test_codegen_step(RT_MODEL *const rtM, real_T rtU_In1, real_T *rtY_Out1)
 }
 
 /* Derivatives for root system: '<Root>' */
-void test_codegen_derivatives(RT_MODEL *const rtM, real_T rtU_In1)
+void test_codegen_derivatives(RT_MODEL *const rtM, real_T rtU_thisIsAnInput)
 {
   DW *rtDW = rtM->dwork;
   XDot *_rtXdot;
   _rtXdot = ((XDot *) rtM->derivs);
 
   /* Derivatives for Integrator: '<S36>/Integrator' incorporates:
-   *  Inport: '<Root>/In1'
+   *  Inport: '<Root>/thisIsAnInput'
    */
-  _rtXdot->Integrator_CSTATE = rtU_In1;
+  _rtXdot->Integrator_CSTATE = rtU_thisIsAnInput;
 
   /* Derivatives for Integrator: '<S31>/Filter' */
   _rtXdot->Filter_CSTATE = rtDW->FilterCoefficient;

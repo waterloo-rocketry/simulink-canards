@@ -7,12 +7,12 @@
  *
  * Code generated for Simulink model 'test_codegen'.
  *
- * Model version                  : 1.1
+ * Model version                  : 1.2
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * C/C++ source code generated on : Wed Oct 23 18:33:32 2024
+ * C/C++ source code generated on : Wed Oct 23 20:06:05 2024
  *
  * Target selection: ert.tlc
- * Embedded hardware selection: Intel->x86-64 (Windows64)
+ * Embedded hardware selection: ARM Compatible->ARM Cortex-M
  * Code generation objectives:
  *    1. Execution efficiency
  *    2. RAM efficiency
@@ -29,11 +29,11 @@ static DW rtDW;                        /* Observable states */
 static X rtX;                          /* Observable continuous states */
 static XDis rtXDis;                    /* Continuous states Disabled */
 
-/* '<Root>/In1' */
-static real_T rtU_In1;
+/* '<Root>/thisIsAnInput' */
+static real_T rtU_thisIsAnInput;
 
-/* '<Root>/Out1' */
-static real_T rtY_Out1;
+/* '<Root>/thisIsAnOutput' */
+static real_T rtY_thisIsAnOutput;
 
 /*
  * Associating rt_OneStep with a real-time clock or interrupt service routine
@@ -66,7 +66,7 @@ void rt_OneStep(RT_MODEL *const rtM)
   /* Set model inputs here */
 
   /* Step the model */
-  test_codegen_step(rtM, rtU_In1, &rtY_Out1);
+  test_codegen_step(rtM, rtU_thisIsAnInput, &rtY_thisIsAnOutput);
 
   /* Get model outputs here */
 

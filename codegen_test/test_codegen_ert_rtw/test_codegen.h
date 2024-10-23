@@ -7,12 +7,12 @@
  *
  * Code generated for Simulink model 'test_codegen'.
  *
- * Model version                  : 1.1
+ * Model version                  : 1.2
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * C/C++ source code generated on : Wed Oct 23 18:33:32 2024
+ * C/C++ source code generated on : Wed Oct 23 20:06:05 2024
  *
  * Target selection: ert.tlc
- * Embedded hardware selection: Intel->x86-64 (Windows64)
+ * Embedded hardware selection: ARM Compatible->ARM Cortex-M
  * Code generation objectives:
  *    1. Execution efficiency
  *    2. RAM efficiency
@@ -147,8 +147,8 @@ struct tag_RTM {
 
 /* Model entry point functions */
 extern void test_codegen_initialize(RT_MODEL *const rtM);
-extern void test_codegen_step(RT_MODEL *const rtM, real_T rtU_In1, real_T
-  *rtY_Out1);
+extern void test_codegen_step(RT_MODEL *const rtM, real_T rtU_thisIsAnInput,
+  real_T *rtY_thisIsAnOutput);
 
 /*-
  * These blocks were eliminated from the model due to optimizations:

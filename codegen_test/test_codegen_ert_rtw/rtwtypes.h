@@ -7,12 +7,12 @@
  *
  * Code generated for Simulink model 'test_codegen'.
  *
- * Model version                  : 1.1
+ * Model version                  : 1.2
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * C/C++ source code generated on : Wed Oct 23 18:33:32 2024
+ * C/C++ source code generated on : Wed Oct 23 20:06:05 2024
  *
  * Target selection: ert.tlc
- * Embedded hardware selection: Intel->x86-64 (Windows64)
+ * Embedded hardware selection: ARM Compatible->ARM Cortex-M
  * Code generation objectives:
  *    1. Execution efficiency
  *    2. RAM efficiency
@@ -35,10 +35,10 @@
 
 /*=======================================================================*
  * Target hardware information
- *   Device type: Intel->x86-64 (Windows64)
+ *   Device type: ARM Compatible->ARM Cortex-M
  *   Number of bits:     char:   8    short:   16    int:  32
  *                       long:  32    long long:  64
- *                       native word size:  64
+ *                       native word size:  32
  *   Byte ordering: LittleEndian
  *   Signed integer division rounds to: Zero
  *   Shift right on a signed integer as arithmetic shift: on
