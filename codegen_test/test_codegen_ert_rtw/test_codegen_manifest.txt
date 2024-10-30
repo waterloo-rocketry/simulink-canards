@@ -1,8 +1,0 @@
-This file is the manifest for the generated code from model 'test_codegen'.
-C:\Users\joedo\Documents\Rocketry\simulink-canards\codegen_test\test_codegen_ert_rtw\ert_main.c
-C:\Users\joedo\Documents\Rocketry\simulink-canards\codegen_test\test_codegen_ert_rtw\test_codegen.c
-C:\Users\joedo\Documents\Rocketry\simulink-canards\codegen_test\test_codegen_ert_rtw\rtwtypes.h
-C:\Users\joedo\Documents\Rocketry\simulink-canards\codegen_test\test_codegen_ert_rtw\test_codegen.h
-C:\Program Files\MATLAB\R2024b\simulink\include\rtw_continuous.h
-C:\Program Files\MATLAB\R2024b\simulink\include\rtw_solver.h
-C:\Users\joedo\Documents\Rocketry\simulink-canards\codegen_test\test_codegen_ert_rtw\test_codegen_manifest.txt
