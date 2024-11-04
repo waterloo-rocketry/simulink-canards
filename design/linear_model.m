@@ -19,7 +19,7 @@ sys = ss(A,B,C,0);
 
 %% Controller
 Q = diag([1,2,10]);
-R = 1e4;        %1e1 for low speeds, 1e4 for high speeds
+R = 1e2;        %1e1 for low speeds, 1e4 for high speeds
 K = -lqr(sys,Q,R,0)
 
 sys_cl = feedback(sys,-K);
