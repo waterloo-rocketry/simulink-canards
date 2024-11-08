@@ -1,7 +1,7 @@
 function [x_new, P_new] = ekf_predict(x, P, u, Q, T, step)
         
     % x_dot = model_f(x, u);
-    [~,x_pred] = ode45(@(x_)model_f(x_, u), 0:step:T, x); %RK45
+    [~,x_pred] = ode45(@(x_)model_f(x_, u), 0:step:T, x); % RK45 (DoPri)
     x_new = x_pred(end,:)';
 
     % P_dot = F*P + P*F'+ Q
