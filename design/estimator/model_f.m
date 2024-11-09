@@ -7,19 +7,26 @@ function [x_dot] = model_f(x, u)
 
     % get parameters
     model_params
-
-    % quaternion derivatives
-    q_dot = quaternion_deriv(q, w);
-
-    % torques
-    ...
-
-    % rate derivatives
-    w_dot = inv(J)*(torque - cross(w, J*w));
+    
+    % calculate air data
+    p_stat = 
+    temperature = init[1] - init[2] * (alt - init[3])
+    rho = (pressure(h)*mol)/(gas_const*temperature);
+    mach_local = math.sqrt((gamma*R*temperature(h))/mol);
+    p_dyn = rho/2*norm(v)^2;
 
     % forces
     ...
     force = inv(S)*[-G,0,0]';   
+
+    % torques
+    torque_x = q
+       
+    % quaternion derivatives
+    q_dot = quaternion_deriv(q, w);
+
+    % rate derivatives
+    w_dot = inv(J)*(torque - cross(w, J*w));
 
     % velocity derivatives 
     v_dot = force/m - cross(w,v); 
@@ -58,4 +65,35 @@ function [S] = quaternion_rotmatrix(q)
                q(3+1), 0, -q(1+1);
               -q(2+1), q(1+1), 0];
     S = eye(3) + 2*q(0+1)*q_tilde + 2*q_tilde*q_tilde;
+end
+
+function [p_static] = pressure(alt)
+    def set_initials(h):
+    init = [] #P0,T0,L,base
+    if(0<=h<11000):
+        init.append(101325)
+        init.append(288.15)
+        init.append(0.0065)
+        init.append(0)
+    if(11000<=h<20000):
+        init.append(22632.064)
+        init.append(216.65)
+        init.append(0)
+        init.append(11000)
+    if(20000<=h<32000):
+        init.append(5474.88867)
+        init.append(216.65)
+        init.append(-0.001)
+        init.append(20000)
+    
+    init = set_initials(h)
+    P0 = init[0]
+    T0 = init[1]
+    L = init[2]
+    b = init[3]
+    H = geopotential_height(h)
+    if(L != 0):
+        P = P0 * ((1-((L*(H-b))/T0))**((gravity(h)*mol)/(R*L)))
+    if(L == 0):
+        P = P0 * np.exp((-mol*gravity(h)*(H-b))/(R*T0))
 end
