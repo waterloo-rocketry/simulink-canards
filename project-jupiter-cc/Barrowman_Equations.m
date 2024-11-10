@@ -1,4 +1,4 @@
-run('scripts/Europa.m')
+run('scripts/Borealis.mlx')
 %-------------------------------------------------------------------------------------------------------------------------------
 %Support formulations to further use
 %Fin-related parameters
