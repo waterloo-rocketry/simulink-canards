@@ -2,26 +2,27 @@ function [x_dot] = model_f(x, u)
     % state vector: [q(4); w(3); v(3); alt; Cl; delta]
     q = x(1:4); w = x(5:7); v = x(8:10); alt = x(11); Cl = x(12); delta = x(13);
 
-    % rotational matrix
+    % rotational matrix (attitude transformation matrix, between body frame and ground frame)
     S = quaternion_rotmatrix(q);
 
     % get parameters
     model_params
     
     % calculate air data
-    p_stat = 
-    temperature = init[1] - init[2] * (alt - init[3])
-    rho = (pressure(h)*mol)/(gas_const*temperature);
-    mach_local = math.sqrt((gamma*R*temperature(h))/mol);
-    p_dyn = rho/2*norm(v)^2;
+    [~, ~, rho, mach_local] = model_airdata(alt, g, air_gamma, air_R, air_atmosphere);
+    airspeed = norm(v);
+    p_dyn = rho/2*airspeed^2;
+    Ma = airspeed / mach_local;
 
     % forces
-    ...
-    force = inv(S)*[-G,0,0]';   
+    force_aero = 
+    force = force_aero + inv(S)*[-g,0,0]';   
 
     % torques
-    torque_x = q
-       
+    torque_canards = 
+    torque_aero = 
+    torque = torque_aero + torque_canards*[1;0;0];
+
     % quaternion derivatives
     q_dot = quaternion_deriv(q, w);
 
@@ -32,7 +33,7 @@ function [x_dot] = model_f(x, u)
     v_dot = force/m - cross(w,v); 
 
     % altitude
-    pos_dot = S*v
+    pos_dot = S*v;
     alt_dot = pos_dot(1);
 
     % canard coefficients, airfoil theory
@@ -46,6 +47,8 @@ end
 
 
 function [q_dot] = quaternion_deriv(q_un, w)
+    % computes quaternion derivative from quaternion and body rates
+
     % norm quaternions
     q = 1/norm(q_un) * q_un;
 
@@ -60,40 +63,15 @@ function [q_dot] = quaternion_deriv(q_un, w)
     q_dot = (0.5* W * q) + norm(w)*(q-q_un);
 end
 
+
 function [S] = quaternion_rotmatrix(q)
+    % computes rotation matrix from quaternion
+
+    % norm quaternions
+    q = 1/norm(q) * q;
+
     q_tilde = [0, -q(3+1), q(2+1);
                q(3+1), 0, -q(1+1);
               -q(2+1), q(1+1), 0];
     S = eye(3) + 2*q(0+1)*q_tilde + 2*q_tilde*q_tilde;
-end
-
-function [p_static] = pressure(alt)
-    def set_initials(h):
-    init = [] #P0,T0,L,base
-    if(0<=h<11000):
-        init.append(101325)
-        init.append(288.15)
-        init.append(0.0065)
-        init.append(0)
-    if(11000<=h<20000):
-        init.append(22632.064)
-        init.append(216.65)
-        init.append(0)
-        init.append(11000)
-    if(20000<=h<32000):
-        init.append(5474.88867)
-        init.append(216.65)
-        init.append(-0.001)
-        init.append(20000)
-    
-    init = set_initials(h)
-    P0 = init[0]
-    T0 = init[1]
-    L = init[2]
-    b = init[3]
-    H = geopotential_height(h)
-    if(L != 0):
-        P = P0 * ((1-((L*(H-b))/T0))**((gravity(h)*mol)/(R*L)))
-    if(L == 0):
-        P = P0 * np.exp((-mol*gravity(h)*(H-b))/(R*T0))
 end
