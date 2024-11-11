@@ -9,8 +9,8 @@ function [x_new, P_new] = ekf_predict(x, P, u, Q, T, step)
     x_new = x_solver(end,:)';
 
     % compute Jacobians (using complex-step differentiation)
-    F1 = jacobian(model_f, x, u, 0.001); 
-    F1 = jacobian(model_f, x_new, u, 0.001);
+    F1 = jacobian(@model_f, t, x, u, 0.001); 
+    F1 = jacobian(@model_f, t, x_new, u, 0.001);
     
     % P_dot = F*P + P*F'+ Q
     P_new = P + T/2*( (F1*P + P*F1'+ Q) + (F2*P + P*F2'+ Q) ); % improved Euler

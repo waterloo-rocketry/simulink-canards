@@ -12,13 +12,13 @@ function [Jx, Ju] = jacobian(f, t, x, u, h)
     for k = 1:n
         one = zeros(n,1);
         one(k) = 1;
-        J(:,k) = imag(f(x+1i*h*one)) / h; 
+        Jx(:,k) = imag(f(t, x+1i*h*one, u)) / h; 
     end
 
     Ju = zeros(l,m);
     for k = 1:m
         one = zeros(m,1);
         one(k) = 1;
-        J(:,k) = imag(f(x+1i*h*one)) / h; 
+        Ju(:,k) = imag(f(t, x, u+1i*h*one)) / h; 
     end
 end
