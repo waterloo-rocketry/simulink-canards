@@ -1,16 +1,24 @@
-function J = jacobian(f, x, h)
+function [Jx, Ju] = jacobian(f, t, x, u, h)
     % Computes the Jacobian matrix of a vector function using complex-step
     % differentiation
+
+    y = f(t, x, u);
     
-    y = f(x);
+    n = length(x);
+    m = length(u);
+    l = length(y);
     
-    m = length(x);
-    n = length(y);
-    
-    J = zeros(n,m);
+    Jx = zeros(l,n);
     for k = 1:n
         one = zeros(n,1);
         one(k) = 1;
-        J(k) = imag(f(x+i*h*one)) / h; 
+        J(:,k) = imag(f(x+1i*h*one)) / h; 
+    end
+
+    Ju = zeros(l,m);
+    for k = 1:m
+        one = zeros(m,1);
+        one(k) = 1;
+        J(:,k) = imag(f(x+1i*h*one)) / h; 
     end
 end

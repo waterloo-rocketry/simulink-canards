@@ -4,7 +4,7 @@ Jx = 0.5; % inertia roll
 Jy = 50; % inertia pitch, yaw
 J = diag([Jx, Jy, Jy]);
 
-length_cp = ;
+length_cp = 0;
 
 %% Canards, Actuator
 tau = 1/60; % time constant of first order actuator dynamics

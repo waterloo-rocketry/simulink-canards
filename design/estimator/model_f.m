@@ -1,7 +1,7 @@
-function [x_dot] = model_f(x_u)
+function [x_dot] = model_f(t, x, u)
     % state vector: [q(4); w(3); v(3); alt; Cl; delta]
-    q = x_u(1:4); w = x_u(5:7); v = x_u(8:10); alt = x_u(11); Cl = x_u(12); delta = x_u(13);
-    u = x_u(14);
+    q = x(1:4); w = x(5:7); v = x(8:10); alt = x(11); Cl = x(12); delta = x(13);
+    delta_u = u;
 
     % rotational matrix (attitude transformation matrix, between body frame and ground frame)
     S = quaternion_rotmatrix(q);
@@ -20,8 +20,8 @@ function [x_dot] = model_f(x_u)
     force = force_aero + inv(S)*[-m*g,0,0]';   
 
     % torques
-    torque_canards = 0;
-    torque_aero = zeros(3,1);;
+    torque_canards = delta;
+    torque_aero = zeros(3,1);
     torque = torque_aero + torque_canards*[1;0;0];
 
     % quaternion derivatives
@@ -41,7 +41,7 @@ function [x_dot] = model_f(x_u)
     Cl_dot = 0; % derivation of CL_alpha_c with Ma = Ma(t)
     
     % actuator dynamics
-    delta_dot = -1/tau * delta + 1/tau * u;
+    delta_dot = -1/tau * delta + 1/tau * delta_u;
 
     x_dot = [q_dot; w_dot; v_dot; alt_dot; Cl_dot; delta_dot];
 end
