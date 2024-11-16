@@ -9,7 +9,7 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
     model_params
 
     % compute rotational matrix (attitude transformation matrix, between body frame and ground frame)
-    S = quaternion_rotmatrix(q);
+    S = model_quaternion_rotmatrix(q);
     
     % calculate air data
     [~, ~, rho, mach_local] = model_airdata(alt, g, air_gamma, air_R, air_atmosphere);
@@ -19,7 +19,7 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
 
     % forces (specific)
     force_aero = zeros(3,1);
-    force = force_aero / m + inv(S)*g;  
+    force = force_aero / m + S'*g;  
 
     % torques
     torque_canards = delta;
@@ -35,12 +35,12 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
     w_dot = inv(J)*(torque - cross(w, J*w));
     
     %%% acceleration specific force
-    a = S_S*A - cross(w_dot, length_cs) - cross(w, cross(w, length_cs));
+    a = S_SA'*A - cross(w_dot, length_cs) - cross(w, cross(w, length_cs));
 
     % velocity derivatives 
     %%% use aerodynamic for simulation, acceleration for filter
     v_dot = force - cross(w,v);
-    v_dot = a - cross(w,v) + inv(S)*g;
+    %v_dot = a - cross(w,v) + inv(S)*g;
 
     % altitude derivative
     pos_dot = S*v;
@@ -74,17 +74,4 @@ function [q_dot] = quaternion_deriv(q_un, w)
 
     % quaternion derivative
     q_dot = (0.5* W * q) + norm(w)*(q-q_un);
-end
-
-
-function [S] = quaternion_rotmatrix(q)
-    % computes rotation matrix from quaternion
-
-    % norm quaternions
-    q = 1/norm(q) * q;
-
-    q_tilde = [0, -q(3+1), q(2+1);
-               q(3+1), 0, -q(1+1);
-              -q(2+1), q(1+1), 0];
-    S = eye(3) + 2*q(0+1)*q_tilde + 2*q_tilde*q_tilde;
 end

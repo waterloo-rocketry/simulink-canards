@@ -15,6 +15,7 @@ function [p_static, temperature, rho, mach_local] = model_airdata(alt, g, air_ga
         layer = air_atmosphere(4,:);
     end
 
+    g = norm(g);
     P_B = layer(1); % base pressure
     T_B = layer(2); % base temperature
     k = layer(3); % temperature lapse rate
