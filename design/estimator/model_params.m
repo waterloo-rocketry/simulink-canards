@@ -8,8 +8,10 @@ length_cg = 0; % center of gravity
 length_cp = 0; % center of pressure
 
 %% Sensors
-S_s = eye(3); % rotation transform from sensor frame to body frame
-length_cs = 0; % center of sensor frame
+S_SW = eye(3); % rotation transform from sensor frame to body frame
+S_SA = eye(3); % rotation transform from sensor frame to body frame
+S_SM = eye(3); % rotation transform from sensor frame to body frame
+length_cs = [0; 0; 0]; % center of sensor frame
 
 %% Canards, Actuator
 tau = 1/60; % time constant of first order actuator dynamics

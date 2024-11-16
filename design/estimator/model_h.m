@@ -6,24 +6,15 @@ function [z] = model_h(x)
     model_params
 
     % rates
-    W = w; % if sensor/rocket alignment is perfect. Use S_s otherwise
+    W = S_SW*w; % rotation from sensor frame to rocket frame
 
     % magnetic field model
     % compute rotational matrix (attitude transformation matrix, between body frame and ground frame)
-    S = quaternion_rotmatrix(q);
-    M = 
-
+    S = model_quaternion_rotmatrix(q);
+    M = S_SM*S*[1;0;0]; % taking [1;0;0] as initial orientation of magnetic field
 
     % atmosphere model
-    [P, T, rho, mach_local] = model_airdata(alt, g, air_gamma, air_R, air_atmosphere);
-
-    % Aerodynamics
-    airspeed = norm(v);
-    p_dyn = rho/2*airspeed^2;
-    Ma = airspeed / mach_local; % remove if not needed
-
-    % forces
-    force_aero = zeros(3,1);
+    [P, T, ~, ~] = model_airdata(alt, g, air_gamma, air_R, air_atmosphere);
 
     %%% accelerations %% not used
     %%% A =  % include centrifugal correction. Include lift through non-zero side velocities    
