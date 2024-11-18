@@ -1,4 +1,6 @@
 function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by matlab ode syntax
+    % Computes state derivative with predictive model. Use ODE solver to compute next state.
+
     % decompose state vector: [q(4); w(3); v(3); alt; Cl; delta]
     q = x(1:4); w = x(5:7); v = x(8:10); alt = x(11); Cl = x(12); delta = x(13);
 
@@ -14,17 +16,19 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
     % calculate air data
     [~, ~, rho, mach_local] = model_airdata(alt, g, air_gamma, air_R, air_atmosphere);
     airspeed = norm(v);
-    p_dyn = rho/2*airspeed^2;
     Ma = airspeed / mach_local; % remove if not needed
+    alpha = atan2(v(2), v(1));
+    beta = atan2(v(3), v(1));
+    p_dyn = rho/2*airspeed^2;
 
     % forces (specific)
     force_aero = zeros(3,1);
     force = force_aero / m + S'*g;  
 
     % torques
-    torque_canards = delta;
-    torque_aero = zeros(3,1);
-    torque = torque_aero + torque_canards*[1;0;0];
+    torque_canards = c_canard * p_dyn * delta;
+    torque_aero = c_aero * p_dyn;
+    torque = torque_aero*[0; alpha; beta] + torque_canards*[1;0;0];
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%% derivatives
 
@@ -48,7 +52,6 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
 
     % canard coefficients derivative , airfoil theory
     % This turned out to be way to involved, setting the prediction to zero change for now
-    % could use numerical differentation in the future
     Cl_dot = 0; % derivation of CL_alpha_c with Ma = Ma(t). 
     
     % actuator dynamics
@@ -56,22 +59,4 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
     
     % concoct state derivative vector
     x_dot = [q_dot; w_dot; v_dot; alt_dot; Cl_dot; delta_dot];
-end
-
-
-function [q_dot] = quaternion_deriv(q_un, w)
-    % computes quaternion derivative from quaternion and body rates
-
-    % norm quaternions
-    q = 1/norm(q_un) * q_un;
-
-    % angular rate matrix
-    w_tilde = [0, -w(3), w(2);
-               w(3), 0, -w(1);
-              -w(2), w(1), 0];
-    W = [0, -w';
-         w, -w_tilde];
-
-    % quaternion derivative
-    q_dot = (0.5* W * q) + norm(w)*(q-q_un);
 end

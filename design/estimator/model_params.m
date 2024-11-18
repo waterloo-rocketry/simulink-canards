@@ -6,6 +6,9 @@ J = diag([Jx, Jy, Jy]);
 
 length_cg = 0; % center of gravity
 length_cp = 0; % center of pressure
+area_reference = pi*(8*0.0254/2)^2; % cross section of body tube
+Cn_alpha = 1; % pitch coefficent 
+c_aero = Cn_alpha*area_reference*length_cp; % moment coefficient of body
 
 %% Sensors
 S_SW = eye(3); % rotation transform from sensor frame to body frame
