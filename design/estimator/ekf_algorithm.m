@@ -1,8 +1,8 @@
 function [x_new, P_new] = ekf_algorithm(x, P, u, y, Q, R, T, step)
     % Computes EKF iteration. Uses model_f for prediction and model_h for correction.
     % use either this or ekf_predict and ekf_correct seperately
-    % Inputs: estimates x, P; control u; measurement y; weighting Q, R;
-    % time differnce to last compute T; step size for ODE solver
+    % Inputs: estimates x, P; control u; measurement y; weighting Q, R; time differnce to last compute T; step size for ODE solver
+    % Outputs: new estimates x, P
 
     %% Prediction
     % computes a-priori state and covariance estimates.
