@@ -14,7 +14,7 @@ function [z] = model_h(t, x, u)
     M = S_SM*S*[1;0;0]; % taking [1;0;0] as initial orientation of magnetic field
 
     % atmosphere model
-    [P, T, ~, ~] = model_airdata(alt, g, air_gamma, air_R, air_atmosphere);
+    [P, T, ~, ~] = model_airdata(alt);
 
     %%% accelerations %% not used
     %%% A =  % include centrifugal correction. Include lift through non-zero side velocities    

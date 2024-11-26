@@ -12,9 +12,9 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
 
     % compute rotational matrix (attitude transformation matrix, between body frame and ground frame)
     S = model_quaternion_rotmatrix(q);
-    
+
     % calculate air data
-    [~, ~, rho, ~] = model_airdata(alt, g, air_gamma, air_R, air_atmosphere);
+    [~, ~, rho, ~] = model_airdata(alt);
     airspeed = norm(v);
     % Ma = airspeed / mach_local; % remove if not needed
     % alpha = atan2(v(2), v(1));

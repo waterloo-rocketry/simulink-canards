@@ -1,22 +1,27 @@
-function [A,B,C,sys_roll] = model_roll(x)
+function [A,B,C,sys_roll] = model_roll(x, dynamicpressure, canardcoeff)
     % Computes state jacobian for roll dynamics
-
-    % decompose state vector: [q(4); w(3); v(3); alt; Cl; delta]
-    q = (1:4); v = x(8:10); alt = x(11); Cl = x(12);
-
-    % compute rotational matrix (attitude transformation matrix, between body frame and ground frame)
-    S = model_quaternion_rotmatrix(q);
-
-    % compute roll angle       
-    phi = S(2,3)/S(3,3); % double check if this is the correct angle
-
+    
     % get parameters
     model_params
-   
-    % calculate air data
-    [~, ~, rho, ~] = model_airdata(alt, g, air_gamma, air_R, air_atmosphere);
-    airspeed = norm(v);
-    p_dyn = rho/2*airspeed^2;
+
+    % check if state is provided
+    if isempty(x) == 0
+        % decompose state vector: [q(4); w(3); v(3); alt; Cl; delta]
+        v = x(8:10); alt = x(11); Cl = x(12);
+       
+        % calculate air data
+        [~, ~, rho, ~] = model_airdata(alt);
+        airspeed = norm(v);
+        p_dyn = rho/2*airspeed^2;
+    end 
+
+    % check for optinonal inputs
+    if nargin > 1 && isempty(dynamicpressure) == 0
+        p_dyn = dynamicpressure;
+    end
+    if nargin > 1 && isempty(canardcoeff) == 0
+       Cl = canardcoeff; 
+    end
 
     % simplified linear roll model
     %%% x_roll = [phi; w; delta]

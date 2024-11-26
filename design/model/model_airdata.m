@@ -1,8 +1,11 @@
-function [p_static, temperature, rho, mach_local] = model_airdata(alt, g, air_gamma, air_R, air_atmosphere)
+function [p_static, temperature, rho, mach_local] = model_airdata(alt)
     % computes air data from altitude, according to US standard atmosphere 
     % air data: static pressure, temperature, density, local speed of sound
     % calculations found in Stengel 2004, pp. 30
     % geopotential altitude neglected, may (should) be added in
+
+    % get parameters
+    model_params
 
     % select atmosphere behaviour from table
     if alt < air_atmosphere(2,end)
