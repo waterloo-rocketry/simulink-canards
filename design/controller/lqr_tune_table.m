@@ -39,8 +39,11 @@ for i=1:m
         R = sqrt(Ps(i)) * 10; % scale R by dynamic pressure
         K = -lqr(F_roll,B,Q,R,N);    
         Ks(1:3,i,k) = K;
-        sys_cl = ss(A+B*K, B, eye(3), 0);
+        sys_cl = ss(F_roll+B*K, B, eye(3), 0);
         K_pre = 1/dcgain(sys_cl(1));
         Ks(4,i,k) = K_pre;
     end
 end    
+
+%% save and export
+save("controller/gains.mat", "Ks");
