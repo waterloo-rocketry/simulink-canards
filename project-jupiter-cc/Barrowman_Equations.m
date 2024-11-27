@@ -15,6 +15,13 @@ c1 = ((Cr+Ct) /  2) * (rt^2) * span;
 c2 = ((Cr + 2*Ct)/3) * rt * (span^2);
 c3 = ((Cr + 3*Ct)/12) * (span^3);
 
+
+% Wind Parameters
+v_w_avg = 2; % average windspeed
+wind_dir = 0; % wind direction
+I_wind = 0.10; % turbulence intensity = sigma_v / v_wind_avg
+wingspan = 2*span + Lr; 
+
 %--------------------------------------------------------------------------------------------------------------------------------
 % The Barrowman Equations
 % Center of pressure derivatives calculations
