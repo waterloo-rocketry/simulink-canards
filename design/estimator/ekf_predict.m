@@ -1,4 +1,4 @@
-function [x_new, P_new] = ekf_predict(x, P, u, Q, T, step)
+function [x_new, P_new] = ekf_predict(x, P, u, t, Q, T, step)
     % prediction step of the EKF.
     % computes a-priori state and covariance estimates.
     % Uses continuous-time model f and solves for state estimate using RK45

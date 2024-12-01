@@ -1,4 +1,4 @@
-function [x, P] = ekf_correct(x, P, y, R)
+function [x, P] = ekf_correct(x, P, y, t, R)
     % Correction step of the EKF.
     % computes a-posteriori state and covariance estimates.
     % Uses discrete-time model h
@@ -8,7 +8,7 @@ function [x, P] = ekf_correct(x, P, y, R)
     innovation = y - model_h(x);
 
     % compute Jacobians (here using closed-form solution)
-    H = model_H(x);
+    H = jacobian(@model_h, t, x, u, step); 
 
     % compute Kalman gain
     S = H*P*H' + R;

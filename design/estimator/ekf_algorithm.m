@@ -1,7 +1,8 @@
-function [x_new, P_new] = ekf_algorithm(x, P, u, y, Q, R, T, step)
+function [x_new, P_new] = ekf_algorithm(x, P, u, y, t, Q, R, T, step)
     % Computes EKF iteration. Uses model_f for prediction and model_h for correction.
     % use either this or ekf_predict and ekf_correct seperately
-    % Inputs: estimates x, P; control u; measurement y; weighting Q, R; time differnce to last compute T; step size for ODE solver
+    % Inputs: estimates x, P; control u; measurement y; timecode t
+    % Input parameters: weighting Q, R; time difference to last compute T; step size for ODE solver step
     % Outputs: new estimates x, P
 
     %% Prediction
@@ -26,10 +27,10 @@ function [x_new, P_new] = ekf_algorithm(x, P, u, y, Q, R, T, step)
     % Solves for covariance estimate 
 
     % compute expected measurement and difference to measured values
-    innovation = y - model_h(x);
+    innovation = y - model_h(g,x,u);
 
     % compute Jacobians (here using closed-form solution)
-    H = model_H(x);
+    H = jacobian(@model_h, t, x, u, step); 
 
     % compute Kalman gain
     S = H*P*H' + R;

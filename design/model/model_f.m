@@ -30,7 +30,7 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
 
     % forces (specific)
     force_aero = zeros(3,1);
-    force = force_aero / m + S'*g;  
+    force = force_aero / m;  
 
     % torques
     torque_canards = Cl * c_canard * p_dyn * delta;
@@ -45,13 +45,12 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
     % rate derivatives
     w_dot = inv(J)*(torque - cross(w, J*w));
     
+    % velocity derivatives 
     %%% acceleration specific force
     a = S_SA'*A - cross(w_dot, length_cs) - cross(w, cross(w, length_cs));
-
-    % velocity derivatives 
     %%% use aerodynamic for simulation, acceleration for filter
-    v_dot = force - cross(w,v);
-    %v_dot = a - cross(w,v) + inv(S)*g;
+    % v_dot = force - cross(w,v) + S'*g;
+    v_dot = a - cross(w,v) + S'*g;
 
     % altitude derivative
     pos_dot = S*v;
