@@ -1,4 +1,4 @@
-run('scripts/Borealis.mlx')
+run('plant-model\scripts\Borealis.mlx')
 %-------------------------------------------------------------------------------------------------------------------------------
 %Support formulations to further use
 %Fin-related parameters
