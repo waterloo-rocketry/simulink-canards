@@ -50,7 +50,7 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
     a = S_SA'*A - cross(w_dot, length_cs) - cross(w, cross(w, length_cs));
     %%% use aerodynamic for simulation, acceleration for filter
     % v_dot = force - cross(w,v) + S'*g;
-    v_dot = a - cross(w,v) + S'*g;
+    v_dot = a - 2*cross(w,v) + S'*g;
 
     % altitude derivative
     pos_dot = S*v;
