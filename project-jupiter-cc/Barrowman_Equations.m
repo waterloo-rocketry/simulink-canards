@@ -69,8 +69,7 @@ yparcial_canard = (Cr_canard + 2 * Ct_canard) / (Cr_canard + Ct_canard); %mean a
 Y_canard = rt + (span_canard/3) * yparcial_canard; %mean aerodynamic chord distance with the radius added
 Lf_canard = sqrt((Cr_canard / 2 - Ct_canard / 2) ^ 2 + span_canard ^ 2); % Pre calculus. No Physical meaning
 
-%XTB_canard = pos_canard - (sweep_canard / 3) * ( (Cr_canard + 2 * Ct_canard) / (Cr_canard + Ct_canard) ) + (1/6) * (Cr_canard + Ct_canard - Cr_canard * Ct_canard / (Cr_canard + Ct_canard)); % Fin's center of pressure
-XTB_canard = x_cg;
+XTB_canard = pos_canard - (sweep_canard / 3) * ( (Cr_canard + 2 * Ct_canard) / (Cr_canard + Ct_canard) ) + (1/6) * (Cr_canard + Ct_canard - Cr_canard * Ct_canard / (Cr_canard + Ct_canard)); % Fin's center of pressure
 Cnalfat_canard = ((4 * N_canard * (span_canard / Lr) ^ 2) / (1 + sqrt(1 + (2 * Lf_canard / (Cr_canard + Ct_canard)) ^ 2))) * (1 + rt / (span_canard + rt));
 Cnalfat_canard = Cnalfat_canard * (1 + r0/(span_canard + r0)); %interference factor
 
