@@ -11,7 +11,7 @@ function [u] = lqr_algorithm(x, r)
     S = model_quaternion_rotmatrix(q);
 
     % compute roll angle       
-    phi = S(2,3)/S(3,3); % double check if this is the correct angle
+    phi = atan2(S(2,3), S(3,3)); % double check if this is the correct angle
     
     % cat roll state
     x_roll = [phi; w(1); delta];
