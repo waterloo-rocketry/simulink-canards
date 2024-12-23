@@ -61,7 +61,7 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
     Cl_dot = -1/tau_cl_alpha * (Cl - Cl_alpha); % returns Cl to expected value slowly, to force convergence in EKF
     
     % actuator dynamics
-    delta_dot = -1/tau * delta + 1/tau * delta_u; % linear 1st order
+    delta_dot = -1/tau * (delta - delta_u); % linear 1st order
     
     % concoct state derivative vector
     x_dot = [q_dot; w_dot; v_dot; alt_dot; Cl_dot; delta_dot];
