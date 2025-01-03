@@ -28,9 +28,10 @@ c_canard = area_canard*length_canard; % moment arm * area of canard
 g = [-9.8; 0; 0]; % gravitational acceleration in the geographic inertial frame
 
 air_gamma = 1.4; % adiabatic index
-air_R = 8.31446 / 0.0289644; % specific gas constant for air
-air_atmosphere = [101325, 288.15, 0.0065, 0; % troposphere
-                  22632.1, 216.65, 0, 11000; % tropopause
-                  5474.9, 216.65, -0.001, 20000; % stratosphere
-                  868.02, 228.65, -0.0028, 32000]; % stratopause
-                  % P_base, T_base, lapse rate, base height;
+air_R = 287.0579; % specific gas constant for air
+air_atmosphere = [0, 101325, 288.15, 0.0065; % troposphere
+                  11000, 22632.1, 216.65, 0; % tropopause
+                  20000, 5474.9, 216.65, -0.001; % stratosphere
+                  32000, 868.02, 228.65, -0.0028]; % stratosphere 2
+                  % base height, P_base, T_base, lapse rate;
+air_r0 = 6356766; % mean earth radius
