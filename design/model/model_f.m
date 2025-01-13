@@ -1,7 +1,6 @@
 function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by matlab ode syntax
     % Computes state derivative with predictive model. Use ODE solver to compute next state.
-    
-    %% decomp, params, rotmatrix
+
     % decompose state vector: [q(4); w(3); v(3); alt; Cl; delta]
     q = x(1:4); w = x(5:7); v = x(8:10); alt = x(11); Cl = x(12); delta = x(13);
 
@@ -14,25 +13,22 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
     % compute rotational matrix (attitude transformation matrix, between body frame and ground frame)
     S = model_quaternion_rotmatrix(q);
 
-    %% air data
+    % calculate air data
     [~, ~, rho, ~] = model_airdata(alt);
     airspeed = norm(v);
-    p_dyn = rho/2*airspeed^2;
-    %%% angle of attack / sideslip
-    if norm(v(1)) >= 0 
-        alpha = atan(v(2)/norm(v));
-        beta = atan(v(3)/norm(v));
-    elseif norm(v(1)) <= 0
-        alpha = pi - atan(v(2)/norm(v));
-        beta = pi - atan(v(3)/norm(v));
+    % Ma = airspeed / mach_local; % remove if not needed
+    % alpha = atan2(v(2), v(1));
+    % beta = atan2(v(3), v(1)); atan2 cannot handle complex numbers needed
+    % for jacobian function. Can use atan2 is jacobian is determined otherwise
+    if v(1) ~= 0 
+        alpha = v(2) / v(1); % use small angle approx instead of atan2
+        beta = v(3) / v(1);
     else
         alpha = 0; beta =0;
     end
-    
-    %% forces and moments
+    p_dyn = rho/2*airspeed^2;
 
     % forces (specific)
-    %%% comment out if using accelerometer, not needed then
     force_aero = zeros(3,1);
     force = force_aero / m;  
 
@@ -41,7 +37,7 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
     torque_aero = c_aero * p_dyn;
     torque = torque_aero*[0; alpha; beta] + torque_canards*[1;0;0];
 
-    %% derivatives
+    %%%%%%%%%%%%%%%%%%%%%%%%%%% derivatives
 
     % quaternion derivatives
     q_dot = model_quaternion_deriv(q, w);
@@ -60,14 +56,13 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
     pos_dot = S*v;
     alt_dot = pos_dot(1);
 
-    % canard coefficients derivative
-    %%% returns Cl to expected value slowly, to force convergence in EKF
-    Cl_dot = -1/tau_cl_alpha * (Cl - Cl_alpha); 
+    % canard coefficients derivative , airfoil theory
+    % This turned out to be way to involved, setting the prediction to zero change for now
+    Cl_dot = -1/tau_cl_alpha * (Cl - Cl_alpha); % returns Cl to expected value slowly, to force convergence in EKF
     
     % actuator dynamics
-    %%% linear 1st order
-    delta_dot = -1/tau * (delta - delta_u);
+    delta_dot = -1/tau * (delta - delta_u); % linear 1st order
     
-    %% concoct state derivative vector
+    % concoct state derivative vector
     x_dot = [q_dot; w_dot; v_dot; alt_dot; Cl_dot; delta_dot];
 end
