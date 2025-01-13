@@ -19,8 +19,8 @@ function [u] = lqr_algorithm(x, r)
     %% Schedule
     % get gain from schedule
     Ks = lqr_schedule(x);
-    K = K(1:3);
-    K_pre = K(4);
+    K_pre = Ks(4);
+    K = Ks(1:3);
     
     %% Feedback law
     u = K*x_roll + K_pre*r; %two degree of freedom, full state feedback

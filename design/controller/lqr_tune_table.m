@@ -4,8 +4,8 @@ alt_max = 20e3; % max height (not relevant)
 CL_max = 3; % max abs(coefficient)
 
 % amount of design point for each dimension
-P_amount = 100; % dynamic pressure
-C_amount = 20; % coefficient of lift
+P_amount = 200; % dynamic pressure
+C_amount = 10; % coefficient of lift
 
 %% tuning parameters
 Q = diag([10, 0, 10]);
@@ -18,14 +18,14 @@ N = 0; % if desired cross term can be passed to lqr_tune
 [~, ~, rho_max, ~] = model_airdata(0);
 [~, ~, rho_min, ~] = model_airdata(alt_max);
 
-p_min = 0;
+p_min = 100;
 p_max = rho_max/2*V_max^2;
 
 % Dimensions are (dynamic pressure, coefficent of lift)
 Ps = linspace(p_min,p_max, P_amount);
 Cls = linspace(-CL_max, CL_max, C_amount);
-Ps(Ps==0)=[]
-Cls(Cls==0)=[]
+Ps(Ps==0)=[];
+Cls(Cls==0)=[];
 
 [P_mesh,C_mesh] = meshgrid(Cls,Ps);
 
@@ -38,7 +38,9 @@ Ks = zeros(m,n,4); % length(x) is 3, plus 1 pre gain
 for i=1:m
     for k=1:n
         [F_roll, B, ~, ~] = model_roll([], Ps(i), Cls(k));
-        R = sqrt(Ps(i)) * 10; % scale R by dynamic pressure
+
+        R = Ps(i) / 1000; % scale R by dynamic pressure
+
         K = -lqr(F_roll,B,Q,R,N);    
         Ks(i,k,1:3) = K;
         sys_cl = ss(F_roll+B*K, B, eye(3), 0);
@@ -49,54 +51,56 @@ end
 
 
 %% save and export
-save("controller/gains.mat", "Ks", "P_mesh", "C_mesh");
+save("design/controller/gains.mat", "Ks", "P_mesh", "C_mesh");
 
 %% Plot
-samplep = 1e5; samplec = 0;
-for i=1:4
-    K(i) = interp2(P_mesh, C_mesh, Ks(:,:,i), samplec, samplep, 'linear');
+if 0
+    samplep = 1e5; samplec = 0;
+    for i=1:4
+        K(i) = interp2(P_mesh, C_mesh, Ks(:,:,i), samplec, samplep, 'linear');
+    end
+    
+    figure(1)
+    subplot(2,2,1)
+    [P_plot,C_plot] = meshgrid(Cls,Ps);
+    surfl(P_plot,C_plot,Ks(:,:,1), 'FaceAlpha',0.5)
+    hold on
+    scatter3(samplec, samplep ,K(1), 20, "k", "o", "filled")
+    hold off
+    xlabel("Coefficient")
+    ylabel("Dynamic pressure")
+    zlabel("K_\phi")
+    
+    % figure(2)
+    subplot(2,2,2)
+    [P_plot,C_plot] = meshgrid(Cls,Ps);
+    surfl(P_plot,C_plot,Ks(:,:,2), 'FaceAlpha',0.5)
+    hold on
+    scatter3(samplec, samplep ,K(2), 20, "k", "o", "filled")
+    hold off
+    xlabel("Coefficient")
+    ylabel("Dynamic pressure")
+    zlabel("K_p")
+    
+    % figure(3)
+    subplot(2,2,3)
+    [P_plot,C_plot] = meshgrid(Cls,Ps);
+    surfl(P_plot,C_plot,Ks(:,:,3), 'FaceAlpha',0.5)
+    hold on
+    scatter3(samplec, samplep ,K(3), 20, "k", "o", "filled")
+    hold off
+    xlabel("Coefficient")
+    ylabel("Dynamic pressure")
+    zlabel("K_\delta")
+    
+    % figure(4)
+    subplot(2,2,4)
+    [P_plot,C_plot] = meshgrid(Cls,Ps);
+    surfl(P_plot,C_plot,Ks(:,:,4), 'FaceAlpha',0.5)
+    hold on
+    scatter3(samplec, samplep ,K(4), 20, "k", "o", "filled")
+    hold off
+    xlabel("Coefficient")
+    ylabel("Dynamic pressure")
+    zlabel("K_{pre}")
 end
-
-figure(1)
-subplot(2,2,1)
-[P_plot,C_plot] = meshgrid(Cls,Ps);
-surfl(P_plot,C_plot,Ks(:,:,1), 'FaceAlpha',0.5)
-hold on
-scatter3(samplec, samplep ,K(1), 20, "k", "o", "filled")
-hold off
-xlabel("Coefficient")
-ylabel("Dynamic pressure")
-zlabel("K_\phi")
-
-% figure(2)
-subplot(2,2,2)
-[P_plot,C_plot] = meshgrid(Cls,Ps);
-surfl(P_plot,C_plot,Ks(:,:,2), 'FaceAlpha',0.5)
-hold on
-scatter3(samplec, samplep ,K(2), 20, "k", "o", "filled")
-hold off
-xlabel("Coefficient")
-ylabel("Dynamic pressure")
-zlabel("K_p")
-
-% figure(3)
-subplot(2,2,3)
-[P_plot,C_plot] = meshgrid(Cls,Ps);
-surfl(P_plot,C_plot,Ks(:,:,3), 'FaceAlpha',0.5)
-hold on
-scatter3(samplec, samplep ,K(3), 20, "k", "o", "filled")
-hold off
-xlabel("Coefficient")
-ylabel("Dynamic pressure")
-zlabel("K_\delta")
-
-% figure(4)
-subplot(2,2,4)
-[P_plot,C_plot] = meshgrid(Cls,Ps);
-surfl(P_plot,C_plot,Ks(:,:,4), 'FaceAlpha',0.5)
-hold on
-scatter3(samplec, samplep ,K(4), 20, "k", "o", "filled")
-hold off
-xlabel("Coefficient")
-ylabel("Dynamic pressure")
-zlabel("K_{pre}")
