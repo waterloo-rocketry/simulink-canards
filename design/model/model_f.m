@@ -20,13 +20,14 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
     p_dyn = rho/2*airspeed^2;
     %%% angle of attack / sideslip
     if norm(v(1)) >= 0 
-        alpha = atan(v(2)/norm(v));
-        beta = atan(v(3)/norm(v));
+        alpha = atan(v(3)/norm(v));
+        beta = atan(v(2)/norm(v));
     elseif norm(v(1)) <= 0
-        alpha = pi - atan(v(2)/norm(v));
-        beta = pi - atan(v(3)/norm(v));
+        alpha = pi - atan(v(3)/norm(v));
+        beta = pi - atan(v(2)/norm(v));
     else
-        alpha = 0; beta =0;
+        alpha = sign(v(3))*pi/2; 
+        beta = sign(v(2))*pi/2;
     end
     
     %% forces and moments
