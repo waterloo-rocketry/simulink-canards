@@ -48,8 +48,8 @@ function [x_new, P_new] = ekf_algorithm(x, P, u, y, t, Q, R, T, step)
 
     %% troubleshooting
     % P_pred = P_new(1:11,1:11)
-    % P_correct = P_new(1:11,1:11)
-    Kalman = K(1:10,:)
+    P_correct = P_new(1:13,1:11)
+    Kalman = K(1:11,:)
     feedback_norm = norm(x_error(1:4))
     quat_norm = norm(x(1:4))
     t

@@ -29,12 +29,15 @@ function [xhat, Phat] = estimator_module(timestamp, omega, mag, accel, baro, cmd
     
     %%% Q is a square 13 matrix, tuning for prediction E(noise)
     %%% x = [   q(4),           w(3),           v(3),      alt(1), Cl(1), delta(1)]
-    Q = diag([ones(1,4)*1e-4, ones(1,3)*1e1, ones(1,3)*1e1, 100,  0.001, 0.001]);
-    % Q()
+    Q = diag([ones(1,4)*1e-4, ones(1,3)*1e1, ones(1,3)*1e1, 10,  0, 0]);
+    Q(1:4, 11) = 1000;
+    Q(1:4, 8:10) = 100;
+    Q = (Q+Q')/2;
     
     %%% R is a square 7*a matrix (a amount of sensors), tuning for measurement E(noise)
     %%% y = [   W(3),          Mag(3),     P(1)]
-    R = diag([ones(1,3)*1e-4, ones(1,3)*1e2, 1e-1]);
+    R = diag([ones(1,3)*1e-4, ones(1,3)*1e3, 1e-1]);
+    R = (R+R')/2;
 
     %% compute new estimate with EKF
     [xhat, Phat] = ekf_algorithm(x, P, u, y, t, Q, R, T, step);
