@@ -1,4 +1,4 @@
-run('plant-model\scripts\Borealis.mlx')
+run('plant-model\scripts\borealis.m')
 
 clear estimator_module
 
