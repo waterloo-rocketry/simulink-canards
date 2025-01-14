@@ -1,6 +1,3 @@
-%% Save parameters from this script to .mat file
-clear 
-
 %% Rocket body
 m = 40; %mass in kg
 Jx = 0.225; % inertia roll
@@ -29,5 +26,3 @@ c_canard = area_canard*length_canard; % moment arm * area of canard
 
 %% Environment
 g = [-9.8; 0; 0]; % gravitational acceleration in the geographic inertial frame
-
-save("design/model/model_params.mat")
