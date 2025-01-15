@@ -14,7 +14,7 @@ function [y] = model_h(t, x, u)
     % magnetic field model
     % compute rotational matrix (attitude transformation matrix, between body frame and ground frame)
     S = model_quaternion_rotmatrix(q);
-    M = S_M'*S*M_E; % M_E is initial orientation of magnetic field
+    M = (S_M')*(S)*M_E; % M_E is initial orientation of magnetic field
 
     % atmosphere model
     [P, ~, ~, ~] = model_airdata(alt);
