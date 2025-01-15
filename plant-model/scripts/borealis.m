@@ -4,8 +4,8 @@ Lr = 0.152; % reference length [m]
 Ar = pi * (Lr^2) / 4; % reference area [m^2]
 
 %Sensor parameters
-samplingrate = 0.02; % sampling period of 
-Ls1 = [-2.5;0;0]; % mounting location of IMU 1 relative CG
+samplingrate = 0.01; % sampling period of 
+Ls1 = [-2.4;0;0]; % mounting location of IMU 1 relative CG
 Ss1 = eye(3); % mounting orientation of IMU 1 relative body frame
 location = [10; 43.47; -80.54]; % launch location on earth. Altitude, Latitude, Longitude
         
