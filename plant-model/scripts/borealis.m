@@ -41,7 +41,7 @@ arm_canard = 10/1000; % Moment arm from fin to fuselage
 alfa_canard = degtorad(0); % Canard maximum angle of attack
 pos_canard = -(558.29 + 40)/1000;
 
-rail_angle = deg2rad(5);
+rail_angle = deg2rad(-5);
 
 % OR Simulation Output Data
 or_data = readtable("plant-model\Data\Borealis\Borealis_flight_no_wind.csv")
