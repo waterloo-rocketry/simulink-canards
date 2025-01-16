@@ -13,22 +13,20 @@ function [x_new, P_new] = ekf_algorithm(x, P, u, y, t, Q, R, T, step)
     %%% solve IVP for x: x_dot = f(x, u)
     [x_new] = solver_vector(@model_f, T, step, t, x, u); % RK4
 
-    %%% compute Jacobians: F = df/dx
+    %%% compute Jacobian: F = df/dx
     F = jacobian(@model_f, t, x, u, step); 
-    % F2 = jacobian(@model_f, t+T, x_new, u, step);
-    
+
     %%% solve IVP for P: P_dot = F*P + P*F'+ Q
     %%% Heuns method
     % P_dot = F*P + P*F'+ Q;
-    % P_new = P + T*P_dot = P + T*F*P + T*P*F'+ T*Q;
     % P2 = P + T*P_dot;
     % P_new = P + T/2*( P_dot + (F*P2 + P2*F'+ Q) ); 
-    %%% discrete variant
-    A = F*T;% + eye(length(x));
-    P_new = A*P*A' + T*Q;
+    %%% exact discretization method
+    A = F*T + eye(length(x));
+    P_pred = A*P*A' + Q;
 
     %%% a-priori estimates
-    x = x_new; P = P_new;
+    x = x_new; P = P_pred;
 
     %% Correction
     % computes a-posteriori state and covariance estimates.
@@ -38,7 +36,7 @@ function [x_new, P_new] = ekf_algorithm(x, P, u, y, t, Q, R, T, step)
     %%% compute expected measurement and difference to measured values
     innovation = y - model_h(t,x,u);
 
-    %%% compute Jacobians (here using closed-form solution)
+    %%% compute Jacobian: H = dh/dx
     H = jacobian(@model_h, t, x, u, step); 
 
     %%% compute Kalman gain
@@ -46,19 +44,19 @@ function [x_new, P_new] = ekf_algorithm(x, P, u, y, t, Q, R, T, step)
     K = P*H' * inv(S);
 
     %%% correct state and covariance estimates
-    x_error = K*innovation;
-    x_new = x + x_error;
-    x_new(1:4) = x_new(1:4)/norm(x_new(1:4));
-    % P_new = (eye(length(x)) - K*H ) * P;
-    P_new = (eye(length(P))-K*H)*P*(eye(length(P))-K*H)' + K*R*K'; % allegedly more stable
+    x_new = x + K*innovation;
+    x_new(1:4) = x_new(1:4)/norm(x_new(1:4)); % norm quaternions
+    % P_new = (eye(length(x)) - K*H ) * P; % standard form
+    P_new = (eye(length(x))-K*H)*P*(eye(length(x))-K*H)' + K*R*K'; % joseph stabilized
 
     %% troubleshooting
-    P_pred = P_new%(1:11,1:11)
-    P_correct = P_new%(1:13,1:11)
-    Kalman = K%(1:11,:)
-    F_jac = F
+    P_pred = P_pred(1:11,1:11) %(1:11,1:11)
+    P_correct = P_new(1:11,1:11)%(1:13,1:11)
+    % Kalman = K%(1:11,:)
+    % F_jac = F
     % H_jac = H
-    feedback_norm = norm(x_error(1:4))
-    quat_norm = norm(x(1:4))
+    % feedback_norm = norm(x_error(1:4))
+    % quat_norm = norm(x(1:4))
+    % rotmatrix = model_quaternion_rotmatrix(x(1:4));
     t
 end

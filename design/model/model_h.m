@@ -4,7 +4,7 @@ function [y] = model_h(t, x, u)
 
     % get parameters
     % z = load("design/estimator/initial_params.mat");
-    M_E = [-49.6250; -2.9533; 18.9293];
+    M_E = [-52.2840; -3.1100; 9.8105];
     S_W = eye(3); % rotation transform from sensor frame to body frame
     S_M = eye(3); % rotation transform from sensor frame to body frame
 

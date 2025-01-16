@@ -12,8 +12,8 @@ function [x_init] = initializor(meas)
     %%% compute quaternion attitude
     %a = S_A*A;
     %phi = atan(abs(a(3)/a(1))); % defines inital attitude on the rail, rail is pitched
-    phi = deg2rad(-5); % replace with attitude determination later on
-    d = [0;1;0];    
+    phi = deg2rad(5); % replace with attitude determination later on
+    d = [0;-1;0];    
     q = [cos(phi/2); d*sin(phi/2)];
 
     %%% compute altitude
@@ -36,7 +36,7 @@ function [x_init] = initializor(meas)
     %%% save parameters
     % save("design/estimator/initial_params.mat","M_E","-append")
     
-    q = [1; 0; 0; 0]; % initial attitude disturbance
+    % q = [1; 0; 0; 0]; % initial attitude disturbance
     %%% conconct state vector
     x_init = [q;w;v;alt;Cl;delta];
 end
