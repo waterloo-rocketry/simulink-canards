@@ -10,5 +10,5 @@ function [S] = model_quaternion_rotmatrix(q)
               -q(3), q(2), 0];
     
     % rotation matrix
-    S = eye(3) + 2*q(0+1)*q_tilde + 2*q_tilde*q_tilde;
+    S = eye(3) + 2*q(1)*q_tilde + 2*q_tilde*q_tilde;
 end

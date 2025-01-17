@@ -3,6 +3,8 @@ function [Jx] = jacobian(f, t, x, u, h)
     % Inputs: ODE function f, time t, state x, step size h
     % Outputs: Jacobian matrix del_f/del_x
 
+    h = 0.0001; % step size overwrite
+
     n = length(x); % size of input
     y = f(t, x, u);
     l = length(y); % size of output

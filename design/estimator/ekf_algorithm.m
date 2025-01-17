@@ -10,38 +10,53 @@ function [x_new, P_new] = ekf_algorithm(x, P, u, y, t, Q, R, T, step)
     % Uses continuous-time model f and solves for state estimate using RK45
     % Solves for covariance estimate using Improved Euler
     
-    % solve IVP for x
-    % x_dot = model_f(x, u);
-    [~,x_solver] = ode45(@(t, x_var)model_f(t, x_var, u), 0:step:T, x); % RK45 (DoPri)
-    x_new = x_solver(end,:)';
-    % [x_new, ~] = solver_rk4(@(t_, x_, u_)model_f(t_, x_, u_), T, step, 0, x, u); % RK4
+    %%% solve IVP for x: x_dot = f(x, u)
+    [x_new] = solver_vector(@model_f, T, step, t, x, u); % RK4
 
-    % compute Jacobians (using complex-step differentiation)
-    F1 = jacobian(@model_f, t, x, u, step); 
-    F2 = jacobian(@model_f, t+T, x_new, u, step);
-    
-    % solve IVP for P
-    % P_dot = F*P + P*F'+ Q
-    P_dot = F1*P + P*F1'+ Q;
-    P2 = P + T*P_dot;
-    P_new = P + T/2*( P_dot + (F2*P2 + P2*F2'+ Q) ); % Heuns method
-    
+    %%% compute Jacobian: F = df/dx
+    F = jacobian(@model_f, t, x, u, step); 
+
+    %%% solve IVP for P: P_dot = F*P + P*F'+ Q
+    %%% Heuns method
+    % P_dot = F*P + P*F'+ Q;
+    % P2 = P + T*P_dot;
+    % P_new = P + T/2*( P_dot + (F*P2 + P2*F'+ Q) ); 
+    %%% exact discretization method
+    A = F*T + eye(length(x));
+    P_pred = A*P*A' + Q;
+
+    %%% a-priori estimates
+    x = x_new; P = P_pred;
+
     %% Correction
     % computes a-posteriori state and covariance estimates.
     % Uses discrete-time model h
     % Solves for covariance estimate 
 
-    % compute expected measurement and difference to measured values
-    innovation = y - model_h(g,x,u);
+    %%% compute expected measurement and difference to measured values
+    innovation = y - model_h(t,x,u);
 
-    % compute Jacobians (here using closed-form solution)
+    %%% compute Jacobian: H = dh/dx
     H = jacobian(@model_h, t, x, u, step); 
 
-    % compute Kalman gain
+    %%% compute Kalman gain
     S = H*P*H' + R;
     K = P*H' * inv(S);
 
-    % correct state and covariance estimates
-    x = x + K*innovation;
-    P = (eye(length(P)) - K*H ) * P;
+    %%% correct state and covariance estimates
+    x_new = x + K*innovation;
+    x_new(1:4) = x_new(1:4)/norm(x_new(1:4)); % norm quaternions
+    % P_new = (eye(length(x)) - K*H ) * P; % standard form
+    P_new = (eye(length(x))-K*H)*P*(eye(length(x))-K*H)' + K*R*K'; % joseph stabilized
+
+    %% troubleshooting
+    P_pred = P_pred(1:11,1:11) %(1:11,1:11)
+    P_correct = P_new(1:11,1:11)%(1:13,1:11)
+    % Kalman = K%(1:11,:)
+    % F_jac = F
+    % H_jac = H
+    % feedback_norm = norm(x_error(1:4))
+    % quat_norm = norm(x(1:4))
+    % rotmatrix = model_quaternion_rotmatrix(x(1:4));
+    t
 end

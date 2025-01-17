@@ -1,4 +1,7 @@
-run('plant-model\scripts\Borealis.mlx')
+run('plant-model\scripts\borealis.m')
+
+clear estimator_module
+
 %-------------------------------------------------------------------------------------------------------------------------------
 %Support formulations to further use
 %Fin-related parameters

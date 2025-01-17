@@ -1,5 +1,5 @@
-function [x_new, y] = solver_rk4(f,T,step,t,x0,u)
-    % Computes solution of IVP using the Runge−Kutta-4 method.
+function [x_new] = solver_vector(f,T,step,t,x0,u)
+    % Computes solution of Vector-valued IVP using an explicit Runge−Kutta method.
     % x_new at time t+T, using step size step
 
     % Explicit Runge-Kutta-4 coefficients
@@ -13,11 +13,11 @@ function [x_new, y] = solver_rk4(f,T,step,t,x0,u)
     % Preallocate the k array
     t_vec = 0:step:T;
     k = zeros(length(x0), length(a));
-    y = zeros(length(x0), length(t_vec));
+    %y = zeros(length(x0), length(t_vec));
 
     % Initial value
     x_m = x0;
-    y(:,1) = x0;
+    %y(:,1) = x0;
     
     % Main loop over time steps
     for m = 1:length(t_vec)-1
@@ -28,7 +28,7 @@ function [x_new, y] = solver_rk4(f,T,step,t,x0,u)
         end
         % value at time t+m*step
         x_m1 = x_m + step * (k*c');
-        y(:, m+1) = x_m1;
+        %y(:, m+1) = x_m1;
         x_m = x_m1;
     end
 
