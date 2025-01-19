@@ -73,4 +73,5 @@ Cnalfat_canard = Cnalfat_canard * (1 + r0/(span_canard + r0)); %interference fac
 Cnfdelta_canard = N_canard * Y_canard / span_canard; % roll forcing moment coefficient derivative, multiple by delta and Cnalfa1
 CndNi_canard= (N_canard * (c1_canard + c2_canard + c3_canard))/(Ar * (Lr)) ; %roll damping moment coefficient derivative (partial, uses real time numbers during simulation)
 
-save barrowaman.mat
+% save barrowaman.mat
+save("plant-model\scripts\barrowman.mat")
