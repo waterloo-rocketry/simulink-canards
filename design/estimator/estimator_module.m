@@ -10,8 +10,8 @@ function [xhat, Phat] = estimator_module(timestamp, omega, mag, accel, baro, cmd
     %% initialize at beginning
     if isempty(P)
         x = initializor([omega;mag;accel;baro]);
-        P = eye(length(x));
-        % P = zeros(length(x));
+        % P = eye(length(x));
+        P = zeros(length(x));
         if timestamp >= 0.005
             t = timestamp-0.005;
         else 
@@ -20,7 +20,7 @@ function [xhat, Phat] = estimator_module(timestamp, omega, mag, accel, baro, cmd
     end 
     
     %% concoct y and u
-    y = [omega; mag];%; baro];
+    y = [omega; mag; baro];
     u = [cmd; accel];
 
     %% set parameters for EKF
@@ -30,14 +30,13 @@ function [xhat, Phat] = estimator_module(timestamp, omega, mag, accel, baro, cmd
     
     %%% Q is a square 13 matrix, tuning for prediction E(noise)
     %%% x = [   q(4),           w(3),           v(3),      alt(1), Cl(1), delta(1)]
-    Q = diag([ones(1,4)*5e-1, ones(1,3)*2e2]);%, ones(1,3)*1e-2, 1e-2,  0, 0]);
-    % Q(1:4, 11) = 100;
-    % Q(1:4, 8:10) = 1;
+    Q = diag([ones(1,4)*5e-4, ones(1,3)*5e0, ones(1,3)*1e-2, 1e-2,  0, 0]);
+    % Q(1:4, 11) = 10;
     Q = (Q+Q')/2;
     
     %%% R is a square 7*a matrix (a amount of sensors), tuning for measurement E(noise)
     %%% y = [   W(3),          Mag(3),     P(1)]
-    R = diag([ones(1,3)*5e-1, ones(1,3)*5e1]);%, 1e2]);
+    R = diag([ones(1,3)*5e-2, ones(1,3)*1e2, 1e2]);
     R = (R+R')/2;
 
     %% compute new estimate with EKF

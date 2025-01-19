@@ -3,7 +3,7 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
     
     %% decomp
     % decompose state vector: [q(4); w(3); v(3); alt; Cl; delta]
-    q = x(1:4); w = x(5:7); % v = x(8:10); alt = x(11); Cl = x(12); delta = x(13);
+    q = x(1:4); w = x(5:7); v = x(8:10); alt = x(11); Cl = x(12); delta = x(13);
 
     % decompose input vector: [delta_u(1), A(3)]
     delta_u = u(1); A = u(2:4);
@@ -40,7 +40,7 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
     S = model_quaternion_rotmatrix(q);
 
     %% air data
-    % [~, ~, rho, ~] = model_airdata(alt);
+    [~, ~, rho, ~] = model_airdata(alt);
     % airspeed = norm(v);
     % p_dyn = rho/2*airspeed^2;
     %%% angle of attack / sideslip
@@ -63,10 +63,10 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
     % force = force_aero / k.m;  
 
     %%% torques
-    % torque_canards = Cl * area_canard*length_canard * 0.5*rho*v(1)*abs(v(1)) * delta *[1;0;0];
-    % torque_aero = Cn_alpha*area_reference*length_cp * 0.5*rho* abs([0; v(3); v(2)]')*[0; v(3); v(2)];
-    % torque = torque_aero + torque_canards;
-    torque = [0;0;0];
+    torque_canards = Cl * area_canard*length_canard * 0.5*rho*v(1)*abs(v(1)) * delta *[1;0;0];
+    torque_aero = Cn_alpha*area_reference*length_cp * 0.5*rho* abs([0; v(3); v(2)]')*[0; v(3); v(2)];
+    torque = torque_aero + torque_canards;
+    % torque = [0;0;0];
 
     %% derivatives
 
@@ -78,23 +78,23 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
     
     % velocity derivatives 
     %%% acceleration specific force
-    % a = S_A*A - cross(w_dot, length_cs) - cross(w, cross(w, length_cs));
+    a = S_A*A - cross(w_dot, length_cs) - cross(w, cross(w, length_cs));
     %%% use aerodynamic for simulation, acceleration for filter
-    % v_dot = force - cross(w,v) + S'*g;
-    % v_dot = a - cross(w,v) + (S)*g;
+    % v_dot = force - cross(w,v) + S*g;
+    v_dot = a - cross(w,v) + (S)*g;
 
     % altitude derivative
-    % pos_dot = (S')*v;
-    % alt_dot = pos_dot(1);
+    pos_dot = (S')*v;
+    alt_dot = pos_dot(1);
 
     % canard coefficients derivative
     %%% returns Cl to expected value slowly, to force convergence in EKF
-    % Cl_dot = -1/tau_cl_alpha * (Cl - Cl_alpha); 
+    Cl_dot = -1/tau_cl_alpha * (Cl - Cl_alpha); 
     
     % actuator dynamics
     %%% linear 1st order
-    % delta_dot = -1/tau * (delta - delta_u);
+    delta_dot = -1/tau * (delta - delta_u);
     
     %% concoct state derivative vector
-    x_dot = [q_dot; w_dot];%; v_dot; alt_dot; Cl_dot; delta_dot];
+    x_dot = [q_dot; w_dot; v_dot; alt_dot; Cl_dot; delta_dot];
 end

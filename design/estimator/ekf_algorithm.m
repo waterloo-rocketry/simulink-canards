@@ -12,18 +12,19 @@ function [x_new, P_new] = ekf_algorithm(x, P, u, y, t, Q, R, T, step)
     
     %%% solve IVP for x: x_dot = f(x, u)
     [x_new] = solver_vector(@model_f, T, step, t, x, u); % RK4
+    % x_new = x + T*model_f(t, x, u);
 
     %%% compute Jacobian: F = df/dx
     F = jacobian(@model_f, t, x, u, step); 
 
     %%% solve IVP for P: P_dot = F*P + P*F'+ Q
     %%% Heuns method
-    % P_dot = F*P + P*F'+ Q;
-    % P2 = P + T*P_dot;
-    % P_new = P + T/2*( P_dot + (F*P2 + P2*F'+ Q) ); 
+    P_dot = F*P + P*F'+ Q;
+    P2 = P + T*P_dot;
+    P_pred = P + T/2*( P_dot + (F*P2 + P2*F'+ Q) ); 
     %%% exact discretization method
-    A = F*T + eye(length(x));
-    P_pred = A*P*A' + A*Q;
+    % A = F*T + eye(length(x));
+    % P_pred = A*P*A' + A*Q;
 
     %%% a-priori estimates
     x = x_new; P = P_pred;
@@ -40,12 +41,15 @@ function [x_new, P_new] = ekf_algorithm(x, P, u, y, t, Q, R, T, step)
     H = jacobian(@model_h, t, x, u, step); 
 
     %%% compute Kalman gain
-    S = H*P*H' + R;
-    K = P*H' * inv(S);
+    L = H*P*H' + R;
+    K = P*(H') * inv(L);
 
     %%% correct state and covariance estimates
     x_new = x + K*innovation;
+    % x_error = K*innovation;
+    % x_new = x + [zeros(4,1); x_error(5:7)];
     x_new(1:4) = x_new(1:4)/norm(x_new(1:4)); % norm quaternions
+
     % P_new = (eye(length(x)) - K*H ) * P; % standard form
     P_new = (eye(length(x))-K*H)*P*(eye(length(x))-K*H)' + K*R*K'; % joseph stabilized
 
