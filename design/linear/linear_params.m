@@ -8,6 +8,7 @@ J = 0.5;                        %Roll Inertia
 
 %% Actuator
 tau = 1/60;                     %Time constant of 1st order actor model
+backlash = 5; % in deg
 
 %% Aerodynamics
 ref_length = 0.25;               %Reference length
