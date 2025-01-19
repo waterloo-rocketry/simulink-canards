@@ -23,7 +23,7 @@ function [x_new, P_new] = ekf_algorithm(x, P, u, y, t, Q, R, T, step)
     % P_new = P + T/2*( P_dot + (F*P2 + P2*F'+ Q) ); 
     %%% exact discretization method
     A = F*T + eye(length(x));
-    P_pred = A*P*A' + Q;
+    P_pred = A*P*A' + A*Q;
 
     %%% a-priori estimates
     x = x_new; P = P_pred;
@@ -50,8 +50,8 @@ function [x_new, P_new] = ekf_algorithm(x, P, u, y, t, Q, R, T, step)
     P_new = (eye(length(x))-K*H)*P*(eye(length(x))-K*H)' + K*R*K'; % joseph stabilized
 
     %% troubleshooting
-    P_pred = P_pred(1:11,1:11) %(1:11,1:11)
-    P_correct = P_new(1:11,1:11)%(1:13,1:11)
+    % P_pred = P_pred(1:11,1:11) %(1:11,1:11)
+    % P_correct = P_new(1:11,1:11)%(1:13,1:11)
     % Kalman = K%(1:11,:)
     % F_jac = F
     % H_jac = H

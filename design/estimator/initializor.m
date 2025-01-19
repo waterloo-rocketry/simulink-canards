@@ -38,6 +38,6 @@ function [x_init] = initializor(meas)
     
     % q = [1; 0; 0; 0]; % initial attitude disturbance
     %%% conconct state vector
-    x_init = [q;w;v;alt;Cl;delta];
+    x_init = [q;w];%;v;alt;Cl;delta];
 end
 

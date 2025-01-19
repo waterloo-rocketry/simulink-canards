@@ -1,6 +1,6 @@
 function [y] = model_h(t, x, u)
     % decompose state vector: [q(4); w(3); v(3); alt; Cl; delta]
-    q = x(1:4); w = x(5:7); v = x(8:10); alt = x(11); Cl = x(12); delta = x(13);
+    q = x(1:4); w = x(5:7);% v = x(8:10); alt = x(11); Cl = x(12); delta = x(13);
 
     % get parameters
     % z = load("design/estimator/initial_params.mat");
@@ -17,10 +17,10 @@ function [y] = model_h(t, x, u)
     M = (S_M')*(S)*M_E; % M_E is initial orientation of magnetic field
 
     % atmosphere model
-    [P, ~, ~, ~] = model_airdata(alt);
+    % [P, ~, ~, ~] = model_airdata(alt);
 
     %%% accelerations %% not used
     %%% A =  % include centrifugal correction. Include lift through non-zero side velocities    
 
-    y = [W; M; P];
+    y = [W; M];%; P];
 end
