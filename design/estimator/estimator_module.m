@@ -1,24 +1,36 @@
-function [xhat, Phat] = estimator_module(timestamp, omega, mag, accel, baro, cmd)
+function [xhat, Phat, bias, out] = estimator_module(timestamp, omega, mag, accel, baro, cmd)
     % Top-level estimator module. Calls EKF algorithm.
     % Inputs: concocted measurement and output vectors with multiple sensors. Not yet fully supported, work in progress
     % omega = [wS1; wS2; ...], mag = [magS1; magS2; ...], accel = [accelS1; accelS2; ...]
     % baro = [PS1; TS1; PS2; TS2; ...]
     % cmd = [CMDservo1; CMDservo2; ...]
     
-    persistent x P t; % remembers x, P, t from last iteration
-
-    %% initialize at beginning
-    if isempty(P)
-        x = initializor([omega;mag;accel;baro]);
-        % P = eye(length(x));
-        P = zeros(length(x));
-        if timestamp >= 0.005
-            t = timestamp-0.005;
-        else 
-            t = 0;
-        end
-    end 
+    persistent x P t b init_phase; % remembers x, P, t from last iteration
     
+    %% initialize at beginning
+    if isempty(x)
+        x = zeros(13,1);
+        P = zeros(length(x));
+        b = zeros(6,1);
+        init_phase = 1;
+        if timestamp >= 0.005
+                t = timestamp-0.005;
+        else 
+                t = 0;
+        end
+    end
+    out = zeros(14,1);
+
+    if init_phase ~= 0 
+        [x, b, out] = initializor([omega;mag;accel;baro]);
+        xhat = x; Phat = P; bias = b;
+        if norm(accel) >= 12
+            init_phase = 0;
+        end
+        xhat = x; Phat = P; bias = b;
+        return
+    end 
+
     %% concoct y and u
     y = [omega; mag; baro];
     u = [cmd; accel];
@@ -40,7 +52,12 @@ function [xhat, Phat] = estimator_module(timestamp, omega, mag, accel, baro, cmd
     R = (R+R')/2;
 
     %% compute new estimate with EKF
-    [xhat, Phat] = ekf_algorithm(x, P, u, y, t, Q, R, T, step);
-    x = xhat; P = Phat;
+    if init_phase == 0
+        [xhat, Phat] = ekf_algorithm(x, P, u, y, b, t, Q, R, T, step);
+        x = xhat; P = Phat;
+    end
+
+    xhat = x; Phat = P; bias = b;
+    timestamp
 end
 

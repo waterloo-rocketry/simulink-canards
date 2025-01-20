@@ -1,7 +1,7 @@
-function [x_new, P_new] = ekf_algorithm(x, P, u, y, t, Q, R, T, step)
+function [x_new, P_new] = ekf_algorithm(x, P, u, y, b, t, Q, R, T, step)
     % Computes EKF iteration. Uses model_f for prediction and model_h for correction.
     % use either this or ekf_predict and ekf_correct seperately
-    % Inputs: estimates x, P; control u; measurement y; timecode t
+    % Inputs: estimates x, P; control u; measurement y; sensor bias b; timecode t
     % Input parameters: weighting Q, R; time difference to last compute T; step size for ODE solver step
     % Outputs: new estimates x, P
 
@@ -16,7 +16,7 @@ function [x_new, P_new] = ekf_algorithm(x, P, u, y, t, Q, R, T, step)
     % x_new(1:4) = x_new(1:4)/norm(x_new(1:4)); % norm quaternions
 
     %%% compute Jacobian: F = df/dx
-    F = jacobian(@model_f, t, x, u, step); 
+    F = jacobian(@model_f, t, x, u); 
 
     %%% solve IVP for P: P_dot = F*P + P*F'+ Q
     %%% Heuns method
@@ -33,10 +33,10 @@ function [x_new, P_new] = ekf_algorithm(x, P, u, y, t, Q, R, T, step)
     % Solves for covariance estimate 
 
     %%% compute expected measurement and difference to measured values
-    innovation = y - model_h(t,x,u);
+    innovation = y - model_h(t,x,b);
 
     %%% compute Jacobian: H = dh/dx
-    H = jacobian(@model_h, t, x, u, step); 
+    H = jacobian(@model_h, t, x, b); 
 
     %%% compute Kalman gain
     L = H*P*H' + R;
@@ -60,5 +60,4 @@ function [x_new, P_new] = ekf_algorithm(x, P, u, y, t, Q, R, T, step)
     % feedback_norm = norm(x_error(1:4))
     % quat_norm = norm(x(1:4))
     % rotmatrix = model_quaternion_rotmatrix(x(1:4));
-    t
 end

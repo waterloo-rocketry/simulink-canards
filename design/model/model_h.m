@@ -1,6 +1,9 @@
-function [y] = model_h(t, x, u)
+function [y] = model_h(t, x, b)
     % decompose state vector: [q(4); w(3); v(3); alt; Cl; delta]
     q = x(1:4); w = x(5:7); v = x(8:10); alt = x(11); Cl = x(12); delta = x(13);
+
+    % decompose bias vector: [b_W(3), M_E(3)]
+    b_W = b(1:3); M_E = b(4:6);
 
     % get parameters
     % z = load("design/estimator/initial_params.mat");
@@ -9,7 +12,7 @@ function [y] = model_h(t, x, u)
     S_M = eye(3); % rotation transform from sensor frame to body frame
 
     % rates
-    W = S_W*w; % rotation from sensor frame to rocket frame
+    W = S_W*(w - b_W); % rotation from sensor frame to rocket frame
 
     % magnetic field model
     % compute rotational matrix (attitude transformation matrix, between body frame and ground frame)
