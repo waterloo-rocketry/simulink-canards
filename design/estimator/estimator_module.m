@@ -24,19 +24,19 @@ function [xhat, Phat] = estimator_module(timestamp, omega, mag, accel, baro, cmd
     u = [cmd; accel];
 
     %% set parameters for EKF
-    step = 0.001; % step size for RK4 and Jacobian
+    step = 0.0001; % step size for RK4 and Jacobian
     T = timestamp - t; % end time for RK4 and Improved Euler
     t = timestamp;
     
     %%% Q is a square 13 matrix, tuning for prediction E(noise)
     %%% x = [   q(4),           w(3),           v(3),      alt(1), Cl(1), delta(1)]
-    Q = diag([ones(1,4)*5e-4, ones(1,3)*5e0, ones(1,3)*1e-2, 1e-2,  0, 0]);
+    Q = diag([ones(1,4)*3e-4, ones(1,3)*5e1, ones(1,3)*2e-1, 1e-2,  0, 0]);
     % Q(1:4, 11) = 10;
     Q = (Q+Q')/2;
     
     %%% R is a square 7*a matrix (a amount of sensors), tuning for measurement E(noise)
     %%% y = [   W(3),          Mag(3),     P(1)]
-    R = diag([ones(1,3)*5e-2, ones(1,3)*1e2, 1e2]);
+    R = diag([ones(1,3)*1e-1, ones(1,3)*2e1, 2e1]);
     R = (R+R')/2;
 
     %% compute new estimate with EKF
