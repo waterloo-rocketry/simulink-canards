@@ -58,7 +58,7 @@ function [xhat, Phat, bias, out] = estimator_module(timestamp, omega, mag, accel
     end
     
     %% troubleshooting
-    timestamp
+    timestamp;
     out = 0;
 end
 
