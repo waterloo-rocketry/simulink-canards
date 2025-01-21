@@ -24,15 +24,6 @@ act_ratelimit = 600; % max rate in deg/s
 Lr = 0.152; % reference length [m]
 Ar = pi * (Lr^2) / 4; % reference area [m^2]
 
-% Canards parameters 
-N_canard = 2;
-Cr_canard = 50 / 1000; %[m] root chord?
-Ct_canard = 30 / 1000; % %[m] tip chord?
-span_canard = 20 / 1000; %[m] height?
-arm_canard = 10/1000; % Moment arm from fin to fuselage
-alfa_canard = deg2rad(0); % Canard maximum angle of attack
-pos_canard = -(558.29 + 40)/1000;
-
 %Nosecone parameters
 logiva = 0.638; % nosecone length [m]
 r0 = 0.152 / 2; % nosecone radius [m]
@@ -46,8 +37,9 @@ Rs = 20 / 10^6; % RMC(?) roughness 20 um smooth paint
 Cr = 0.254; %[m] root chord?
 Ct = 0.229; %[m] tip chord?
 span = 0.178; %[m] height?
+sweep = 0.114; % [m]
 pos_aletas = -l0 + (28.3+7.94-1.27)/100; % postion of fins measured from nosecone [m]
-N = 3; % Number of fins
+N_fins = 3; % Number of fins
 cant_angle_rad = deg2rad(0); % fin cant angle [rad]
 
 %Tail parameters
@@ -55,6 +47,15 @@ rt = 0.152 / 2; % tail radius [m]
 h = 0.0794; % tail length [m]
 r2 = 0.14 / 2; % smallest tail radius(?) [m]
 pos_tail = -l0 + h; % tail position measured from nosecone
+
+% Canards parameters 
+N_canard = 0;
+Cr_canard = 40 / 1000;
+Ct_canard = 40 / 1000; % "The tip is the size of the root to take advantage of the fact that the further away from the rocket, the greater the moment arm."
+span_canard = 80 / 1000;
+arm_canard = 10/1000; % Moment arm from fin to fuselage
+alfa_canard = deg2rad(0); % Canard maximum angle of attack
+pos_canard = -(558.29 + 40)/1000; %TODO: add this
 
 %% MCI
 % Wet
