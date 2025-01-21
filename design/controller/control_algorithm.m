@@ -25,7 +25,7 @@ function [u] = control_algorithm(x, r)
     %% Gain scheduling
     Ks = zeros(1,4);
     % get gain from schedule
-    Ks = control_scheduler(table, x)
+    Ks = control_scheduler(table, x);
     K = Ks(1:3);
     K_pre = Ks(4);
     
