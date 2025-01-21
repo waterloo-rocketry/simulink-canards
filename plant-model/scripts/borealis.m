@@ -49,6 +49,12 @@ pos_aletas = -l0 + (28.3+7.94-1.27)/100; % postion of fins measured from nosecon
 N = 3; % Number of fins
 cant_angle_rad = deg2rad(0); % fin cant angle [rad]
 
+% TEMP Cnalfa overrides
+CnAlfaNose = 2;
+CnalfaBody = 0;
+Cnalfat = 9.6;
+CnAlfaTail = -0.319;
+
 %Tail parameters
 rt = 0.152 / 2; % tail radius [m]
 h = 0.0794; % tail length [m]
@@ -117,3 +123,5 @@ unique_data(unique_data(:, 1) < 0.3, 2) = Cd_at_03;
 lookup_table = unique_data;
 CD_input = lookup_table(:, 1); % Mach #
 CD_data = lookup_table(:, 2); % Cd
+
+% or_moment = or_data.PitchMomentCoefficient___ * or_data.DynamicPressure_mbar_ 
