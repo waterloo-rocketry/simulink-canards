@@ -1,9 +1,9 @@
-function [Jx] = jacobian(f, t, x, u, h)
+function [Jx] = jacobian(f, t, x, u)
     % Computes the Jacobian matrix of a vector function using complex-step differentiation
     % Inputs: ODE function f, time t, state x, step size h
     % Outputs: Jacobian matrix del_f/del_x
 
-    h = 0.0001; % step size overwrite
+    h = 0.001; % step size overwrite
 
     n = length(x); % size of input
     y = f(t, x, u);

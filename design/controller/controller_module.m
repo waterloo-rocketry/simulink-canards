@@ -1,7 +1,11 @@
-function [u] = controller_module(t, x)
+function [u] = controller_module(timestamp, x)
     % Top-level controller module. Calls controller algorithm. Sets reference signal.
     
-    % reference signal
+    %% stuff
+    t = timestamp;
+    r = 0;
+
+    %% reference signal
     %%% includes multiple roll angle steps. Reference r [rad].
     if t>10
         if t<15
@@ -11,11 +15,9 @@ function [u] = controller_module(t, x)
         elseif t>25
             r = 0;
         end
-    else
-        r = 0;
     end
 
-    % compute controller output
-    u = lqr_algorithm(x, r);
+    %% compute controller output
+    u = control_algorithm(x, r);
 end
 

@@ -16,9 +16,9 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
             Jy = 52; % inertia pitch, yaw
             J = diag([Jx, Jy, Jy]);
             
-            length_cp = -1; % center of pressure
+            length_cp = -0.5; % center of pressure
             area_reference = pi*(8*0.0254/2)^2; % cross section of body tube
-            Cn_alpha = 1; % pitch coefficent 
+            Cn_alpha = 5; % pitch coefficent 
             
             %%% Sensors
             S_A = eye(3); % rotation transform from sensor frame to body frame
@@ -27,8 +27,8 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
             %%% Canards, Actuator
             tau = 1/60; % time constant of first order actuator dynamics
             Cl_alpha = 1.5; % estimated coefficient of lift, const with Ma
-            tau_cl_alpha = 0.01; % time constant to converge Cl back to 1.5 in filter
-            area_canard = 0.005; % total canard area 
+            tau_cl_alpha = 2; % time constant to converge Cl back to 1.5 in filter
+            area_canard = 0.004; % total canard area 
             length_canard = 8/2*0.0254+0.05; % lever arm of canard to x-axis 
             c_canard = area_canard*length_canard; % moment arm * area of canard
             
@@ -80,7 +80,7 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
     %%% acceleration specific force
     a = S_A*A - cross(w_dot, length_cs) - cross(w, cross(w, length_cs));
     %%% use aerodynamic for simulation, acceleration for filter
-    % v_dot = force - cross(w,v) + S'*g;
+    % v_dot = force - cross(w,v) + S*g;
     v_dot = a - cross(w,v) + (S)*g;
 
     % altitude derivative
