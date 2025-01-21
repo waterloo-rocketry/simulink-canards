@@ -2,7 +2,7 @@
 or_data = readtable("plant-model\Data\Borealis\Borealis_flight_no_wind.csv");
 
 %% Sensor parameters
-samplingrate = 0.01; % sampling period of the estimator
+samplingrate = 0.005; % sampling period of the estimator
 Ls1 = [-2.4;0;0]; % mounting location of IMU 1 relative CG
 Ss1 = eye(3); % mounting orientation of IMU 1 relative body frame
 
@@ -24,7 +24,7 @@ Lr = 0.152; % reference length [m]
 Ar = pi * (Lr^2) / 4; % reference area [m^2]
 
 % Canards parameters 
-N_canard = 4;
+N_canard = 2;
 Cr_canard = 40 / 1000;
 Ct_canard = 40 / 1000; % "The tip is the size of the root to take advantage of the fact that the further away from the rocket, the greater the moment arm."
 span_canard = 80 / 1000;
