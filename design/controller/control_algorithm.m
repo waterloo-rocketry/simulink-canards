@@ -1,8 +1,14 @@
-function [u] = lqr_algorithm(x, r)
+function [u] = control_algorithm(x, r)
     % Computes control output. Uses gain schedule table and simplified roll model
     % Inputs: full state x, reference signal r
     % Outputs: control input u
     
+    persistent table; 
+
+    if isempty(table)
+        table = load("controller\gains.mat", "Ks", "P_mesh", "C_mesh");
+    end
+
     %% State
     % decompose state vector: [q(4); w(3); v(3); alt; Cl; delta]
     q = x(1:4); w = x(5:7); v = x(8:10); alt = x(11); Cl = x(12); delta = x(13);
@@ -16,9 +22,9 @@ function [u] = lqr_algorithm(x, r)
     % cat roll state
     x_roll = [phi; w(1); delta];
 
-    %% Schedule
+    %% Gain scheduling
     % get gain from schedule
-    Ks = lqr_schedule(x);
+    Ks = control_scheduler(table, x);
     K_pre = Ks(4);
     K = Ks(1:3);
     

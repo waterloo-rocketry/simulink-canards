@@ -5,7 +5,7 @@ CL_max = 3; % max abs(coefficient)
 
 % amount of design point for each dimension
 P_amount = 200; % dynamic pressure
-C_amount = 10; % coefficient of lift
+C_amount = 30; % coefficient of lift
 
 %% tuning parameters
 Q = diag([10, 0, 10]);
@@ -55,7 +55,7 @@ save("design/controller/gains.mat", "Ks", "P_mesh", "C_mesh");
 
 %% Plot
 if 0
-    samplep = 1e5; samplec = 0;
+    samplep = 1e5; samplec = 1.5;
     for i=1:4
         K(i) = interp2(P_mesh, C_mesh, Ks(:,:,i), samplec, samplep, 'linear');
     end
@@ -70,6 +70,7 @@ if 0
     xlabel("Coefficient")
     ylabel("Dynamic pressure")
     zlabel("K_\phi")
+    zlim([-1,1])
     
     % figure(2)
     subplot(2,2,2)
@@ -80,7 +81,8 @@ if 0
     hold off
     xlabel("Coefficient")
     ylabel("Dynamic pressure")
-    zlabel("K_p")
+    zlabel("K_{\omega_x}")
+    zlim([-3,3])
     
     % figure(3)
     subplot(2,2,3)
@@ -92,6 +94,7 @@ if 0
     xlabel("Coefficient")
     ylabel("Dynamic pressure")
     zlabel("K_\delta")
+    zlim([-4,0])
     
     % figure(4)
     subplot(2,2,4)
@@ -103,4 +106,5 @@ if 0
     xlabel("Coefficient")
     ylabel("Dynamic pressure")
     zlabel("K_{pre}")
+    zlim([-1,1])
 end
