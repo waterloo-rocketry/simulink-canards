@@ -28,7 +28,7 @@ function [K] = control_scheduler(table, x, dynamicpressure, canardcoeff)
     C_mesh = table.C_mesh;
 
     %% Interpolate table
-    K = zeros(4,1);
+    K = zeros(1,4);
     for i=1:4
         %%% interpolate linearly between design points, output 0 if state outside of table
         K(i) = interp2(P_mesh, C_mesh, Ks(:,:,i), Cl, p_dyn, 'linear', 0); 

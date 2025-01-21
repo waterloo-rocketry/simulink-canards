@@ -23,10 +23,11 @@ function [u] = control_algorithm(x, r)
     x_roll = [phi; w(1); delta];
 
     %% Gain scheduling
+    Ks = zeros(1,4);
     % get gain from schedule
-    Ks = control_scheduler(table, x);
-    K_pre = Ks(4);
+    Ks = control_scheduler(table, x)
     K = Ks(1:3);
+    K_pre = Ks(4);
     
     %% Feedback law
     u = K*x_roll + K_pre*r; %two degree of freedom, full state feedback

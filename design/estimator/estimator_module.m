@@ -8,6 +8,7 @@ function [xhat, Phat, bias, out] = estimator_module(timestamp, omega, mag, accel
     persistent x P t b init_phase; % remembers x, P, t from last iteration
     
     %% initialize at beginning
+    xhat = zeros(13,1); Phat = zeros(13); bias = zeros(6,1);
     if isempty(x)
         x = zeros(13,1);
         P = zeros(length(x));
@@ -19,16 +20,15 @@ function [xhat, Phat, bias, out] = estimator_module(timestamp, omega, mag, accel
                 t = 0;
         end
     end
-    out = zeros(14,1);
 
     if init_phase ~= 0 
-        [x, b, out] = initializor([omega;mag;accel;baro]);
-        xhat = x; Phat = P; bias = b;
+        [xhat, bias, ~] = initializor([omega;mag;accel;baro]);
+        x = xhat; b = bias;
         if norm(accel) >= 12
             init_phase = 0;
         end
         xhat = x; Phat = P; bias = b;
-        return
+        % return
     end 
 
     %% concoct y and u
@@ -56,8 +56,9 @@ function [xhat, Phat, bias, out] = estimator_module(timestamp, omega, mag, accel
         [xhat, Phat] = ekf_algorithm(x, P, u, y, b, t, Q, R, T, step);
         x = xhat; P = Phat;
     end
-
-    xhat = x; Phat = P; bias = b;
+    
+    %% troubleshooting
     timestamp
+    out = 0;
 end
 

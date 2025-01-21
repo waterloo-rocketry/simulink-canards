@@ -1,6 +1,12 @@
 %% OR Simulation Output Data
 or_data = readtable("plant-model\Data\Borealis\Borealis_flight_no_wind.csv");
 
+%% Initial values
+location = [10; 43.47; -80.54]; % launch location on earth. Altitude, Latitude, Longitude
+rail_angle = deg2rad(-5); % negative is pitched downrange
+rail_length = 8.28; % delta-altitude for rail constraints
+time_idle = 10; % wait time on the rail before launch
+
 %% Sensor parameters
 samplingrate = 0.005; % sampling period of the estimator
 Ls1 = [-2.4;0;0]; % mounting location of IMU 1 relative CG
@@ -13,11 +19,6 @@ act_backlash = 1; % play in deg
 act_anglelimit = 15; % max deflection in deg
 act_ratelimit = 600; % max rate in deg/s
 
-%% Initial values
-location = [10; 43.47; -80.54]; % launch location on earth. Altitude, Latitude, Longitude
-rail_angle = deg2rad(-5); % negative is pitched downrange
-rail_length = 8.28; % delta-altitude for rail constraints
-
 %% Reference Geometry
 %Reference parameters   
 Lr = 0.152; % reference length [m]
@@ -25,9 +26,9 @@ Ar = pi * (Lr^2) / 4; % reference area [m^2]
 
 % Canards parameters 
 N_canard = 2;
-Cr_canard = 40 / 1000;
-Ct_canard = 40 / 1000; % "The tip is the size of the root to take advantage of the fact that the further away from the rocket, the greater the moment arm."
-span_canard = 80 / 1000;
+Cr_canard = 50 / 1000; %[m] root chord?
+Ct_canard = 30 / 1000; % %[m] tip chord?
+span_canard = 20 / 1000; %[m] height?
 arm_canard = 10/1000; % Moment arm from fin to fuselage
 alfa_canard = deg2rad(0); % Canard maximum angle of attack
 pos_canard = -(558.29 + 40)/1000;
