@@ -1,8 +1,14 @@
 %% OR Simulation Output Data
 or_data = readtable("plant-model\Data\Borealis\Borealis_flight_no_wind.csv");
 
+%% Initial values
+location = [10; 43.47; -80.54]; % launch location on earth. Altitude, Latitude, Longitude
+rail_angle = deg2rad(-5); % negative is pitched downrange
+rail_length = 8.28; % delta-altitude for rail constraints
+time_idle = 10; % wait time on the rail before launch
+
 %% Sensor parameters
-samplingrate = 0.01; % sampling period of the estimator
+samplingrate = 0.005; % sampling period of the estimator
 Ls1 = [-2.4;0;0]; % mounting location of IMU 1 relative CG
 Ss1 = eye(3); % mounting orientation of IMU 1 relative body frame
 
@@ -12,11 +18,6 @@ act_damping = 0.9; % damping ratio
 act_backlash = 1; % play in deg
 act_anglelimit = 15; % max deflection in deg
 act_ratelimit = 600; % max rate in deg/s
-
-%% Initial values
-location = [10; 43.47; -80.54]; % launch location on earth. Altitude, Latitude, Longitude
-rail_angle = deg2rad(-5); % negative is pitched downrange
-rail_length = 8.28; % delta-altitude for rail constraints
 
 %% Reference Geometry
 %Reference parameters   
@@ -117,4 +118,4 @@ unique_data(unique_data(:, 1) < 0.3, 2) = Cd_at_03;
 % Final lookup table
 lookup_table = unique_data;
 CD_input = lookup_table(:, 1); % Mach #
-CD_data = lookup_table(:, 2); % Cd 
+CD_data = lookup_table(:, 2); % Cd
