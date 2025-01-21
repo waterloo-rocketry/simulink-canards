@@ -1,4 +1,4 @@
-function [x_pos_canard,Cnalfat_canard,Cnfdelta_canard, CndNi_canard, AR_canard] = canards(Cr,Ct, span, Cr_canard, Ct_canard, span_canard, pos_canard, N_canard, Ar, Lr, r0)
+function [x_pos_canard,Cnalfat_canard,Cnfdelta_canard, CndNi_canard, AR_canard, Af_canard, gamac_canard, yparcial_canard, Y_canard, Lf_canard] = canards(Cr,Ct, span, Cr_canard, Ct_canard, span_canard, pos_canard, N_canard, Ar, Lr, r0)
 rt = 0.152 / 2; % tail radius [m]
 c1_canard = ((Cr+Ct) /  2) * (rt^2) * span;
 c2_canard = ((Cr + 2*Ct)/3) * rt * (span^2);

@@ -15,7 +15,7 @@ r=rt/r2;
 x_pos_tail = pos_tail - (h/3) * (1 + ( (1 - r) / (1 - r^2) ) );
 
 % Canards
-[x_pos_canard, CNa_canard, Cnfdelta_canard, CndNi_canard, AR_canard] = canards(Cr,Ct, span, Cr_canard, Ct_canard, span_canard, pos_canard, N_canard, Ar, Lr, r0);
+[x_pos_canard,Cnalfat_canard,Cnfdelta_canard, CndNi_canard, AR_canard, Af_canard, gamac_canard, yparcial_canard, Y_canard, Lf_canard] = canards(Cr,Ct, span, Cr_canard, Ct_canard, span_canard, pos_canard, N_canard, Ar, Lr, r0);
 
 % TEMP Cnalfa overrides
 CNa_nosecone = 2;
