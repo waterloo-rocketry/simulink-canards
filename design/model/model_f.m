@@ -81,10 +81,14 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
     a = S_A*A - cross(w_dot, length_cs) - cross(w, cross(w, length_cs));
     %%% use aerodynamic for simulation, acceleration for filter
     % v_dot = force - cross(w,v) + S*g;
-    v_dot = a - cross(w,v) + (S)*g;
+    g_body = model_quaternion_rotate(q, g);
+    % g_body = (S)*g:
+    v_dot = a - cross(w,v) + g_body;
 
     % altitude derivative
-    pos_dot = (S')*v;
+    [~, v_earth] = model_quaternion_rotate(q, v);
+    % v_earth = (S')*v;
+    pos_dot = v_earth;
     alt_dot = pos_dot(1);
 
     % canard coefficients derivative
