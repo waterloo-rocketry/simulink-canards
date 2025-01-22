@@ -21,4 +21,6 @@ This project contains the estimator and controller for the canards that will fly
 Ideally, setting the rocket to simulate should be as easy as changing the first line in `configure_plant_model.m` to run the appropriate script. It probably isn't, so at that point you should ask someone for help
 
 ## Sample Plots
+This is a quick plot of sim vs OpenRocket results for Borealis, as an example of what the plant model can do.
+
 ![.](/sample.png)
