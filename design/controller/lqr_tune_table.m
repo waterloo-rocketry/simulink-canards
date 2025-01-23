@@ -39,7 +39,7 @@ for i=1:m
     for k=1:n
         [F_roll, B, ~, ~] = model_roll([], Ps(i), Cls(k));
 
-        R = Ps(i) / 1000; % scale R by dynamic pressure
+        R = (Ps(i))^1.3 / 500; % scale R by dynamic pressure
 
         K = -lqr(F_roll,B,Q,R,N);    
         Ks(i,k,1:3) = K;
