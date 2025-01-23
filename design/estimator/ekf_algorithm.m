@@ -11,9 +11,9 @@ function [x_new, P_new] = ekf_algorithm(x, P, u, y, b, t, Q, R, T, step)
     % Solves for covariance estimate using Improved Euler
     
     %%% solve IVP for x: x_dot = f(x, u)
-    [x_pred] = solver_rk4(@model_f, T, step, t, x, u); % RK4
+    % [x_pred] = solver_rk4(@model_f, T, step, t, x, u); % RK4
     % [x_pred] = solver_lie_euler(@model_f, T, step, t, x, u); % Lie group & explicit Euler
-    % [x_pred] = solver_euler(@model_f, T, step, t, x, u); % Explicit Euler
+    [x_pred] = solver_euler(@model_f, T, step, t, x, u); % Explicit Euler
 
     %%% compute Jacobian: F = df/dx
     F = jacobian(@model_f, t, x, u); 
@@ -21,8 +21,9 @@ function [x_new, P_new] = ekf_algorithm(x, P, u, y, b, t, Q, R, T, step)
     %%% solve IVP for P: P_dot = F*P + P*F'+ Q
     %%% Heuns method
     P_dot = F*P + P*F'+ Q;
-    P2 = P + T*P_dot;
-    P_pred = P + T/2*( P_dot + (F*P2 + P2*F'+ Q) ); 
+    % P2 = P + T*P_dot;
+    % P_pred = P + T/2*( P_dot + (F*P2 + P2*F'+ Q) ); 
+    P_pred = P + T*P_dot;
 
     %%% a-priori estimates
     x = x_pred; P = P_pred;
@@ -61,6 +62,4 @@ function [x_new, P_new] = ekf_algorithm(x, P, u, y, b, t, Q, R, T, step)
     % H_jac = H
     % feedback_norm = norm(x_error(1:4))
     % quat_norm = norm(x(1:4))
-    % rotmatrix = model_quaternion_rotmatrix(x(1:4));
-    innovation
 end
