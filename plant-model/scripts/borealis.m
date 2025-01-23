@@ -5,7 +5,7 @@ or_data = readtable("plant-model\Data\Borealis\Borealis_flight_no_wind.csv");
 location = [10; 43.47; -80.54]; % launch location on earth. Altitude, Latitude, Longitude
 rail_angle = deg2rad(-5); % negative is pitched downrange
 rail_length = 8.28; % delta-altitude for rail constraints
-time_idle = 10; % wait time on the rail before launch
+time_idle = 2; % wait time on the rail before launch
 
 %% Sensor parameters
 samplingrate = 0.005; % sampling period of the estimator
@@ -15,7 +15,7 @@ Ss1 = eye(3); % mounting orientation of IMU 1 relative body frame
 %% Actuator parameters
 act_freq = 58; % natural frequency, approx 1/timeconstant
 act_damping = 0.9; % damping ratio
-act_backlash = 1; % play in deg
+act_backlash = 0.1; % play in deg
 act_anglelimit = 15; % max deflection in deg
 act_ratelimit = 600; % max rate in deg/s
 
@@ -49,7 +49,7 @@ r2 = 0.14 / 2; % smallest tail radius(?) [m]
 pos_tail = -l0 + h; % tail position measured from nosecone
 
 % Canards parameters 
-N_canard = 0;
+N_canard = 2;
 Cr_canard = 40 / 1000;
 Ct_canard = 40 / 1000; % "The tip is the size of the root to take advantage of the fact that the further away from the rocket, the greater the moment arm."
 span_canard = 80 / 1000;
