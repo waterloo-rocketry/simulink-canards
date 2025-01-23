@@ -1,4 +1,4 @@
-function [body, inert] = model_quaternion_rotate(q, u)
+function [body, inert] = quaternion_rotate(q, u)
     % rotates vector u with quaternion q
     % body is vector transform: inertial -> body frame
     % inert is vector transform: body -> inertial frame
@@ -16,5 +16,5 @@ function [body, inert] = model_quaternion_rotate(q, u)
     body = 2*qv*(qv'*u) + (q0^2-qv'*qv)*u - 2*q0*(cross(qv,u)); 
 
     %%% to inertial frame
-    inert = -2*qv*(-qv'*u) + (q0^2+qv'*qv)*u - 2*q0*(cross(qv,u)); 
+    inert = 2*qv*(qv'*u) + (q0^2-qv'*qv)*u - 2*q0*(cross(-qv,u)); 
 end

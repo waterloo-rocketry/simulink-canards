@@ -1,4 +1,4 @@
-function [q_dot] = model_quaternion_deriv(q_un, w)
+function [q_dot, W] = quaternion_deriv(q_un, w)
     % computes quaternion derivative from quaternion and body rates
 
     % norm quaternions
@@ -9,8 +9,8 @@ function [q_dot] = model_quaternion_deriv(q_un, w)
                w(3), 0, -w(1);
               -w(2), w(1), 0];
     W = [0, -w';
-         w, -w_tilde];
+         w, -w_tilde] / 2;
 
     % quaternion derivative
-    q_dot = (0.5* W * q) + norm(w)*(q-q_un);
+    q_dot = (W * q) + norm(w)*(q-q_un);
 end

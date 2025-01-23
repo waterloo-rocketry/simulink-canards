@@ -1,4 +1,4 @@
-function [S] = model_quaternion_rotmatrix(q)
+function [S] = quaternion_rotmatrix(q)
     % computes rotation matrix from quaternion
     
     %%% quaternion definition
