@@ -23,7 +23,7 @@ function [xhat, Phat, bias, out] = estimator_module(timestamp, omega, mag, accel
 
     if init_phase ~= 0 
         [xhat, bias, ~] = initializor([omega;mag;accel;baro]);
-        if norm(accel) >= 10.5
+        if norm(accel) >= 11
             init_phase = 0;
         else
             x = xhat; b = bias;
@@ -47,7 +47,7 @@ function [xhat, Phat, bias, out] = estimator_module(timestamp, omega, mag, accel
     
     %%% R is a square 7*a matrix (a amount of sensors), tuning for measurement E(noise)
     %%% y = [   W(3),          Mag(3),     P(1)]
-    R = diag([ones(1,3)*1e-1, ones(1,3)*5e0, 2e1]);
+    R = diag([ones(1,3)*1e-2, ones(1,3)*5e0, 2e1]);
     R = (R+R')/2;
 
     %% compute new estimate with EKF
