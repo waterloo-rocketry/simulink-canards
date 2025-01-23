@@ -22,7 +22,7 @@ function [x_init, bias, out] = initializor(meas)
         sensors = y;
     end
     %%% lowpass to attenuate sensor noise
-    alpha = 0.05; % low pass time constant
+    alpha = 0.01; % low pass time constant
     sensors = sensors + alpha*(y-sensors); % lowpass filter
 
     %% State determination
@@ -56,7 +56,7 @@ function [x_init, bias, out] = initializor(meas)
     bias(1:3) = sensors(1:3);
     
     %%% compute earth magnetic field
-    S = model_quaternion_rotmatrix(q); % launch attitude
+    S = quaternion_rotmatrix(q); % launch attitude
     M_E = (S')*(S_M')*sensors(4:6); % sensorframe -> body-fixed -> earth-flat
     bias(4:6) = M_E;
 
