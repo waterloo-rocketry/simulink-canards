@@ -25,7 +25,7 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
             length_cs = [0; 0; 0]; % center of sensor frame
             
             %%% Canards, Actuator
-            tau = 1/60; % time constant of first order actuator dynamics
+            tau = 1/25; % time constant of first order actuator dynamics
             Cl_alpha = 1.5; % estimated coefficient of lift, const with Ma
             tau_cl_alpha = 2; % time constant to converge Cl back to 1.5 in filter
             area_canard = 0.004; % total canard area 

@@ -7,12 +7,12 @@ function [u] = controller_module(timestamp, x)
 
     %% reference signal
     %%% includes multiple roll angle steps. Reference r [rad].
-    if t>10
-        if t<15
+    if t>5
+        if t<12
             r = 1;
-        elseif t<25
+        elseif t<19
             r = -1;
-        elseif t>25
+        elseif t>26
             r = 0;
         end
     end
