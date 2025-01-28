@@ -7,17 +7,18 @@ function [y] = model_h(t, x, b)
 
     % get parameters
     % z = load("design/estimator/initial_params.mat");
-    M_E = [-49.77; -3.11; 18.76];
     S_W = eye(3); % rotation transform from sensor frame to body frame
     S_M = eye(3); % rotation transform from sensor frame to body frame
 
     % rates
-    W = S_W*(w - b_W); % rotation from sensor frame to rocket frame
+    W = S_W*(w) + b_W; % rotation from sensor frame to rocket frame
 
     % magnetic field model
     % compute rotational matrix (attitude transformation matrix, between body frame and ground frame)
-    S = model_quaternion_rotmatrix(q);
-    M = (S_M)*(S)*M_E; % M_E is initial orientation of magnetic field
+    % S = quaternion_rotmatrix(q);
+    % M_body = (S)*M_E; % M_E is initial orientation of magnetic field
+    M_body = quaternion_rotate(q, M_E);
+    M = (S_M)*M_body;
 
     % atmosphere model
     [P, ~, ~, ~] = model_airdata(alt);

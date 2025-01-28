@@ -25,7 +25,7 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
             length_cs = [0; 0; 0]; % center of sensor frame
             
             %%% Canards, Actuator
-            tau = 1/60; % time constant of first order actuator dynamics
+            tau = 1/30; % time constant of first order actuator dynamics
             Cl_alpha = 1.5; % estimated coefficient of lift, const with Ma
             tau_cl_alpha = 2; % time constant to converge Cl back to 1.5 in filter
             area_canard = 0.004; % total canard area 
@@ -37,7 +37,7 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
 
     %% compute rotation matrix 
     %%% attitude transformation, inertial to body frame
-    S = model_quaternion_rotmatrix(q);
+    S = quaternion_rotmatrix(q);
 
     %% air data
     [~, ~, rho, ~] = model_airdata(alt);
@@ -63,28 +63,32 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
     % force = force_aero / k.m;  
 
     %%% torques
-    torque_canards = Cl * area_canard*length_canard * 0.5*rho*v(1)*abs(v(1)) * delta *[1;0;0];
+    % torque_canards = Cl * area_canard*length_canard * 0.5*rho*v(1)*abs(v(1)) * delta *[1;0;0];
     torque_aero = Cn_alpha*area_reference*length_cp * 0.5*rho* abs([0; v(3); v(2)]')*[0; v(3); v(2)];
-    torque = torque_aero + torque_canards;
+    torque = torque_aero;% + torque_canards;
     % torque = [0;0;0];
 
     %% derivatives
 
     % quaternion derivatives
-    q_dot = model_quaternion_deriv(q, w);
+    q_dot = quaternion_deriv(q, w);
 
     % rate derivatives
     w_dot = inv(J)*(torque - cross(w, J*w));
     
     % velocity derivatives 
     %%% acceleration specific force
-    a = S_A*A - cross(w_dot, length_cs) - cross(w, cross(w, length_cs));
+    a = S_A*A - cross(w, cross(w, length_cs));% - cross(w_dot, length_cs);
     %%% use aerodynamic for simulation, acceleration for filter
     % v_dot = force - cross(w,v) + S*g;
-    v_dot = a - cross(w,v) + (S)*g;
+    % g_body = quaternion_rotate(q, g);
+    g_body = (S)*g;
+    v_dot = a - cross(w,v) + g_body;
 
     % altitude derivative
-    pos_dot = (S')*v;
+    % [~, v_earth] = quaternion_rotate(q, v);
+    v_earth = (S')*v;
+    pos_dot = v_earth;
     alt_dot = pos_dot(1);
 
     % canard coefficients derivative

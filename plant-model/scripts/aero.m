@@ -19,10 +19,10 @@ x_pos_tail = pos_tail - (h/3) * (1 + ( (1 - r) / (1 - r^2) ) );
 
 % TEMP Cnalfa overrides
 CNa_nosecone = 2;
-CNa_body = 0;
+CNa_body = 5;
 CNa_fins = 9.6;
 CNa_tail = -0.319;
-CNa_canard = 0;
+CNa_canard = 2;
 
 % reference computations (used to check internal computation against OR net values only)
 Cnalfa_ref = (CNa_nosecone + CNa_fins + CNa_tail + CNa_body + CNa_canard); % Total normal force derivative

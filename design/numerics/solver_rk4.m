@@ -1,4 +1,4 @@
-function [x_new] = solver_vector(f,T,step,t,x0,u)
+function [x_new] = solver_rk4(f,T,step,t,x0,u)
     % Computes solution of Vector-valued IVP using an explicit Runge−Kutta method.
     % x_new at time t+T, using step size step
     % RK4n method, with normalization of Quaternions x(1:4) in every time step

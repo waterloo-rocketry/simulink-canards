@@ -11,9 +11,9 @@ function [x_new, P_new] = ekf_algorithm(x, P, u, y, b, t, Q, R, T, step)
     % Solves for covariance estimate using Improved Euler
     
     %%% solve IVP for x: x_dot = f(x, u)
-    [x_new] = solver_vector(@model_f, T, step, t, x, u); % RK4
-    % x_new = x + T*model_f(t, x, u);
-    % x_new(1:4) = x_new(1:4)/norm(x_new(1:4)); % norm quaternions
+    % [x_pred] = solver_rk4(@model_f, T, step, t, x, u); % RK4
+    % [x_pred] = solver_lie_euler(@model_f, T, step, t, x, u); % Lie group & explicit Euler
+    [x_pred] = solver_euler(@model_f, T, step, t, x, u); % Explicit Euler
 
     %%% compute Jacobian: F = df/dx
     F = jacobian(@model_f, t, x, u); 
@@ -21,11 +21,12 @@ function [x_new, P_new] = ekf_algorithm(x, P, u, y, b, t, Q, R, T, step)
     %%% solve IVP for P: P_dot = F*P + P*F'+ Q
     %%% Heuns method
     P_dot = F*P + P*F'+ Q;
-    P2 = P + T*P_dot;
-    P_pred = P + T/2*( P_dot + (F*P2 + P2*F'+ Q) ); 
+    % P2 = P + T*P_dot;
+    % P_pred = P + T/2*( P_dot + (F*P2 + P2*F'+ Q) ); 
+    P_pred = P + T*P_dot;
 
     %%% a-priori estimates
-    x = x_new; P = P_pred;
+    x = x_pred; P = P_pred;
 
     %% Correction
     % computes a-posteriori state and covariance estimates.
@@ -43,13 +44,15 @@ function [x_new, P_new] = ekf_algorithm(x, P, u, y, b, t, Q, R, T, step)
     K = P*(H') * inv(L);
 
     %%% correct state and covariance estimates
-    x_new = x + K*innovation;
-    % x_error = K*innovation;
-    % x_new = x + [zeros(4,1); x_error(5:7)];
-    % x_new(1:4) = x_new(1:4)/norm(x_new(1:4)); % norm quaternions
+    x_corr = x + K*innovation;
+    x_corr(1:4) = x_corr(1:4)/norm(x_corr(1:4)); % norm quaternions
 
-    % P_new = (eye(length(x)) - K*H ) * P; % standard form
-    P_new = (eye(length(x))-K*H)*P*(eye(length(x))-K*H)' + K*R*K'; % joseph stabilized
+    % P_corr = (eye(length(x)) - K*H ) * P; % standard form
+    P_corr = (eye(length(x))-K*H)*P*(eye(length(x))-K*H)' + K*R*K'; % joseph stabilized
+
+    %% output
+    x_new = x_corr;
+    P_new = P_corr;
 
     %% troubleshooting
     % P_pred = P_pred(1:11,1:11) %(1:11,1:11)
@@ -59,5 +62,4 @@ function [x_new, P_new] = ekf_algorithm(x, P, u, y, b, t, Q, R, T, step)
     % H_jac = H
     % feedback_norm = norm(x_error(1:4))
     % quat_norm = norm(x(1:4))
-    % rotmatrix = model_quaternion_rotmatrix(x(1:4));
 end
