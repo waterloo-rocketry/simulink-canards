@@ -8,6 +8,7 @@
   - Aerospace Toolbox
   - Aerospace Blockset
   - Control System Toolbox
+  - Instrument Control Toolbox
   - MATLAB Support for MinGW-w64 C/C++/Fortran Compiler
 4. In Matlab run `mex -setup C` and `mex -setup C++`
 
