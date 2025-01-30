@@ -1,4 +1,4 @@
-function [x_new, P_new] = ekf_algorithm(x, P, u, y, b, t, Q, R, T, step)
+function [x_new, P_new] = ekf_algorithm(x, P, u, y, b, t, Q, R, T)
     % Computes EKF iteration. Uses model_f for prediction and model_h for correction.
     % use either this or ekf_predict and ekf_correct seperately
     % Inputs: estimates x, P; control u; measurement y; sensor bias b; timecode t
@@ -11,9 +11,10 @@ function [x_new, P_new] = ekf_algorithm(x, P, u, y, b, t, Q, R, T, step)
     % Solves for covariance estimate using Improved Euler
     
     %%% solve IVP for x: x_dot = f(x, u)
+    % step = 0.001; % step size for stages in RK
     % [x_pred] = solver_rk4(@model_f, T, step, t, x, u); % RK4
     % [x_pred] = solver_lie_euler(@model_f, T, step, t, x, u); % Lie group & explicit Euler
-    [x_pred] = solver_euler(@model_f, T, step, t, x, u); % Explicit Euler
+    [x_pred] = solver_euler(@model_f, T, t, x, u); % Explicit Euler
 
     %%% compute Jacobian: F = df/dx
     F = jacobian(@model_f, t, x, u); 

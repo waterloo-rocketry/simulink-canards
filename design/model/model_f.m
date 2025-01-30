@@ -18,7 +18,8 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
             
             length_cp = -0.5; % center of pressure
             area_reference = pi*(8*0.0254/2)^2; % cross section of body tube
-            Cn_alpha = 5; % pitch coefficent 
+            Cn_alpha = 5; % pitch forcing coefficent 
+            Cn_omega = 0; % pitch damping coefficent 
             
             %%% Sensors
             S_A = eye(3); % rotation transform from sensor frame to body frame
@@ -41,19 +42,19 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
 
     %% air data
     [~, ~, rho, ~] = model_airdata(alt);
-    % airspeed = norm(v);
-    % p_dyn = rho/2*airspeed^2;
-    %%% angle of attack / sideslip
-    % if norm(v(1)) >= 0 
-    %     alpha = atan(v(3)/v(1));
-    %     beta = atan(v(2)/v(1));
-    % elseif norm(v(1)) <= 0
-    %     alpha = pi - atan(v(3)/v(1));
-    %     beta = pi - atan(v(2)/v(1));
-    % else
-    %     alpha = sign(v(3))*pi/2; 
-    %     beta = sign(v(2))*pi/2;
-    % end
+    p_dyn = rho/2*norm(v)^2;
+
+    %% angle of attack / sideslip
+    if norm(v(1)) >= 0 
+        alpha = atan(v(3)/v(1));
+        beta = atan(v(2)/v(1));
+    elseif norm(v(1)) <= 0
+        alpha = pi - atan(v(3)/v(1));
+        beta = pi - atan(v(2)/v(1));
+    else
+        alpha = sign(v(3))*pi/2; 
+        beta = sign(v(2))*pi/2;
+    end
 
     %% forces and moments
 
@@ -64,7 +65,7 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
 
     %%% torques
     % torque_canards = Cl * area_canard*length_canard * 0.5*rho*v(1)*abs(v(1)) * delta *[1;0;0];
-    torque_aero = Cn_alpha*area_reference*length_cp * 0.5*rho* abs([0; v(3); v(2)]')*[0; v(3); v(2)];
+    torque_aero = ( Cn_alpha*[0; v(3); v(2)] + Cn_omega*[0; w(2); w(3)] ) * area_reference*length_cp*p_dyn;
     torque = torque_aero;% + torque_canards;
     % torque = [0;0;0];
 

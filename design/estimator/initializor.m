@@ -50,10 +50,11 @@ function [x_init, bias, out] = initializor(meas)
     x_init = [q;w;v;alt;Cl;delta];
 
     %% Bias output
-    bias = zeros(6,1);
+    bias = zeros(9,1);
     
     %%% gyroscope
     bias(1:3) = sensors(1:3);
+    bias(7:9) = sensors(7:9);
     
     %%% compute earth magnetic field
     S = quaternion_rotmatrix(q); % launch attitude
