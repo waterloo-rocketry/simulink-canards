@@ -1,0 +1,3 @@
+## how to debug
+
+We assume gaussian noise with zero mean. If the state estimate is perfect, we would expect the measurement difference to be equal to the noise of the sensor. The difference is pubished if the debug flag is set to true. The StateMeasurement message has a field for all measurements, but each sensor only fills in it's own differences. This way it is easy to plot it live. This should help to find systemetic errors. When examining a sensor, you could set the H matrix to zero, meaning it doesn't correct the state and then look at the errors. Again, this should have as little noise as possible and no systemetic offsets.

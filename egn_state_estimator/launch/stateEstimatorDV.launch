@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<launch>
+
+    <node pkg="egn_state_estimator" type="egn_state_estimator_node" name="egn_state_estimator_node" output="screen">
+      <rosparam command="load" file="$(find egn_state_estimator)/launch/kalmanParameters.yaml" />
+      <rosparam command="load" file="$(find egn_state_estimator)/launch/simpleDynamicSlip.yaml" />
+
+      <param name = "enableImuCorrection" value = "1" type = "bool" />
+      <param name = "enableGPSCorrection" value = "1" type = "bool" />
+      <param name = "enableLIDARCorrection" value = "1" type = "bool" />
+      <param name = "enableWheelSpeedCorrection" value = "1" type = "bool" />
+
+      <param name = "rearWheelDrive" value = "1" type = "bool" />
+
+      <param name = "useDynamicModel" value = "0" type = "bool" />
+      <param name = "debugMode" value = "1" type = "bool" />
+
+    </node>
+</launch>

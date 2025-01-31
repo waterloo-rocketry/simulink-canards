@@ -1,0 +1,15 @@
+# Kalman Parameters
+kalman:
+
+  # Measurement noise covariance
+  gps_pos_noise: 0.1
+  gps_heading_noise: 1.0
+
+  imu_acc_noise: 1.0
+  imu_gyro_noise: 0.1
+
+  wheel_speed_noise: 0.1
+
+  slam_x_noise: 0.1
+  slam_y_noise: 0.1
+  slam_yaw_noise: 1.0

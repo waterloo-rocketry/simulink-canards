@@ -1,0 +1,18 @@
+kalman:
+
+  predict_x: 1.0
+  predict_y: 1.0
+  predict_vx: 50.0
+  predict_vy: 50.0
+  predict_ax: 1.0
+  predict_ay: 10.0
+  predict_yaw: 1.0
+  predict_yawrate: 100.0
+  predict_steer: 100.0
+  predict_slip: 10.0
+  predict_ca: 100.0
+  predict_gps: 0.001
+  tire_b: 6.5
+  tire_c: 2.0
+  tire_d: 1.35
+  tire_e: 0.9
