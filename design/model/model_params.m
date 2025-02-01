@@ -20,7 +20,7 @@ length_cs = [0; 0; 0]; % center of sensor frame
 tau = 1/30; % time constant of first order actuator dynamics
 Cl_alpha = 1.5; % estimated coefficient of lift, const with Ma
 tau_cl_alpha = 0.01; % time constant to converge Cl back to 1.5 in filter
-area_canard = 0.008; % total canard area 
+area_canard = 0.02; % total canard area 
 length_canard = 8*0.0254+0.05; % lever arm of canard to x-axis 
 c_canard = area_canard*length_canard; % moment arm * area of canard
 

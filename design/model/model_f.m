@@ -29,7 +29,7 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
             tau = 1/30; % time constant of first order actuator dynamics
             Cl_alpha = 1.5; % estimated coefficient of lift, const with Ma
             tau_cl_alpha = 2; % time constant to converge Cl back to 1.5 in filter
-            area_canard = 0.004; % total canard area 
+            area_canard = 0.02; % total canard area 
             length_canard = 8/2*0.0254+0.05; % lever arm of canard to x-axis 
             c_canard = area_canard*length_canard; % moment arm * area of canard
             
@@ -64,9 +64,9 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
     % force = force_aero / k.m;  
 
     %%% torques
-    % torque_canards = Cl * area_canard*length_canard * 0.5*rho*v(1)*abs(v(1)) * delta *[1;0;0];
+    torque_canards = Cl *  delta * area_canard*length_canard * p_dyn *[1;0;0];
     torque_aero = ( Cn_alpha*[0; v(3); v(2)] + Cn_omega*[0; w(2); w(3)] ) * area_reference*length_cp*p_dyn;
-    torque = torque_aero;% + torque_canards;
+    torque = torque_aero + torque_canards;
     % torque = [0;0;0];
 
     %% derivatives

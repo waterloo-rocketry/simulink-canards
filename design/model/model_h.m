@@ -10,21 +10,25 @@ function [y] = model_h(t, x, b)
     S_W = eye(3); % rotation transform from sensor frame to body frame
     S_M = eye(3); % rotation transform from sensor frame to body frame
 
-    % rates
+    %% rates
     W = S_W*(w) + b_W; % rotation from sensor frame to rocket frame
 
-    % magnetic field model
+    %% magnetic field model
     % compute rotational matrix (attitude transformation matrix, between body frame and ground frame)
     % S = quaternion_rotmatrix(q);
     % M_body = (S)*M_E; % M_E is initial orientation of magnetic field
     M_body = quaternion_rotate(q, M_E);
     M = (S_M)*M_body;
 
-    % atmosphere model
+    %% atmosphere model
     [P, ~, ~, ~] = model_airdata(alt);
 
-    %%% accelerations %% not used
-    %%% A =  % include centrifugal correction. Include lift through non-zero side velocities    
+    %% accelerations 
+    %%% not used in measurement model, but in dynamics model
+    
+    %% canard angle
+    D = delta;
 
-    y = [W; M; P];
+    %% measurement prediction
+    y = [W; M; P; D];
 end
