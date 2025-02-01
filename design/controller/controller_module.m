@@ -4,6 +4,7 @@ function [u] = controller_module(timestamp, x)
     %% stuff
     t = timestamp;
     r = 0;
+    u_max = deg2rad(20); % cap output to this angle
 
     %% reference signal
     %%% includes multiple roll angle steps. Reference r [rad].
@@ -19,5 +20,8 @@ function [u] = controller_module(timestamp, x)
 
     %% compute controller output
     u = control_algorithm(x, r);
+
+    %%% limit output to allowable angle
+    u = min(max(u, -u_max), u_max);
 end
 

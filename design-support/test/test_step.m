@@ -10,6 +10,7 @@ x = [q; w; v; alt; CL; delta];
 
 V = linspace(30, 800, 40);
 steptime = 10;
+T_sample = 0.005; % sampling time of the loop
 
 %% test lqr + step
 for i=1:length(V)
@@ -23,8 +24,10 @@ for i=1:length(V)
     K = Ks(1:3);
 
     [A, B, C, ~] = model_roll(x);
+    sys_ol = c2d(ss(A, B, eye(3), 0), T_sample);
+    [phi, gamma] = ssdata(sys_d_ol);
+    sys_cl = K_pre*ss(phi+gamma*K, gamma, eye(3), 0, T_sample);
 
-    sys_cl = K_pre*ss(A+B*K, B, C, 0);
     sys_array(:,:,1,i) = sys_cl;
 
     if i == 1
