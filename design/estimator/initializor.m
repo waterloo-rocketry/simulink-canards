@@ -15,14 +15,15 @@ function [x_init, bias, out] = initializor(meas)
     air_R = 287.0579; % specific gas constant for air
     T_B = 288.15; % troposphere base temperature
     P_B = 101325; % troposphere base pressure
+    k_B = 0.0065; % troposphere base lapse rate
 
     %% Bias determination
-    y = meas(1:9);
+    y = meas(1:10);
     if isempty(sensors)
         sensors = y;
     end
     %%% lowpass to attenuate sensor noise
-    alpha = 0.01; % low pass time constant
+    alpha = 0.005; % low pass time constant
     sensors = sensors + alpha*(y-sensors); % lowpass filter
 
     %% State determination
@@ -38,7 +39,9 @@ function [x_init, bias, out] = initializor(meas)
          sin(psi/2)*cos(theta/2)];
 
     %%% compute altitude
-    alt = -log(P/P_B)*air_R*T_B/g0;
+    P = sensors(10);
+    % alt = -log(P/P_B)*air_R*T_B/g0;
+    alt = T_B/k_B * (1- (P/P_B)^(air_R*k_B/g0) );
     
     %%% set constant initials
     w = [0; 0; 0];
