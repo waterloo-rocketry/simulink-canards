@@ -8,43 +8,22 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
     % decompose input vector: [delta_u(1), A(3)]
     delta_u = u(1); A = u(2:4);
 
-    %% get parameters
-    % k = load("design/model/model_params.mat");
-            %%% Rocket body
-            m = 40; %mass in kg
-            Jx = 0.225; % inertia roll
-            Jy = 52; % inertia pitch, yaw
-            J = diag([Jx, Jy, Jy]);
-            
-            length_cp = -0.5; % center of pressure
-            area_reference = pi*(8*0.0254/2)^2; % cross section of body tube
-            Cn_alpha = 5; % pitch forcing coefficent 
-            Cn_omega = 0; % pitch damping coefficent 
-            
-            %%% Sensors
-            S_A = eye(3); % rotation transform from sensor frame to body frame
-            length_cs = [0; 0; 0]; % center of sensor frame
-            
-            %%% Canards, Actuator
-            tau = 1/30; % time constant of first order actuator dynamics
-            Cl_alpha = 1.5; % estimated coefficient of lift, const with Ma
-            tau_cl_alpha = 2; % time constant to converge Cl back to 1.5 in filter
-            area_canard = 0.02; % total canard area 
-            length_canard = 8/2*0.0254+0.05; % lever arm of canard to x-axis 
-            c_canard = area_canard*length_canard; % moment arm * area of canard
-            
-            %%% Environment
-            g = [-9.81; 0; 0]; % gravitational acceleration in the geographic inertial frame
-
+    %% load parameters
+    persistent param
+    if isempty(param)
+        param = load("model\model_params.mat");
+    end
+    
     %% compute rotation matrix 
     %%% attitude transformation, inertial to body frame
     S = quaternion_rotmatrix(q);
 
-    %% air data
+    %% aerodynamics
+    %%% air data
     [~, ~, rho, ~] = model_airdata(alt);
     p_dyn = rho/2*norm(v)^2;
 
-    %% angle of attack / sideslip
+    %%% angle of attack/sideslip
     if norm(v(1)) >= 0 
         alpha = atan(v(3)/v(1));
         beta = atan(v(2)/v(1));
@@ -56,16 +35,9 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
         beta = sign(v(2))*pi/2;
     end
 
-    %% forces and moments
-
-    %%% forces (specific)
-    %%% comment out if using accelerometer, not needed then
-    % force_aero = zeros(3,1);
-    % force = force_aero / k.m;  
-
     %%% torques
-    torque_canards = Cl *  delta * area_canard*length_canard * p_dyn *[1;0;0];
-    torque_aero = ( Cn_alpha*[0; v(3); v(2)] + Cn_omega*[0; w(2); w(3)] ) * area_reference*length_cp*p_dyn;
+    torque_canards = Cl *  delta * param.c_canard * p_dyn *[1;0;0];
+    torque_aero = p_dyn * ( param.Cn_alpha*[0; v(3); v(2)] + param.Cn_omega*[0; w(2); w(3)] ) * param.c_aero;
     torque = torque_aero + torque_canards;
     % torque = [0;0;0];
 
@@ -75,30 +47,30 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
     q_dot = quaternion_deriv(q, w);
 
     % rate derivatives
-    w_dot = inv(J)*(torque - cross(w, J*w));
+    w_dot = inv(param.J)*(torque - cross(w, param.J*w));
     
     % velocity derivatives 
     %%% acceleration specific force
-    a = S_A*A - cross(w, cross(w, length_cs));% - cross(w_dot, length_cs);
-    %%% use aerodynamic for simulation, acceleration for filter
-    % v_dot = force - cross(w,v) + S*g;
-    % g_body = quaternion_rotate(q, g);
-    g_body = (S)*g;
+    a1 = param.S1*A - cross(w, cross(w, param.d1)) - cross(w_dot, param.d1);
+    a2 = param.S2*A - cross(w, cross(w, param.d2)) - cross(w_dot, param.d2);
+    a3 = param.S3*A - cross(w, cross(w, param.d3)) - cross(w_dot, param.d3);
+    a = (a1 + a2 + a3)/3;
+    % g_body = quaternion_rotate(q, param.g);
+    g_body = (S)*param.g;
     v_dot = a - cross(w,v) + g_body;
 
     % altitude derivative
     % [~, v_earth] = quaternion_rotate(q, v);
     v_earth = (S')*v;
-    pos_dot = v_earth;
-    alt_dot = pos_dot(1);
+    alt_dot = v_earth(1);
 
     % canard coefficients derivative
     %%% returns Cl to expected value slowly, to force convergence in EKF
-    Cl_dot = -1/tau_cl_alpha * (Cl - Cl_alpha); 
+    Cl_dot = -1/param.tau_cl_alpha * (Cl - param.Cl_alpha); 
     
     % actuator dynamics
     %%% linear 1st order
-    delta_dot = -1/tau * (delta - delta_u);
+    delta_dot = -1/param.tau * (delta - delta_u);
     
     %% concoct state derivative vector
     x_dot = [q_dot; w_dot; v_dot; alt_dot; Cl_dot; delta_dot];

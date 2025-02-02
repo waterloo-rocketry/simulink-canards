@@ -7,10 +7,12 @@ function [x_init, bias, out] = initializor(meas)
     %%% decompose measurement vector
     W = meas(1:3); M = meas(4:6); A = meas(7:9); P = meas(10);
 
-    %%% load parameters
-    S_M = eye(3);
-    S_A = eye(3);
-    Cl_alpha = 1.5;
+    %% load parameters
+    persistent param
+    if isempty(param)
+        param = load("model\model_params.mat");
+    end
+
     g0 = 9.8; % zero height gravity
     air_R = 287.0579; % specific gas constant for air
     T_B = 288.15; % troposphere base temperature
@@ -28,7 +30,7 @@ function [x_init, bias, out] = initializor(meas)
 
     %% State determination
     %%% gravity vector in body-fixed frame
-    a = S_A*sensors(7:9);
+    a = param.S1*sensors(7:9);
 
     %%% compute launch attitude quaternion
     psi = atan(-a(2)/a(1)); % rail yaw angle
@@ -46,7 +48,7 @@ function [x_init, bias, out] = initializor(meas)
     %%% set constant initials
     w = [0; 0; 0];
     v = [0; 0; 0];
-    Cl = Cl_alpha;
+    Cl = param.Cl_alpha;
     delta = 0;
 
     %%% conconct state vector
@@ -61,7 +63,7 @@ function [x_init, bias, out] = initializor(meas)
     
     %%% compute earth magnetic field
     S = quaternion_rotmatrix(q); % launch attitude
-    M_E = (S')*(S_M')*sensors(4:6); % sensorframe -> body-fixed -> earth-flat
+    M_E = (S')*(param.S1')*sensors(4:6); % sensorframe -> body-fixed -> earth-flat
     bias(4:6) = M_E;
 
     %% troubleshooting

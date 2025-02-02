@@ -33,7 +33,7 @@ n = length(Cls);
 Ks = zeros(m,n,4); % length(x) is 3, plus 1 pre gain
 
 %% fill table
-
+clear model_roll
 for i=1:m
     for k=1:n
         [F_roll, B, ~, ~] = model_roll([], Ps(i), Cls(k));
