@@ -1,12 +1,13 @@
-function [xhat, Phat, bias, out] = estimator_module(timestamp, IMU_1, IMU_2, IMU_3, cmd, encoder)
+function [xhat, Phat, bias, out] = estimator_module(timestamp, IMU, cmd, encoder)
     % Top-level estimator module. Calls EKF algorithm.
     % Inputs: concocted measurement and output vectors with multiple sensors. Not yet fully supported, work in progress
-    % IMU_i = [accel; omega; mag; baro] 
+    % IMU = struct of IMUi = [accel; omega; mag; baro] 
     
     persistent x P t b init_phase; % remembers x, P, t from last iteration
+    global IMU_select 
     
     %% settings
-    IMU = IMU_1; % select IMU
+    IMU_select = [1; 0,; 0]; % select IMUs, 1 is on, 0 is off
     flight_phase = 5; % acceleration threshold to detect boost phase
 
     %%% Q is a square 13 matrix, tuning for prediction E(noise)
@@ -21,22 +22,14 @@ function [xhat, Phat, bias, out] = estimator_module(timestamp, IMU_1, IMU_2, IMU
     R = (R+R')/2;
 
     %% concoct y and u
-
-    accel = IMU(1:3);
-    omega = IMU(4:6);
-    mag = IMU(7:9);
-    baro = IMU(10);
-
-    y = [omega; mag; baro; encoder];
-    u = [cmd; accel];
-
+    [meas, y, u] = imu_selector(IMU, IMU_select);
+    y = [y; encoder];
+    u = [cmd; u];
 
     %% initialize at beginning
-    xhat = zeros(13,1); Phat = zeros(13); bias = zeros(9,1); out = zeros(3,1);
+    xhat = zeros(13,1); Phat = zeros(13); bias = zeros(size(meas)); out = zeros(3,1);
     if isempty(x)
-        x = zeros(13,1);
-        P = zeros(length(x));
-        b = zeros(9,1);
+        x = xhat; P = Phat; b = bias;
         init_phase = 1;
         if timestamp >= 0.005
                 t = timestamp-0.005;
@@ -47,8 +40,8 @@ function [xhat, Phat, bias, out] = estimator_module(timestamp, IMU_1, IMU_2, IMU
     
     %% Initializor filter iteration
     if init_phase ~= 0 
-        [xhat, bias, ~] = initializor([omega;mag;accel;baro]);
-        if (norm(accel)-9.81) >= flight_phase
+        [xhat, bias, ~] = initializor(meas);
+        if (norm(meas(1:3,1))-9.81) >= flight_phase
             init_phase = 0;
         else
             x = xhat; b = bias;
