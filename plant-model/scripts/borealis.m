@@ -11,6 +11,8 @@ time_idle = 5; % wait time on the rail before launch
 samplingrate = 0.005; % sampling period of the estimator
 Ls1 = [-2.4;0;0]; % mounting location of IMU 1 relative CG
 Ss1 = eye(3); % mounting orientation of IMU 1 relative body frame
+Ls2 = [-2.5;0;0]; % mounting location of IMU 2 relative CG
+Ss2 = eye(3); % mounting orientation of IMU 2 relative body frame
 
 %% Actuator parameters
 act_freq = 58; % natural frequency, approx 1/timeconstant
