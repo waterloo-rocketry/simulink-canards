@@ -4,9 +4,19 @@ clear
 S1 = eye(3); % IMU 1, rotation transform from sensor frame to body frame
 S2 = eye(3); % IMU 2, rotation transform from sensor frame to body frame
 S3 = eye(3); % IMU 3, rotation transform from sensor frame to body frame
+S_k = [S1, S2, S3];
 d1 = [0; 0; 0]; % center of sensor frame
 d2 = [0; 0; 0]; % center of sensor frame
 d3 = [0; 0; 0]; % center of sensor frame
+d_k = [d1, d2, d3];
+
+B1 = eye(3); % Soft iron compensation
+B2 = eye(3); % Soft iron compensation
+B3 = eye(3); % Soft iron compensation
+b1 = [0;0;0]; % Hard iron compensation
+b2 = [0;0;0]; % Hard iron compensation
+b3 = [0;0;0]; % Hard iron compensation
+
 
 %% Rocket body
 m = 40; %mass in kg
