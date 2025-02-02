@@ -1,4 +1,4 @@
-function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by matlab ode syntax
+function [x_dot] = model_f(t, x, u)
     % Computes state derivative with predictive model. Use ODE solver to compute next state.
     
     %% decomp
@@ -6,7 +6,9 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
     q = x(1:4); w = x(5:7); v = x(8:10); alt = x(11); Cl = x(12); delta = x(13);
 
     % decompose input vector: [delta_u(1), A(3)]
-    delta_u = u(1); A = u(2:4);
+    delta_u = u(1); A = u(2:end);
+    
+    global IMU_select
 
     %% load parameters
     persistent param
@@ -51,10 +53,19 @@ function [x_dot] = model_f(t, x, u) % time t is not used yet, but required by ma
     
     % velocity derivatives 
     %%% acceleration specific force
-    a1 = param.S1*A - cross(w, cross(w, param.d1)) - cross(w_dot, param.d1);
-    a2 = param.S2*A - cross(w, cross(w, param.d2)) - cross(w_dot, param.d2);
-    a3 = param.S3*A - cross(w, cross(w, param.d3)) - cross(w_dot, param.d3);
-    a = (a1 + a2 + a3)/3;
+    if isreal(v) || isreal(w)
+        a = zeros(3,1);
+    else
+        a = zeros(3,1) + 1i*zeros(3,1);
+    end
+    %%% average specific force of selected sensors
+    for k = 1:length(IMU_select)
+        if IMU_select(k) == 1
+            dk = param.d_k(:, k);
+            ak = A( 3*(k-1)+1 : 3*k ) - cross(w, cross(w, dk)) - cross(w_dot, dk);
+            a = a + ak/(length(A)/3);
+        end
+    end
     % g_body = quaternion_rotate(q, param.g);
     g_body = (S)*param.g;
     v_dot = a - cross(w,v) + g_body;
