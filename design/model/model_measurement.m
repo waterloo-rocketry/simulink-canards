@@ -1,4 +1,4 @@
-function [y] = model_h(t, x, b)
+function [y] = model_measurement(t, x, b)
     % Computes measurement prediction using current state and sensor biases
 
     %% decomp

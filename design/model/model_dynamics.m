@@ -1,4 +1,4 @@
-function [x_dot] = model_f(t, x, u)
+function [x_dot] = model_dynamics(t, x, u)
     % Computes state derivative with predictive model. Use ODE solver to compute next state.
     
     %% decomp

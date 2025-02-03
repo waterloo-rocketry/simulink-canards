@@ -11,19 +11,19 @@ function [x_new, P_new] = ekf_algorithm(x, P, u, y, b, t, Q, R, T)
     % Solves for covariance estimate using Improved Euler
     
     %%% solve IVP for x: x_dot = f(x, u)
-    % step = 0.001; % step size for stages in RK
     % [x_pred] = solver_rk4(@model_f, T, step, t, x, u); % RK4
     % [x_pred] = solver_lie_euler(@model_f, T, step, t, x, u); % Lie group & explicit Euler
-    [x_pred] = solver_euler(@model_f, T, t, x, u); % Explicit Euler
+    [x_pred] = solver_euler(@model_dynamics, T, t, x, u); % Explicit Euler
 
     %%% compute Jacobian: F = df/dx
-    F = jacobian(@model_f, t, x, u); 
+    F = jacobian(@model_dynamics, t, x, u); 
 
     %%% solve IVP for P: P_dot = F*P + P*F'+ Q
-    %%% Heuns method
     P_dot = F*P + P*F'+ Q;
+    %%% Heuns method
     % P2 = P + T*P_dot;
     % P_pred = P + T/2*( P_dot + (F*P2 + P2*F'+ Q) ); 
+    %%% explicit Euler
     P_pred = P + T*P_dot;
 
     %%% a-priori estimates
@@ -35,10 +35,10 @@ function [x_new, P_new] = ekf_algorithm(x, P, u, y, b, t, Q, R, T)
     % Solves for covariance estimate 
 
     %%% compute expected measurement and difference to measured values
-    innovation = y - model_h(t,x,b);
+    innovation = y - model_measurement(t,x,b);
 
     %%% compute Jacobian: H = dh/dx
-    H = jacobian(@model_h, t, x, b); 
+    H = jacobian(@model_measurement, t, x, b); 
 
     %%% compute Kalman gain
     L = H*P*H' + R;
@@ -55,12 +55,4 @@ function [x_new, P_new] = ekf_algorithm(x, P, u, y, b, t, Q, R, T)
     x_new = x_corr;
     P_new = P_corr;
 
-    %% troubleshooting
-    % P_pred = P_pred(1:11,1:11) %(1:11,1:11)
-    % P_correct = P_new(1:11,1:11)%(1:13,1:11)
-    % Kalman = K%(1:11,:)
-    % F_jac = F
-    % H_jac = H
-    % feedback_norm = norm(x_error(1:4))
-    % quat_norm = norm(x(1:4))
 end
