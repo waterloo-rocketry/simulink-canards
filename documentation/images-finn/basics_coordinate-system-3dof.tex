@@ -1,0 +1,26 @@
+\begin{tikzpicture}[scale=0.4, every node/.style={scale=0.2}, auto, node distance=1.5cm,>=latex']
+        \tikzstyle{every node}=[font=\LARGE]
+
+		%origin
+		\coordinate(o) at (0,0) {};
+
+		%earth coordinates
+ 		\node (X) at (0,12) {$x^e$};
+        \draw [->] (o) -- (X);
+        \node (Y) at (-1,-1.3) {$y^e, y^b$};
+        \filldraw (o) circle (0.4em);
+        \draw (o) circle (1.1em);
+		\node (Z) at (12,0) {$z^e$};
+        \draw [->] (o) -- (Z);
+        		      		
+		%body coordinates		
+		\node (x) at (3,11) {$x^b$};
+		\draw [very thick, ->] (o) -- (x);
+        \node (z) at (11,-3) {$z^b$};
+        \draw [very thick, ->] (o) -- (z);
+      
+ 		%angles
+ 		 \draw [very thick, ->] (0,8) arc (90:75:8);  
+ 		 \node (theta) at (1.2,9) {$\theta$}; 
+
+\end{tikzpicture}

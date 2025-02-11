@@ -1,0 +1,59 @@
+\begin{tikzpicture}[scale=0.8, every node/.style={scale=0.2}, auto, node distance=1.5cm,>=latex']
+        \tikzstyle{every node}=[font=\LARGE]
+
+		%origin
+		\coordinate(o) at (0,0) {};
+
+		%earth coordinates
+ 		\node (X) at (0,12) {$x^G$};
+        \draw [ ->] (o) -- (X);
+        \node (Y) at (-6,-3) {$y^G$};
+        \draw [ ->] (o) -- (Y);
+		\node (Z) at (8,-4) {$z^G$};
+        \draw [ ->] (o) -- (Z);
+        		
+		%box
+		\coordinate(xx) at (0,10) {};
+		\coordinate(yy) at (-4,-2) {};        
+		\coordinate(zz) at (6,-3) {};
+		\coordinate(yz) at (2,-5) {};
+		\coordinate(xy) at (-4,8) {};
+		\coordinate(xz) at (6,7) {};
+		\coordinate(xyz) at (2,5) {};
+		\draw [dotted] (yy) -- (yz);
+		\draw [dotted] (zz) -- (yz);
+		\draw [dotted] (xx) -- (xy);
+		\draw [dotted] (yy) -- (xy);
+		\draw [dotted] (xx) -- (xz);
+		\draw [dotted] (zz) -- (xz);
+		\draw [dotted] (xy) -- (xyz);
+		\draw [dotted] (xz) -- (xyz);
+		\draw [dotted] (yz) -- (xyz);
+        		
+		%body coordinates		
+		\node (x) at (2.2,5.5) {$x^B$};
+		\draw [very thick, ->] (o) -- (x);
+		\node (y) at (-0.6,-6) {$y^B$};
+        \draw [very thick, ->] (o) -- (y);
+        \node (z) at (5,-1) {$z^B$};
+        \draw [very thick, ->] (o) -- (z);
+		\draw [dashed, ->] (o) -- (xy);
+		\draw [dashed, ->] (o) -- (xz);
+		%\draw [dashed, ->] (o) -- (yz);
+      
+ 		%angles
+ 		 \draw [very thick, ->] (0,8) arc (90:50:8);  
+ 		 \node (theta) at (3.1,8.2) {$\theta$}; 
+ 		 \draw [very thick, ->] (0,7) arc (90:116:7); 
+ 		 \node (psi) at (-1.7,7.5) {$\psi$}; 
+		   \draw [very thick, ->] (-2,-1) arc (230:268:3); 
+ 		 \node (phi) at (-1.8,-2.2) {$\phi$}; 
+
+ 		 \draw [very thick, ->] (2,3.75) arc (20:300:0.6); 
+ 		 \node (phi) at (0.6,4.5) {$\omega_x$}; 
+		   \draw [very thick, <-] (0.2,-3.8) arc (0:300:0.6); 
+ 		 \node (phi) at (-1.7,-4.2) {$\omega_y$}; 
+		   \draw [very thick, <-] (3.6,-0.6) arc (0:300:0.6); 
+ 		 \node (phi) at (4,0.2) {$\omega_z$}; 
+
+\end{tikzpicture}

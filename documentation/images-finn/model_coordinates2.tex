@@ -1,0 +1,58 @@
+\tdplotsetmaincoords{70}{120} % Set viewing angles
+\begin{tikzpicture}[tdplot_main_coords, scale=4]
+
+% Define the axes
+\draw[->] (0,0,0) -- (1.5,0,0) node[anchor=north east] {$y^G$};
+\draw[->] (0,0,0) -- (0,1.5,0) node[anchor=north west] {$z^G$};
+\draw[->] (0,0,0) -- (0,0,1.5) node[anchor=south] {$x^G$};
+
+% Define rotated body-frame axes
+\tdplotsetrotatedcoords{50}{40}{-10} % Rotation angles: φ (roll), ψ (yaw), θ (pitch), 
+% axis lengths: 
+\pgfmathsetmacro{\ax}{1.5}
+\pgfmathsetmacro{\ay}{1}
+\pgfmathsetmacro{\az}{1}
+
+\draw[->,tdplot_rotated_coords] (0,0,0) -- (\ay,0,0) node[anchor=west] {$y^B$};
+\draw[->,tdplot_rotated_coords] (0,0,0) -- (0,\az,0) node[anchor=west] {$z^B$};
+\draw[->,tdplot_rotated_coords] (0,0,0) -- (0,0,\ax) node[anchor=south] {$x^B$};
+
+% Mark center of gravity
+\filldraw[black] (0,0,0) circle (0.5pt) node[anchor=north east] {};
+
+\tdplotsetrotatedcoords{50}{40}{-10}
+
+% projected rotations
+% yaw pitch
+\tdplottransformrotmain{0}{0}{\ax}
+\draw[tdplot_main_coords,->,red!50] (0,0,0)
+-- (\tdplotresx,0,\tdplotresz);
+
+% yaw roll
+\tdplottransformrotmain{\ay}{0}{0}
+\draw[tdplot_main_coords,->,green!50] (0,0,0)
+-- (\tdplotresx,0,\tdplotresz);
+
+% pitch roll
+\tdplottransformrotmain{0}{\az}{0}
+\draw[tdplot_main_coords,->,blue!50] (0,0,0)
+-- (0,\tdplotresy,\tdplotresz);
+
+% Draw the angles
+% yaw (ψ)
+\tdplotsetrotatedcoords{-90}{-90}{0}
+\tdplotdrawarc[->,tdplot_rotated_coords,red!50]{(0,0,0)}{0.6}{0}{28}{anchor=north}{$\psi$}
+\tdplotdrawarc[->,tdplot_rotated_coords,green!50]{(0,0,0)}{0.6}{90}{136}{anchor=north}{$\psi$}
+
+% pitch (θ)
+\tdplotsetrotatedcoords{180}{90}{90}
+\tdplotdrawarc[->,tdplot_rotated_coords,red!50]{(0,0,0)}{0.7}{90}{123}{anchor=south west}{$\theta$}
+\tdplotdrawarc[->,tdplot_rotated_coords,blue!50]{(0,0,0)}{0.7}{180}{188.5}{anchor=south west}{$\theta$}
+
+% roll (φ)
+\tdplotsetrotatedcoords{0}{0}{0}
+\tdplotdrawarc[->,tdplot_rotated_coords,blue!50]{(0,0,0)}{0.8}{90}{140}{anchor=south}{$\phi$}
+\tdplotdrawarc[->,tdplot_rotated_coords,green!50]{(0,0,0)}{0.8}{0}{50}{anchor=south}{$\phi$}
+
+
+\end{tikzpicture}

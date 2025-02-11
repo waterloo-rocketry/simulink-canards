@@ -1,0 +1,54 @@
+\newcommand\lw{0.75pt}
+% style of elements
+\tikzstyle{block} = [draw, fill=white!20, rectangle, 
+    minimum height=3em, minimum width=4em, line width = \lw]
+\tikzstyle{dblock} = [draw, rectangle, 
+    minimum height=4.5em, minimum width=16em, line width = \lw]
+\tikzstyle{sum} = [draw, fill=white!20, circle, node distance=1cm, line width = \lw, inner sep = 0.075cm]
+\tikzstyle{bullet} = [draw, fill=black!100, circle, node distance=1cm, line width = \lw, inner sep = 0.04cm]
+\tikzstyle{input} = [coordinate]
+\tikzstyle{output} = [coordinate]
+\tikzstyle{branch} = [coordinate, bullet]
+\tikzstyle{pinstyle} = [pin edge={to-,thin,black}]
+
+
+\begin{tikzpicture}[auto, node distance=2.1cm,>=latex']
+    % We start by placing the blocks
+    \node [input, name=input] {};
+    \node [block, right of=input, 
+    node distance=3cm] (prescale) {$K_{pre}$};
+    \node [sum, right of=prescale, xshift = 1cm] (sum) {};
+    \node [branch, right of=sum, xshift = 1cm] (b1) {};
+    \node [block, right of=b1, 
+    		node distance=2.5cm] (plant) {Rocket};
+    \node [branch, right of=plant, xshift = 2cm] (b2) {};
+    \node [block, below of=plant, 
+    		node distance=2.5cm] (observer) {Estimator};
+    \node [block, left of=observer, 
+    		node distance=3cm] (feedback) {$K$};
+    \node [block, below of=feedback, 
+    		node distance=2cm] (scheduler) {Schedule};
+    \node [output, right of=b2, xshift = -1cm] (o1) {};
+
+    \node [output, below of=plant, yshift = 0.8cm] (u_line1) {};
+    \node [output, right of=observerxshift = -1cm, below of=plant, yshift = 0.8cm ] (u_line2) {};
+
+
+    % Once the nodes are placed, connecting them is easy. 
+    \draw [->, line width = \lw] (input) -- node {$r(t)$} (prescale);
+    \draw [->, line width = \lw] (prescale.east) |- (sum);
+    \draw [-, line width = \lw] (sum) -- node[pos=1] {$u(t)$}  (b1);
+    \draw [->, line width = \lw] (b1.east) |- (plant);
+    \draw [-, line width = \lw] (plant.east) |- (b2);
+    \draw [->, line width = \lw] (b2) -- node[pos=0] {$y(t)$} (o1);
+    \draw [->, line width = \lw] (b2) |- (observer.345);
+    \draw [->, line width = \lw] (observer.west) -- node {$\hat x_R(t)$}(feedback);
+    \draw [-, line width = \lw] (b1) |- (u_line1);
+    \draw [-, line width = \lw] (u_line1) -- (u_line2);
+    \draw [->, line width = \lw] (u_line2) |- (observer.15);
+    \draw [->, line width = \lw] (feedback.west) -| (sum.south);
+    \draw [->, line width = \lw] (observer.south) |- node[above,pos=0.7] {$\hat x(t)$}(scheduler.east);
+    \draw [->, dashed, line width = \lw] (scheduler.north) -- node {}(feedback.south);
+    \draw [->, dashed, line width = \lw] (scheduler.west) -| node {}(prescale.south);
+
+\end{tikzpicture}

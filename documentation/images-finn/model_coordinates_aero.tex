@@ -1,0 +1,51 @@
+\begin{tikzpicture}[scale=0.65, every node/.style={scale=0.2}, auto, node distance=1.5cm,>=latex']
+        \tikzstyle{every node}=[font=\LARGE]
+
+		%origin
+		\coordinate(o) at (0,0) {};
+
+		%earth coordinates
+ 		\node (X) at (0,12) {$x^B$};
+        \draw [ ->, dash dot] (o) -- (X);
+        \node (Y) at (-6,-3) {$y^B$};
+        \draw [ ->, dash dot] (o) -- (Y);
+		\node (Z) at (8,-4) {$z^B$};
+        \draw [ ->, dash dot] (o) -- (Z);
+        		
+		%box
+		\coordinate(xx) at (0,10) {};
+		\coordinate(yy) at (-4,-2) {};        
+		\coordinate(zz) at (6,-3) {};
+		\coordinate(yz) at (2,-5) {};
+		\coordinate(xy) at (-4,8) {};
+		\coordinate(xz) at (6,7) {};
+		\coordinate(xyz) at (2,5) {};
+		\draw [loosely dotted] (yy) -- (yz);
+		\draw [loosely dotted] (zz) -- (yz);
+		\draw [loosely dotted] (xx) -- (xy);
+		\draw [loosely dotted] (yy) -- (xy);
+		\draw [loosely dotted] (xx) -- (xz);
+		\draw [loosely dotted] (zz) -- (xz);
+		\draw [loosely dotted] (xy) -- (xyz);
+		\draw [loosely dotted] (xz) -- (xyz);
+		\draw [loosely dotted] (yz) -- (xyz);
+        		
+		%body coordinates		
+		\node (x) at (2.2,5.5) {$v$};
+		\draw [very thick, ->] (o) -- (x);
+		\draw [dashed, ->] (o) -- (xy);
+		\draw [dashed, ->] (o) -- (xz);
+        \draw [very thick, ->] (o) -- (xx);
+        \draw [very thick, ->] (o) -- (yy);
+        \draw [very thick, ->] (o) -- (zz);
+
+        \node (X) at (0.7,10.5) {$v_x$};
+        \node (Y) at (-3.3,-0.9) {$v_y$};
+		\node (Z) at (5.3,-1.9) {$v_z$};
+      
+        %angles
+        \draw [very thick, ->] (0,8) arc (90:50:8);  
+        \node (alpha) at (2.8,8.2) {$\alpha$}; 
+        \draw [very thick, ->] (0,7) arc (90:116:7); 
+        \node (beta) at (-1.5,7.5) {$\beta$}; 
+\end{tikzpicture}

@@ -1,0 +1,50 @@
+\begin{tikzpicture}[scale=0.5, every node/.style={scale=0.2}, auto, node distance=1.5cm,>=latex']
+        \tikzstyle{every node}=[font=\LARGE]
+
+		%origin, rocket
+		\coordinate(o) at (0,0) {};
+		\node(r) at (5,9) {\tikz[radius=0em] {\filldraw (0,0) circle (0.15em)}};
+		\node (rocket) at (7.5,8.5) {Rocket};
+
+		%earth coordinates
+ 		\node (X) at (0,18) {$x^e$};
+        \draw [ ->] (o) -- (X);
+        \node (Y) at (-6,-3) {$y^e$};
+        \draw [ ->] (o) -- (Y);
+		\node (Z) at (12,-6) {$z^e$};
+        \draw [ ->] (o) -- (Z);
+        		
+		%box
+		\coordinate(xx) at (0,16) {};
+		\coordinate(yy) at (-4,-2) {};        
+		\coordinate(zz) at (9,-4.5) {};
+		\coordinate(xy) at (-4,13.5) {};
+		\coordinate(xz) at (9,11.5) {};
+		\coordinate(yz) at (5,-7) {};
+		\draw [dotted] (yy) -- (yz);
+		\draw [dotted] (zz) -- (yz);
+		\draw [dotted] (xx) -- (xy);
+		\draw [dotted] (yy) -- (xy);
+		\draw [dotted] (xx) -- (xz);
+		\draw [dotted] (zz) -- (xz);
+		\draw [dotted] (xy) -- (r);
+		\draw [dotted] (xz) -- (r);
+		\draw [dotted] (yz) -- (r);
+        		
+		%body coordinates		
+		%\node (x) at (5.5,11) {$x$};
+		%\draw [very thick, ->] (r) -- (x);
+		%\node (y) at (4,8) {$y$};
+        %\draw [very thick, ->] (r) -- (y);
+        %\node (z) at (6,8) {$z$};
+        %\draw [very thick, ->] (r) -- (z);
+		%\draw [dashed, ->] (o) -- (xy);
+		%\draw [dashed, ->] (o) -- (xz);
+      
+		%flight path
+		\draw [] (o) -- (r);
+		%\draw [dashed,->] (o) arc (180:122:10.7);
+		\draw [very thick, dashed,->] (o) to[out=90, in=220] (r);
+		\node (trajectory) at (-0.8,7) {Trajectory};
+		 
+\end{tikzpicture}

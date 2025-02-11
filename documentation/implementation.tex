@@ -1,0 +1,46 @@
+\section{Implementation}
+\subsection{Overview}
+\begin{itemize}
+    \item Estimator: computes a state $x$ = \texttt{estimator\_state\_t} from IMU measurements, control inputs, and encoder measurements
+    \item Controller: computes a desired servo angle $u = \delta_u$ = \texttt{controller\_output\_t} from the estimated state
+\end{itemize}
+
+\subsection{Estimator}
+Propagates an estimation of the rocket state: $x$ = \texttt{estimator\_state\_t}
+
+Structs and co.
+\begin{itemize}
+    \item The state: $x$ = \texttt{estimator\_state\_t}
+    \item The covariance: $P$ = \texttt{estimator\_covariance\_t}
+\end{itemize}
+
+\subsubsection{Initializor}
+Runs repeatedly after initialization message has been sent, and until \texttt{flight\_phase} detects injector valve opening.
+
+Tasks in each iteration:
+\begin{itemize}
+    \item Determine gyroscope biases
+    \item Calculate launch attitude with accelerometer measurements
+    \item Calculate the Earth magnetic field vector from magnetometer measurements
+    \item Determine launch altitude with atmosphere model
+    \item Set initial state to hand over to EKF
+\end{itemize}
+The initializor uses an iterative lowpass filter to filter out the sensor noise: \\
+\texttt{mean(k+1) = mean(k) + time\_const*(measurement-mean(k));} 
+
+\subsubsection{EKF}
+Runs repeatedly after injector valve opening.
+
+Tasks in each iteration:
+\begin{itemize}
+    \item Integrate state from last state using dynamics model equations
+    \item Integrate covariance matrix from last state using filter ricatti equation 
+    \item Calculate filter gain from covariance matrix
+    \item Predict IMU measurements using measuremen model equations
+    \item Calculate new state from feedback: filter gain * (actual - predicted IMU measurements)
+    \item Calculate new covariance matrix
+\end{itemize}
+
+\subsection{Model functions}
+
+\subsection{Controller}
