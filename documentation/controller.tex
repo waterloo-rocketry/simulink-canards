@@ -1,0 +1,87 @@
+\section{Controller}
+To determine the desired canard angle $u = \delta_u$, the  the current rocket state as determined by the state estimation is used.
+The control law is a state feedback, where the gains $K_s$ are determined by performing the \textit{Linear Quadratic Regulator} (LQR) method \cite{werner2021, werner2021b} around a linear model.
+\begin{align}
+    K_s &= -\texttt{lqr}(F_R(\hat x),B,Q_{c},R_{c}) \\
+    u(t) &= K_s(\hat x) \hat x_R(t)
+\end{align}
+
+\subsection{Controller roll model}
+As $F_R$ is linear, it makes some simplifications compared to Section \ref{sec:estimator}.
+The cross coupling terms are neglected, and the atmosphere model is only implied.
+The roll angle $\phi$ is computed from entries of the rotation matrix as $\phi = \mathrm{atan2}( S_{23}, S_{33} )$.
+\begin{align}
+    x_R = \begin{bmatrix} \phi & \omega_x & \delta \end{bmatrix}^T
+\end{align}
+\begin{align}
+    F_R &= \begin{bmatrix}
+        0 & 1 & 0 \\
+        0 & 0 & L_\delta \\
+        0 & 0 & -\frac{1}{\tau}
+    \end{bmatrix}
+    &
+    B &= \begin{bmatrix}
+        0 \\ 0 \\ 1/\tau
+    \end{bmatrix}
+    &
+    C &= \begin{bmatrix} I_3 \end{bmatrix}
+\end{align}
+where the roll control derivative is $L_\delta = \bar p \,  C_L \, A d / J_x$, with total canard area $A$ and canard moment arm $d$, as well as the roll moment of inertia $J_x$.
+The 1st order actuator dynamics are accounted for with the $\delta$ state, and are characterized by the time constant $\tau$ (the value should be determined by experimental system identification).
+Any gear ratio between servo motor and canards may be expressed as the numerator of the bottom entry of $B$ (here set to 1).
+
+To determine if pole placement is possible, which is a necessary condition for LQR \cite{werner2021}, the roll model is checked for controllability.
+The controllability matrix is 
+\begin{align}
+    \mathcal{C} = \begin{bmatrix}
+        B & FB & F^2 B 
+    \end{bmatrix}
+\end{align}
+which has full rank for all $L_\delta \neq 0$, i.e. there exists a feasible feedback gain for every flight condition, except for zero velocity ($\lVert v \rVert = 0$) or a zero coefficient of lift ($C_L = 0$).
+
+\subsection{Gain scheduling}
+As the models from canard angle to roll rate are nonlinear and highly dependent on some slowly-varying states, a gain-scheduling scheme will be implemented. 
+The design points $x_s$ of the schedule are characterized by these slowly-varying states, being as air density, velocity, and aerodynamic coefficients of the canards. 
+The air density and velocity are combined to the dynamic pressure $\bar p$.
+The simplified model $F_R (x)$ is evaluated around these design points, to form the linear model at the current state estimate $F_R(\hat x)$.
+As the LQR method produces guaranteed robustness margins \cite{doyle1978, werner2021, werner2021b}, the  interpolation between two close design points should always produce a stable control loop.
+
+A large variety of design points are chosen, both along the nominal flight profile, but also encompassing a larger flight envelope to accommodate off-nominal trajectories.
+Design points for the condition $L_\delta$ are omitted from the tuning process.
+The control gains for all design points are computed beforehand and stored in a look-up table.
+In flight, the control algorithms interpolate the gains from the look-up table according to the current state estimate. 
+The pre-computed feedback gains for the roll model are shown in Figure \ref{fig:controller-surfaces}, plotted over the scheduling variables $\bar p$ and $C_L$.
+To note is the discontinuity at $\bar p = 0$ and especially at $C_L = 0$, where no feasible design points exist. 
+The feedback gain are interpolated over this split.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images-finn/controller_scheduling-surfaces.png}
+    \caption{Scheduling surfaces along dynamic pressure $\bar p$ and canard coefficient of lift $C_L$. Feedback gains $K_\phi, K_p, K_\delta$ and reference gain $K_\textit{pre}$.}
+    \label{fig:controller-surfaces}
+\end{figure}
+
+
+
+\subsection{Optimal control theory}
+The LQR method uses the weighting matrices $Q$ and $R$ to solve the linear quadratic optimization problem \cite{werner2021b} \footnote{I think this came out better than the estimation theory}
+\begin{equation}
+    \min V = \int_0^{\infty} (x^T(t) Q x(t) + u^T(t) R u(t)) dt
+\end{equation}
+for which the solution is of the form 
+\begin{equation}
+    V^* = x^T P x
+\end{equation}
+In infinite time, $P$ satisfies the algebraic Ricatti equation 
+\begin{equation}
+    PF + F^TP - PBR^{-1}B^TP + Q = 0
+\end{equation}
+which results in the control law
+\begin{align}
+    u^*(t) &= K x(t) \\
+    K &= -R^{-1}B^TP
+\end{align}
+The resulting controller for the linear system is optimal in the trade-off of minimizing the state error $x(t)$ and control effort $u(t)$ \cite{werner2021}.
+The closed-loop is guaranteed to be stable \cite{werner2021b}, and has margins of $[\infty, 0.5]$ in gain and $60^\circ$ in phase. 
+This guarantee is only valid however for linear systems with full state measurements \cite{doyle1978}.
+The control law is still useful for controlling nonlinear and observed systems, as the robustness properties can be partially preserved \cite{werner2021b}.

@@ -1,0 +1,106 @@
+\documentclass[a4paper, 12pt]{report} %% use report if this gets extensive, use chapters
+\usepackage[top=2.4cm, left=2.4cm,right=2.4cm,bottom=2.4cm]{geometry}
+\usepackage[english]{babel}
+\usepackage[bottom]{footmisc}
+
+\usepackage{fancyhdr}
+\usepackage{chngcntr}
+
+\usepackage[backend=biber, style=numeric, sorting=none]{biblatex}
+\addbibresource{refs-finn.bib}
+\addbibresource{refs-joe.bib}
+\usepackage{csquotes}
+
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows, calc}
+\usepackage{pgfplots}
+\pgfplotsset{width=10cm,compat=1.18}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{url}
+
+\setlength{\parindent}{0pt}
+\usepackage{parskip}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bm}
+
+\usepackage{hyperref}
+\hypersetup{
+    hidelinks,
+    pdftitle={Roll Control Design and Simulation of a Canard-controlled Sounding Rocket},
+    pdfauthor = {F. Breuer, J. Dolina}
+}
+
+
+%%%%%%%% Custom commands
+\makeatletter
+\newcommand{\chapterauthor}[1]{%
+  {\parindent0pt\vspace*{-25pt}%
+  \linespread{1.1}\large\bfseries#1%
+  \par\nobreak\vspace*{35pt}}
+  \@afterheading% 
+}
+\makeatother
+
+\renewcommand{\thechapter}{\Roman{chapter}}
+\renewcommand{\thesection}{\arabic{section}}
+\counterwithout{section}{chapter}
+
+\renewcommand{\chaptermark}[1]{\markboth{\itshape\MakeUppercase{\thechapter.\ #1}}{}}
+\fancyhead[R]{\thepage}
+\fancyfoot[C]{\thepage}
+\fancyfoot[L]{\itshape \leftmark}
+\renewcommand{\footrulewidth}{0.4pt}
+
+%%%%%%%%% Document
+
+\begin{document}
+
+\title{{\Large Waterloo Rocketry 2025 - Aurora} \\[1em] \Huge 
+Roll Control Design and Simulation of a Canard-controlled Sounding Rocket}
+\author{Finn Breuer \footnote{Technische Universität Hamburg, finn.breuer@tuhh.de} 
+        \and 
+        Joe Dolina \footnote{University of Waterloo}
+        \and 
+        Tristan Yan-Klassen \footnote{University of Waterloo} 
+    }
+\maketitle 
+
+\tableofcontents
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\pagestyle{fancy}
+
+%%%% Design part
+
+\chapter[Estimator \& Controller]{Estimator and Controller Design}
+\chapterauthor{Finn Breuer}
+\fancyfoot[R]{\itshape Finn Breuer}
+
+\input{modeling}
+\input{estimator}
+\input{controller}
+\input{appendix-finn}
+\input{symbols-finn}
+
+%%%% Simulation part
+
+\chapter[Flight Simulation]{Rocket flight Simulation}
+\chapterauthor{Joe Dolina, Tristan Yan-Klassen}
+\fancyfoot[R]{\itshape Joe Dolina, Tristan Yan-Klassen}
+
+\input{plant}
+\input{simulation-results}
+
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\fancyfoot[R]{}
+\printbibliography[heading=bibintoc, title={References}]
+
+\end{document}

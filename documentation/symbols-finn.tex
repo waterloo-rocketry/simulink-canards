@@ -1,0 +1,84 @@
+\section{Index}
+%\subsection*{Acronyms}
+\begin{table}[ht]
+\begin{center}
+\begin{tabular}{l l l}
+Short & Expansion  & Description \\
+\hline
+EKF & Extended Kalman Filter & Extension of Kalman filter to nonlinear systems \\
+IMU & Inertial Measurement Unit & Packaged gyroscope and accelerometer sensor \\
+IVP & Initial Value Problem & ODE set to be solved, with inital values\\
+LQR & Linear Quadratic Regulator & Optimal controller for linear systems \\
+\end{tabular}
+\end{center}
+\caption{Acronyms} \label{tab:acronyms}
+\end{table}
+
+
+%\subsection*{Symbols}
+\begin{table}[ht]
+\begin{center}
+\begin{tabular}{c c l}
+Name & Dimension  & Description \\
+\hline 
+$x$ & $n {\times} 1$ & State\\
+$\hat x$ & $n {\times} 1$ & State estimate\\
+$u$ & $m {\times} 1$ & Control input (controller $\rightarrow$ rocket) \\
+$y$ & $l {\times} 1$ & Measurement output (rocket $\rightarrow$ estimator)\\
+\hline
+$f(x,u)$ & $n {\times} 1$ function & State transition function \\
+$h(x)$ & $l {\times} 1$ function & Measurement function \\
+$F(x, u)$ & $n {\times} n$ function & State transition Jacobian  \\
+$H(x)$ & $l {\times} n$ function & Measurement Jacobian  \\
+$B(x, u)$ & $n {\times} m$  function & Input Jacobian  \\
+\hline
+$P$ & $n {\times} n$  & Covariance estimate \\
+$K_k$ & $l {\times} n$  & Filter gain  \\
+$Q_e$ & $n {\times} n$  & State process covariance  \\
+$R_e$ & $l {\times} l$  & Measurement covariance  \\
+\hline
+$K_s$ & $m {\times} n$  & Feedback gain  \\
+$Q_c$ & $n {\times} n$  & State error weighting  \\
+$R_c$ & $m {\times} m$  & Control effort weighting 
+\end{tabular}
+\end{center}
+\caption{Estimator and Controller variables} \label{tab:symbols_theory}
+\end{table}
+
+\begin{table}[ht]
+\begin{center}
+\begin{tabular}{c c c l}
+Name & Dimension & Unit & Description \\
+\hline
+$q$ & 4 & & Quaternion \\
+$\omega$ & 3 & $\frac{\mathrm{rad}}{\mathrm{s}}$& Angular velocity in body-fixed frame (body rates) \\
+$v$ & 3 &$\frac{\mathrm{m}}{\mathrm{s}}$ & Velocity in the body-fixed frame\\
+$r^G$ & 3 & m & Position in the inertial (geographic) frame \\
+$l$ & 1 & m & Altitude \\
+\hline
+$S$ & $3{\times}3$ & & Rotation matrix, body-fixed $\rightarrow$ inertial \\
+$S_i$ & $3{\times}3$ & & Rotation matrix, sensor $i$ $\rightarrow$ body-fixed \\
+\hline
+$\Omega$ & 3 & $\frac{\mathrm{rad}}{\mathrm{s}}$ & Measured body rates \\
+$M$ & 3 & mT & Measured magnetic field \\
+$A$ & 3 & $\frac{\mathrm{m}}{\mathrm{s}^2}$ & Measured acceleration \\
+$P$ & 1 & Pa & Measured air pressure \\
+$K$ & 1 & K & Measured air temperature \\
+\hline 
+$m$ & & kg & Mass \\
+$J$ & $3{\times}3$ & $\mathrm{kg m}^2$ & Moment of inertia \\
+$\mathcal{F}$ & 3 & N & External force in the body-fixed frame \\
+$\mathcal{T}$ & 3 & Nm & External torque in the body-fixed frame \\
+$ g $ & & $\frac{\mathrm{m}}{\mathrm{s}^2}$ & Gravitational acceleration \\
+\hline
+$V_A$ & & $\frac{\mathrm{m}}{\mathrm{s}}$ & Airspeed \\
+$ T $ & & K & Air temperature \\
+$ \rho $ & & $\frac{\mathrm{kg}}{\mathrm{m}^3}$ & Air density \\
+$ p $ & & Pa & Static pressure \\
+$\bar p$ & & Pa & Dynamic pressure \\
+\end{tabular}
+\end{center}
+\caption{Important modelling variables} \label{tab:symbols_modeling}
+\end{table}
+
+\newpage

@@ -1,0 +1,82 @@
+\section{Plant Model}
+\subsection{Background}
+\subsubsection{2023-2024, Borealis, and Airbrakes}
+\label{test}
+Borealis was the team's first attempt at flying (and for all intents and purposes, developing) active control systems, in the form of airbrakes. At the outset of the airbrakes project, it was envisioned that a working group would develop something like Fig \ref{fig:ab-model}. Incidentally, it was "envisioned" that we would be flying TVC stabilization in 2026.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.5\linewidth]{images/airbrakes.png}
+    \caption{Airbrakes Simulink structure}
+    \label{fig:ab-model}
+\end{figure}
+
+Everything except "Actuator" and "Rocket" were implemented to some degree in the final flight software. However, the most useful output from Simulink that year was Fig \ref{fig:ab-model} itself.
+
+A PID controller was ultimately selected for airbrakes because nobody had the knowledge or experience to do anything fancier. This controller was "tuned" using a plugin for OpenRocket \cite{or-brake}, essentially going in and dynamically modifying the drag force used by Openrocket in its calculations with values produced from external computational fluid dynamics (CFD) simulations. Later versions included the ability to inject random noise into the state measurements. Under these noisy conditions, simulations suggested the controller could get within about 20m of the target altitude over most of the controllable regime (20,000 +/- 2,000 ft.). 
+
+While much more useful at the time than having no controller-in-loop simulation options at all, the OpenRocket plugin was not sustainable. The overlap between Waterloo Rocketry members (and budding control engineers) and Java developers was and still is very small. The final version ran the controller as a binary compiled from the same C source as the board on the rocket, and while this was also a promising development in the team's testing practices, the process for doing this was even less accessible than running the plugin itself. The plugin project was ultimately an uphill battle to turn OpenRocket into something it wasn't meant to be.
+
+This brings us to the present design cycle. The controls subsystem has flight heritage in the form of the processor and motor control boards, it has experienced members (in this author's opinion, some of the very best members), and it even has its own WEEF account. Given the sophistication of controller and state estimator design we are targeting this year for canards, as well as the broad interest from controls members in Matlab and Simulink, there is a strong justification to pursue the development of a complete rocket plant model in Simulink this year.
+
+\subsubsection{Project Jupiter}
+Projeto Jupiter is a rocketry team from the University of São Paulo, Brazil. They conveniently already developed most of what is necessary for a plant model of a sounding rocket with canards \cite{jupiter-canards}. Rather than trying to start more or less from scratch as it was planned last year, the goal this year is essentially to modify their plant model with our rocket design parameters, verify it for uncontrolled flight, and then begin simulating the effects of canards.
+
+\subsection{Theory}
+Compared to a dynamic model of a real launch vehicle, a sounding rocket is considerably simpler. In particular, sloshing (source: Thomas), bending, and TVC dynamics do not need to be considered. The rocket can be treated as a single rigid body with time-varying mass and mass distribution. The only forces acting on an uncontrolled rocket are engine thrust, gravity, and drag. Of these, gravity applies no moment by definition, and the moment applied by thrust, due to misalignment with the rocket center of mass, is considered negligible for our purposes. Since gravity is well defined and engine thrust is defined externally from static fire test data, this leaves aerodynamic drag as the most complicated aspect of simulation.
+
+Barrowman provides empirical methods for computing the center of pressure of a rocket's components at relatively low Mach numbers. (link FD docs). The coefficient of drag ($C_d$) is modeled only as a function of Mach number for a given rocket, using OpenRocket's methodology, of which this author is unfamiliar. In the future, other drag models could certainly be considered.
+\subsection{Implementation}
+Everything is in metric - MKS. Due to restrictions of certain blocks, the WGS84 earth model is used where applicable.
+\subsubsection{Matlab Scripts}
+A rocket-specific script (e.g. Borealis.m) hard-codes the geometric parameters like reference length, fin location, etc. This script also imports a .csv file from OpenRocket containing relevant data. The Borealis script includes some logic to turn the $C_d$ and Mach number time series into a lookup table.
+Barrowman.m takes the rocket parameters and evaluates the Barrowman equations based on the reference geometry.
+
+\subsubsection{Top Level Plant}
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.7\linewidth]{images/top_level_plant.png}
+    \caption{Canards Plant Model Interface}
+    \label{fig:plant-model}
+\end{figure}
+
+The only explicit input to the plant is the deflection angle of the canards. The plant model outputs the full 6DOF state in a combination of reference frames, and the direction cosine matrix (DCM) from flat earth to body frame. It also outputs the translational acceleration, in order to model accelerometer dynamics.
+
+The actuator subsystem implements a first order system representing the response delay of the servo.
+
+\subsubsection{6DOF Variant Mass Model}
+The core of the plant model is the "Simple Variable Mass 6DOF" block provided by the Aerospace Blockset. It takes in net force and moment about the center of mass at each time step and outputs translational and rotational position and velocity.
+Note that the inputs are provided in the body fixed frame, with the X axis coincident with the longitudinal axis of the rocket body. The translational position and velocity are provided in the flat earth reference frame.
+The block doesn't output mass vs time, instead giving you starting mass, ending mass, and a $\frac{dm}{dt}$ input. You gotta dig in there and log the signal or hope and pray. But it seems to work as expected so far.
+
+\subsubsection{Wind Model}
+
+The wind simulation operates similar to Niskanen. The winds take on a constant speed at all altitudes, with pink noise for turbulence added on top. This turbulence is also responsible for any and all rotational speed of the wind. Additionally, gusting has been added on top of the base wind model, which allows for gusts of set strength and direction to happen after a specified time. Similar to OpenRocket, the simulation takes a user inputted base wind velocity, base wind direction, and turbulence value. The user must also specify the magnitude, time of occurrence, and duration of gusts.
+
+\subsubsection{Roll Dynamics}
+
+For roll dynamics, the canards and fins are split into separate parts and treated independently. This allows the canards to be handled with more detail or with different aerodynamic models if needed.
+
+For the fins, the aerodynamic coefficients and derivatives are calculated using Barrowman's equations and then fed into the Simulink model. This is done by the ``roll forcing and damping block" in the plant. The only significant change from an aerodynamics standpoint is the mach-speed correction term on the coefficients, which is normally taken to be $$ \mathcal{B}^{-1} = \frac{1}{\sqrt{\lvert 1-M^2 \rvert}}$$
+
+Since this breaks at $M = 0$ and it is commonly held that it peaks at around 2 near sonic speeds, we take $\mathcal{B}$ to be the minimum of the above expression and 2.
+
+\subsubsection{Normal Force Components}
+The methodology used to compute the normal force components is the same as that of OpenRocket \cite{or-manual} (see Sec. 3.2.1). The rocket body is divided into its components: nosecone, body, fin, tail, and canards (if applicable). The local velocity of the rocket at the component center of pressure, relative to the wind, is computed and along with the component $C_{N_\alpha}$ is used to compute the normal force and moment vectors. This functionality is encapsulated in a generic "lift component" block, whose internals are shown in Fig \ref{fig:lift-component}:
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.9\linewidth]{images/lift_comp.png}
+    \caption{Lift Component subsystem}
+    \label{fig:lift-component}
+\end{figure}
+
+These blocks are composed to calculate the net normal force and moment:
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.9\linewidth]{images/normal_force.png}
+    \caption{Normal Force and Moment}
+    \label{fig:normal-force}
+\end{figure}
+
+\subsubsection{Simulated Sensor Outputs}
+In order to test the robustness of the controller to real-world sensor outputs, IMU (accelerometer, gyroscope, magnetometer) and barometer (pressure, temperature) outputs are simulated, adding noise and drift. This is done through custom MatLab scripts that track drift over the simulation and continuously add it to the measured quantities. 

@@ -1,0 +1,315 @@
+\section{Modelling}
+\subsection{State Space representation}
+Both the controller synthesis and the EKF algorithm use dynamical models of the rocket flight. The rocket model is made up of algebraic and differential equations \cite{zipfel2007, stevens2015}, represented in state space as \cite{lewis2008, stevens2015}
+\begin{align}
+    \dot x &= f(t, x, u) \\  y &= h(t, x, u)
+\end{align}  
+with the state $x$, measurement output $y$, and control input $u$, where the state equation $f$ and the output equation $h$ are nonlinear functions.
+
+\subsubsection{States $x$}
+From textbooks \cite{zipfel2007, stevens2015, tewari2011},  lectures \cite{theis2023}, papers \cite{minh2012, theis2015}, the industry standard for choosing states of aeronautical vehicles is using attitude angles, attitude rates, velocity, and position. 
+Position is reduced to altitude only (longitude and latitude are not required \footnote{and probably undesired as it borders on guided missile design}). 
+The entire state vector is then
+\begin{equation}
+    x =  \begin{bmatrix}
+    q & \omega & v & l & C_L & \delta
+    \end{bmatrix}^T
+    \label{eq:model-state-vector}
+\end{equation}
+with the attitude represented as Quaternions $q$, the angular velocity in the body-fixed frame (body rates) $\omega$, the velocity in the body-fixed frame $v$, the altitude over sea level $l$. 
+Additionally, the canards have the coefficient of lift $C_L$ as we are unsure about the aerodynamic behaviour of the canards (and as a state, the coefficient can be estimated), and the angle-of-attack $\delta$ which is used to carry first order actuator dynamics.
+% \begin{itemize}
+%     \item Attitude: Quaternions $q$. Euler may be sufficient as attitude will be close to upright at all times
+%     \item Rates: body rates $\omega$
+%     \item Velocity: body velocities $v$, or airspeed \& AoAs $\begin{bmatrix} V_A & \alpha & \beta \end{bmatrix}$ (Latter seems more useful, and may be derived more easily from rates and acceleration measurements)
+%     \item Altitude: height $l$, or density $\rho$
+%     \item Canard coefficient of lift $C_L$, or similar
+%     \item Canard angle $\delta$ used as state for 1st order actuator dynamics
+% \end{itemize}
+
+
+\subsubsection{Measurements $y$}
+The measurements arrive in the measurement vector 
+\begin{equation}
+    y =  \begin{bmatrix}
+    \Omega & M & P & T
+    \end{bmatrix}^T
+\end{equation}
+with measured body rates from the rate gyroscope $\Omega$, the magnetic field measurement $M$ (which can be transformed to attitude \footnote{The inverse transformation is not unique as it is invariant about the field direction, but we can’t use the accelerometer in free flight to find the gravity vector}) from the magnetometer, additionally the static air pressure $P$, and temperature $T$ are provided by the barometer.
+The accelerometer data $A$ will be provided to the filter in the input vector, as this simplifies calculations.\footnote{This is quite common practice}
+If multiple sensors are used for each measurement, they will be stacked in the vector as $y = [\begin{smallmatrix} \Omega_1 & \Omega_2 & M_1 & M_2 & P_1 & P_2 & T_1 & T_2 \end{smallmatrix}]$.
+% \begin{itemize}
+%     \item Rate gyroscope: Angular velocity (body rates) $\Omega$
+%     \item Magnetometer: Magnetic field $M$, can be transformed to attitude (not unique, but can’t use accel in free flight)
+%     \item Accelerometer: body accelerations $A$ - get body velocities / AoAs from lift
+%     \item Barometer: pressure $P$, temperature $T$ - get altitude from standard atmosphere model 
+% \end{itemize}
+
+
+\subsubsection{Inputs $u$}
+The control input vector is the desired canard angle to the servo mechanism $\delta_u$ and, as stated in the previous paragraph, the  accelerometer data $A$, which may also be stacked.
+\begin{equation}
+    u =  \begin{bmatrix}
+    \delta_u & A
+    \end{bmatrix}^T
+    \label{eq:model-input-vector}
+\end{equation}
+The actual canard angle is represented as the state $\delta$, to account for actuator dynamics.
+The computation from desired canard angle to servo command should be performed in the controller. 
+
+\subsection{Kinematics and dynamics}
+\subsubsection{Coordinate frames}
+The inertial frame $\mathrm{f}^G$ is assumed to be the earth-flat geographic frame, with an up-north-west orientation.
+The body-fixed frame $\mathrm{f}^B$ is oriented along the main inertia axes of the rocket body, namely forward-rail-port ($x^+$ is forward).
+The sensor frame $\mathrm{f}^S$ is aboard the rocket, but rotated and translated against the body frame.
+The rotational transformation between the frames is given by
+\begin{align}
+    r^G &= S r^B & r^B &= S^T r^G \\
+    r^B &= S_S r^S & r^S &= S_S^T r^B 
+\end{align}
+with the rotation matrix $S$ (see Equation \ref{eq:rotationmatrix}), and the rotation matrix $S_S$ for the sensor frame.
+To simplify the following notations, the velocities, the angular rates, and the external forces and torques are given in the body-fixed frame, and the index $^B$ is omitted.  
+
+
+\subsubsection{Attitude with Quaternions}
+\begin{quote}
+``These differential equations are a joy to implement, because they are linear, have no singularities, and number only four" - P. Zipfel \cite{zipfel2007}
+\end{quote}
+
+The Quaternion is defined as  
+\begin{equation}
+    q = \begin{bmatrix}
+        q_w & q_x & q_y & q_z 
+    \end{bmatrix}^T = 
+    \begin{bmatrix}
+        q_w \\ \bm q
+    \end{bmatrix}
+\end{equation}
+which is normed to $|q| = q^T q =  1$ to describe rotations.
+This has to be enforced in the filter process, by norming $q$ after every integration.
+The quaternion derivative is \cite{zipfel2007, schiehlen2017}
+\begin{equation}
+    \begin{bmatrix}
+       \dot q_w \\ \bm{\dot q}
+    \end{bmatrix} 
+    = \frac{1}{2}
+    \begin{bmatrix}
+        0 & -\omega^T  \\
+        \omega & - \tilde \omega
+    \end{bmatrix} \cdot 
+    \begin{bmatrix}
+        q_w \\ \bm q
+    \end{bmatrix}
+    = \frac{1}{2}
+    \begin{bmatrix}
+        q_w & \bm q^T  \\
+        -\bm q & q_w \bm I + \bm{\tilde q}
+    \end{bmatrix} \cdot 
+    \begin{bmatrix}
+        0 \\ \omega
+    \end{bmatrix}
+    \label{eq:quaternion-deriv}
+\end{equation}
+with angular rates $\omega$ described in the body-fixed frame, and 
+\begin{align}
+    \tilde \omega &= \begin{bmatrix}
+        0 & -\omega_3 & \omega_2 \\
+        \omega_3 & 0 & - \omega_1 \\
+        -\omega_2 & \omega_1 & 0
+    \end{bmatrix}    
+    &
+    \bm{\tilde q} &= \begin{bmatrix}
+        0 & -q_z & q_y \\
+        q_z & 0 & -q_x \\
+        -q_y & q_x & 0
+    \end{bmatrix}  
+\end{align}
+The rotation matrix, used for attitude transformation from the body-fixed frame to the inertial frame, can be computed directly from the quaternion \cite{zipfel2007, schiehlen2017} as
+\begin{equation}
+    S = I + 2 q_w \bm{\tilde q} + 2 \bm{\tilde q} \bm{\tilde q} \label{eq:rotationmatrix}
+\end{equation}
+The Euler angles \textit{yaw} $\psi$, \textit{pitch} $\theta$, and \textit{roll} $\phi$ (in airplanes heading, pitch, bank) can be recovered from the rotation matrix (or directly from the quaternions). 
+For the rotation sequence yaw-pitch-roll the Euler angles are 
+\begin{align}
+    \psi &= \mathrm{atan2}(S_{21}, S_{11}) &
+    \theta &= \mathrm{arcsin}(-S_{31}) &
+    \phi &= \mathrm{atan2}(S_{23}, S_{33}) 
+\end{align}
+
+
+For initialization, the quaternion is set as
+\begin{align}
+    q_w &= \cos(\frac{\varphi}{2}) 
+    &
+    \bm q &= \bm d \sin(\frac{\varphi}{2})
+\end{align}
+where $\varphi$ is a rotation about a unit vector $\bm d$, both of which are set according to the initial orientation of the rocket \footnote{Initialization with Euler angles is also possible \cite[p. 126]{zipfel2007}, but too much effort to write down here}.
+
+\subsubsection{Relative motion}
+Using Newton's second law, the acceleration in the body-fixed frame is \cite{zipfel2007, schiehlen2017}
+\begin{align}
+    \dot v = m^{-1} \mathcal{F} - 2 \, \omega \times v
+    \label{eq:model-vel-deriv}
+\end{align}
+which includes external forces $\mathcal{F}$ (described in the body-fixed frame) and the tangent acceleration.
+The velocity in the inertial (geographic) frame is \cite{zipfel2007}
+\begin{equation}
+    \dot r^G = S v
+    \label{eq:model-pos-deriv}
+\end{equation}
+
+With Euler's law, the angular acceleration is \cite{zipfel2007, schiehlen2017}
+\begin{align}
+   \dot \omega = J^{-1} (\mathcal{T} - \omega \times J \omega)
+   \label{eq:model-rate-deriv}
+\end{align}
+which includes the external torques $\mathcal{T}$ (described in the body-fixed frame) and the gyroscopic moment.
+The inertia tensor $J$ is determined from CAD or experimentally. If the coupling inertia moments are small, they may be neglected to fill the tensor diagonally as $J = \text{diag}\begin{bmatrix} J_x & J_y & J_z \end{bmatrix}$, where in a rocket cruciform often $J_y = J_z$.
+
+\subsection{Forces and moments}
+\subsubsection{Gravity}
+Gravitational acceleration acts in the geographic down direction, so the gravitational force in the body-fixed frame is
+\begin{equation}
+    \mathcal{F}_G = -m S^T g^G
+\end{equation}
+
+\subsubsection{Aerodynamics of the rocket body}
+Most of the external forces and torques acting on the rocket will stem from aerodynamics.
+The effect of rocket body geometry, including fins and nosecone, can be approximated using Barrowman's method \cite{barrowman1967}:
+
+\subsubsection{Aerodynamics of the canards}
+The effect of canard deflections is also found with Barrowman's method \cite{barrowman1967}, and using thin airfoil theory \cite{stengel2004}.
+
+\subsubsection{Propulsion}
+As we cannot predict thrust misalignment, it is assumed zero with any misalignment acting as disturbances.
+Any sloshing or pogo-effect is too complex to model here, and will be neglected.
+
+\subsubsection{Rail constraints}
+The rocket is attached to the launch rail for the first few meters of altitude, constraining the rocket to one degree of freedom (translating upwards).
+
+\subsection{IMU Measurements}
+\label{sec:model-measurements}
+The Inertial Measurement Unit (IMU), which houses all sensors, is not mounted at the center of gravity of the rocket body, and the sensor frame is not aligned to the body frame.
+Therefore, a transformation to the body-fixed frame must be formulated to model the sensor measurements using current states.
+
+\subsubsection{Angular velocity}
+The measured angular velocity $\Omega$ is in the rotated sensor frame, and needs to be transformed to the  body-fixed frame as\footnote{In a lot of literature, $\Omega$ refers to the skew-symmetric matrix of $\omega$. Here, this matrix is expressed as $\tilde \omega$ or $(\omega \times)$, while $\Omega$ refers to sensor measurements}
+\begin{align}
+    \omega &= S_\Omega \hat \Omega & \hat \Omega &= S_\Omega^T \omega
+    \label{eq:meas-gyro}
+\end{align}
+where $S_\Omega$ is the rotation vector from body-fixed to the sensor frame.
+This transformation is done for each IMU separately.
+
+\subsubsection{Acceleration}
+As the acceleration is not a state, and cannot be directly computed from the other states (aerodynamic modelling is too indirect), it is used in the state prediction step instead of the correction step. 
+The measured acceleration $A$ enters the prediction function as a control input.
+Transformation from the sensor frame to the body frame are computed as \cite{stevens2015} \footnote{I'm about 90\% sure that this is the correct transformation and derivation \label{footnote:measure-accel}}
+\begin{align}
+    a = S_A A - \dot \omega \times r_s - \omega \times (\omega \times r_s)
+    \label{eq:meas-accel}
+\end{align}
+resulting in the corrected specific force term $a$ in the body-fixed frame, with the vector from rocket center of mass to the sensor $r_s$, and the rotation matrix from the sensor frame to the body frame $S_A$.
+This transformation is performed for each IMU separately.
+The resulting acceleration in the body-fixed frame is then \cite{zipfel2007, stevens2015} \footnote{Some literature \cite{zipfel2007} does not have the factor 2 in the Coriolis term. Unsure why they omitted that, simple mistake?}
+\begin{align}
+    \dot v = a - 2 \, \omega \times v + S^T g^G
+    \label{eq:meas-veldot}
+\end{align}
+which accounts for the derivation in the rotating body-fixed frame and the gravitational acceleration, which cannot be measured by the accelerometer. 
+As these measurements do not enter the filter in the classical way, their weighting of the expected covariances has to happen in the prediction model.
+The transformation to the body-fixed body-centered frame from Equation \ref{eq:meas-accel} is performed first, after which the $a_i$ will be weighted and then fed to Equation \ref{eq:meas-veldot}.
+
+\subsubsection{Magnetometer}
+The magnetometer measures the local magnetic field vector.
+This is mostly determined by Earths magnetic field $M_E$ (which is assumed to be constant over the flight, and predetermined by initialization on the ground), but can include disturbances from local sources on the rocket (and ground support equipment).
+
+\textit{Hard iron} disturbances emanate from permanent and electromagnets, which cause an offset bias by vector $B_{HI}$ in the measured field strength as shown in Figure \ref{fig:meas-mag-dist}. \\
+\textit{Soft iron} disturbances stem from nearby ferromagnetic materials (predominantly Iron, Nickel, Cobalt), which react to the present magnetic field. 
+This causes stretching of the measured field (shown in Figure \ref{fig:meas-mag-dist}) by the matrix $B_{SI}$, which is unity if no soft iron disturbances are present.
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}{0.45\textwidth}
+        \resizebox{0.7\textwidth}{!}{
+        \input{images-finn/meas-magnet-disturbancefree}}
+        \caption{Disturbance free}
+        \label{fig:meas-mag-free}
+    \end{subfigure}
+    \begin{subfigure}{0.45\textwidth}
+        \resizebox{0.7\textwidth}{!}{
+        \input{images-finn/meas-magnet-disturbances}}
+        \caption{Hard and soft iron disturbances}
+        \label{fig:meas-mag-dist}
+    \end{subfigure}
+    \caption{2D Visualization of the measured magnetic field \cite{vectornav2024}}
+    \label{fig:meas-mag}
+\end{figure}
+
+The model of the measured magnetic field with hard and soft iron biases $B_{HI}$ and $B_{SI}$ is 
+\begin{equation}
+    \hat M = B_{SI}(S^T S_M^T M_E) + B_{HI} \label{eq:meas-mag}
+\end{equation}
+where Earths magnetic field vector $M_E$ is rotated into the body-fixed and then the sensor frame with $S^T S_M^T$.
+Hard calibration (Section \ref{sec:hard-calibration}) must account for both biases and sensor frame rotation.
+
+\subsection{Barometer, Atmosphere and air data}
+The air at altitude $l$ is modelled according to the US standard atmosphere \cite{stengel2004}
+\begin{align}
+    T &= T_B - k_B (l-l_B) \label{eq:model-atmos1} \\ 
+    p &= p_B \exp \left( \frac{-g (l-l_B)}{R T_B} \right) &
+    p &= p_B \left( \frac{T_B}{k_B (l-l_B)} \right) ^\frac{-g}{R k_B} \label{eq:pressure}\\
+    \rho &= \frac{p}{R T} \\
+    c &= \sqrt{\gamma R T} \label{eq:model-atmos5}
+\end{align}
+with temperature $T$, static pressure $p$, density $\rho$, and the local speed of sound $c$.
+where the index $B$ indicates a base value from Table \ref{tab:atmosphere}. 
+The adiabatic index of air is $\gamma = 1.4$, and the specific gas constant of air is $R = 287.0579 \frac{\mathrm{J}}{\mathrm{kg K}}$.
+To calculate the static air pressure, Equation \ref{eq:pressure} is split in two, where the left equation is only used for a zero lapse rate $k_B = 0$.
+The mach number is $\mathrm{Ma} = V_A / c $.
+The dynamic pressure is defined with the airspeed $V_A = |v|$ (assuming no or only little wind disturbances \footnote{These are difficult to predict, and will thus act as disturbances on the rocket-estimator loop}) as \cite{stengel2004}
+\begin{equation}
+    \bar p = \frac{1}{2} \rho V_A^2
+\end{equation}
+
+
+\begin{table}[!ht]
+\begin{center}
+\begin{tabular}{c c c c c}
+Layer & Altitude $l_B$ [m] & Pressure $p_B$ [Pa] & Temperature $T_B$ [K] & Lapse rate $k_B \text{ } [\frac{\mathrm{K}}{\mathrm{m}}]$  \\
+\hline % \midrule
+Troposphere & 0 & 101325 & 288.15 & 0.0065 \\
+Tropopause & 11000 & 22632.1 & 216.65 & 0 \\
+Stratosphere & 20000 & 5474.9 & 216.65 & -0.001 \\ 
+Stratopause & 32000 & 868.02 & 228.65 & -0.0028 \\
+\end{tabular}
+\end{center}
+\caption{Atmosphere base data} \label{tab:atmosphere}
+\end{table}
+
+\subsection{The models}
+The state prediction model 
+\begin{equation}
+    \dot{\hat x} = f(t, \hat x, u)
+\end{equation}
+predicts the time derivative of the state vector $\dot{\hat x}$ (Equation \ref{eq:model-state-vector}), using the control input $u$ (Equation \ref{eq:model-input-vector}), and the following model equations:
+\begin{itemize}
+    \item Attitude: \ref{eq:quaternion-deriv}
+    \item Rates: \ref{eq:model-rate-deriv}
+    \item Velocities: \ref{eq:meas-veldot} for filtering and \ref{eq:model-vel-deriv} for simulation
+    \item Position/Altitude: \ref{eq:model-pos-deriv}
+    \item Canard coefficient: 1st order dynamics $\dot C_L = -(1/\tau_c) (C_L - C_{L\text{, theory}})$
+    \item Canard angle: 1st order dynamics $\dot \delta = -(1/\tau_\delta) (\delta - \delta_u)$
+\end{itemize}
+
+The measurement model 
+\begin{equation}
+    \hat y = h(t, \hat x, u)
+\end{equation}
+predicts the sensor outputs $\hat y$ from the current state estimate $\hat x$, and the model equations:
+\begin{itemize}
+    \item Gyroscope: \ref{eq:meas-gyro}
+    \item Accelerometer: used in state prediction as \ref{eq:meas-accel} and \ref{eq:meas-veldot}
+    \item Magnetometer: \ref{eq:meas-mag}
+    \item Barometer: \ref{eq:model-atmos1} to \ref{eq:model-atmos5}
+\end{itemize}
