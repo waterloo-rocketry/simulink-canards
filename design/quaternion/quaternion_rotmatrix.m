@@ -2,7 +2,7 @@ function [S] = quaternion_rotmatrix(q)
     % computes rotation matrix from quaternion
     
     %%% quaternion definition
-    q0 = q(1); qv = q(2:4);
+    qw = q(1); qv = q(2:4);
 
     %%% norm quaternions
     q = 1/norm(q) * q;
@@ -14,5 +14,5 @@ function [S] = quaternion_rotmatrix(q)
     
     %%% rotation matrix
     % S = (eye(3) + 2*q0*q_tilde + 2*q_tilde*q_tilde)'; Schiehlen
-    S = 2*qv*qv' + (q0^2-qv'*qv)*eye(3)-2*q0*q_tilde; % Stevens
+    S = (qw^2-qv'*qv)*eye(3) + 2*qv*qv' -2*qw*q_tilde; % Stevens
 end
