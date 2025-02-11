@@ -1,8 +1,8 @@
-function [x_new, P_new] = ekf_algorithm(x, P, u, y, b, t, Q, R, T)
+function [x_new, P_new] = ekf_algorithm_cd(x, P, u, y, b, t, Q, R, T)
     % Computes EKF iteration. Uses model_f for prediction and model_h for correction.
     % use either this or ekf_predict and ekf_correct seperately
     % Inputs: estimates x, P; control u; measurement y; sensor bias b; timecode t
-    % Input parameters: weighting Q, R; time difference to last compute T; step size for ODE solver step
+    % Input parameters: weighting Q, R; time difference to last compute T;
     % Outputs: new estimates x, P
 
     %% Prediction

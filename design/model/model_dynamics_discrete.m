@@ -1,4 +1,4 @@
-function [x_dot] = model_dynamics(t, x, u)
+function [x_dot] = model_dynamics_discrete(t, x, u, T)
     % Computes state derivative with predictive model. Use ODE solver to compute next state.
     
     %% decomp
@@ -45,13 +45,13 @@ function [x_dot] = model_dynamics(t, x, u)
 
     %% derivatives
 
-    % quaternion derivatives
-    q_dot = quaternion_deriv(q, w);
+    % quaternion update
+    q_new = quaternion_increment(q, w, T);
 
-    % rate derivatives
-    w_dot = inv(param.J)*(torque - cross(w, param.J*w));
+    % rate update
+    w_new = w + T * inv(param.J) * (torque - cross(w, param.J*w));
     
-    % velocity derivatives 
+    % velocity update 
     %%% acceleration specific force
     if isreal(v) || isreal(w)
         a = zeros(3,1);
@@ -68,21 +68,20 @@ function [x_dot] = model_dynamics(t, x, u)
     end
     % g_body = quaternion_rotate(q, param.g);
     g_body = (S)*param.g;
-    v_dot = a - cross(w,v) + g_body;
+    v_new = v + T * (a - cross(w,v) + g_body);
 
-    % altitude derivative
-    % [~, v_earth] = quaternion_rotate(q, v);
+    % altitude update
     v_earth = (S')*v;
-    alt_dot = v_earth(1);
+    alt_new = alt + T * v_earth(1);
 
     % canard coefficients derivative
     %%% returns Cl to expected value slowly, to force convergence in EKF
-    Cl_dot = -1/param.tau_cl_alpha * (Cl - param.Cl_alpha); 
+    Cl_dot = Cl + T * (-1/param.tau_cl_alpha * (Cl - param.Cl_alpha)); 
     
     % actuator dynamics
     %%% linear 1st order
-    delta_dot = -1/param.tau * (delta - delta_u);
+    delta_dot = delta + T * (-1/param.tau * (delta - delta_u));
     
     %% concoct state derivative vector
-    x_dot = [q_dot; w_dot; v_dot; alt_dot; Cl_dot; delta_dot];
+    x_dot = [q_new; w_new; v_new; alt_new; Cl_new; delta_new];
 end

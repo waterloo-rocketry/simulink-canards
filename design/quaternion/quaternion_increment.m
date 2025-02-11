@@ -1,5 +1,5 @@
 function [q_new] = quaternion_increment(q, omega, dt)
-    % computes quaternion derivative from quaternion and body rates
+    % computes new quaternion from old quaternion and body rates
 
     % norm quaternions
     q = 1/norm(q) * q;
