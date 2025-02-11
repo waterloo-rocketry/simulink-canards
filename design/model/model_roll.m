@@ -4,7 +4,7 @@ function [A,B,C,sys_roll] = model_roll(x, dynamicpressure, canardcoeff)
     % get parameters
     persistent param
     if isempty(param)
-        param = load("model\model_params.mat");
+        param = load("design\model\model_params.mat");
     end
 
     % check if state is provided
@@ -32,7 +32,7 @@ function [A,B,C,sys_roll] = model_roll(x, dynamicpressure, canardcoeff)
 
     A = [0, 1, 0; % roll angle is integral of roll rate
          0, 0, L_delta; 
-         0, 0, -1/tau]; % 1st order actuator dynamics
+         0, 0, -1/param.tau]; % 1st order actuator dynamics
 
     B = [0; 0; 1]; % adjust scaling for servo to canard angle ratio
 

@@ -11,6 +11,7 @@ Q = diag([10, 0, 10]);
 R = 1e4; % constant R. Can be scaled by dynamic pressure in loop
 N = 0; % if desired cross term can be passed to lqr_tune
 T_sample = 0.005; % sampling time of the loop
+C = [1, 0, 0]; % output channel
 
 %% prep table
 
@@ -43,10 +44,11 @@ for i=1:m
         K = -lqrd(F_roll,B,Q,R,N, T_sample);    
         Ks(i,k,1:3) = K;
 
-        sys_ol = c2d(ss(F_roll, B, eye(3), 0), T_sample);
-        [phi, gamma] = ssdata(sys_d_ol);
-        sys_cl = ss(phi+gamma*K, gamma, eye(3), 0, T_sample);
-        K_pre = 1/dcgain(sys_cl(1));
+        % sys_ol = c2d(ss(F_roll, B, eye(3), 0), T_sample);
+        % [phi, gamma] = ssdata(sys_ol);
+        % sys_cl = ss(phi+gamma*K, gamma, C, 0, T_sample);
+        sys_cl = ss(F_roll+B*K, B, C, 0, T_sample);
+        K_pre = 1/dcgain(sys_cl);
         Ks(i,k,4) = K_pre;
     end
 end    
