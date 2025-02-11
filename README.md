@@ -20,7 +20,8 @@
 2. When everything has loaded and simulink is open, click the big green start button in center of the top header
 
 # Documentation
-Most up to date internal documentation is [here](https://www.overleaf.com/project/67239de67b73b702d3233692)
+Most up to date internal documentation is [here](https://www.overleaf.com/project/67239de67b73b702d3233692). \
+A backup is on the `documentation` [branch](https://github.com/waterloo-rocketry/simulink-canards/tree/documentation).
 
 ## Summary
 
