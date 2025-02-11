@@ -1,4 +1,4 @@
-\section{Index}
+\section{Symbols}
 %\subsection*{Acronyms}
 \begin{table}[ht]
 \begin{center}
@@ -7,8 +7,9 @@ Short & Expansion  & Description \\
 \hline
 EKF & Extended Kalman Filter & Extension of Kalman filter to nonlinear systems \\
 IMU & Inertial Measurement Unit & Packaged gyroscope and accelerometer sensor \\
-IVP & Initial Value Problem & ODE set to be solved, with inital values\\
+IVP & Initial Value Problem & Set of ODEs with given inital values, to be solved \\
 LQR & Linear Quadratic Regulator & Optimal controller for linear systems \\
+LTI & Linear time-invariant & State-space model with linear dynamics, do not depend explicitly on time 
 \end{tabular}
 \end{center}
 \caption{Acronyms} \label{tab:acronyms}
@@ -26,9 +27,9 @@ $\hat x$ & $n {\times} 1$ & State estimate\\
 $u$ & $m {\times} 1$ & Control input (controller $\rightarrow$ rocket) \\
 $y$ & $l {\times} 1$ & Measurement output (rocket $\rightarrow$ estimator)\\
 \hline
-$f(x,u)$ & $n {\times} 1$ function & State transition function \\
+$f(x,u)$ & $n {\times} 1$ function & Dynamics function \\
 $h(x)$ & $l {\times} 1$ function & Measurement function \\
-$F(x, u)$ & $n {\times} n$ function & State transition Jacobian  \\
+$F(x, u)$ & $n {\times} n$ function & Dynamics Jacobian  \\
 $H(x)$ & $l {\times} n$ function & Measurement Jacobian  \\
 $B(x, u)$ & $n {\times} m$  function & Input Jacobian  \\
 \hline
@@ -58,24 +59,30 @@ $l$ & 1 & m & Altitude \\
 \hline
 $S$ & $3{\times}3$ & & Rotation matrix, body-fixed $\rightarrow$ inertial \\
 $S_i$ & $3{\times}3$ & & Rotation matrix, sensor $i$ $\rightarrow$ body-fixed \\
+$d_i$ & 3 & m & Distance vector, sensor $i$ $\rightarrow$ center of gravity \\
+$b_i$ & 3 &  & Bias of sensor $i$ \\
 \hline
 $\Omega$ & 3 & $\frac{\mathrm{rad}}{\mathrm{s}}$ & Measured body rates \\
 $M$ & 3 & mT & Measured magnetic field \\
 $A$ & 3 & $\frac{\mathrm{m}}{\mathrm{s}^2}$ & Measured acceleration \\
 $P$ & 1 & Pa & Measured air pressure \\
-$K$ & 1 & K & Measured air temperature \\
+$T$ & 1 & K & Measured air temperature \\
 \hline 
-$m$ & & kg & Mass \\
+$m$ & 1 & kg & Mass \\
 $J$ & $3{\times}3$ & $\mathrm{kg m}^2$ & Moment of inertia \\
 $\mathcal{F}$ & 3 & N & External force in the body-fixed frame \\
 $\mathcal{T}$ & 3 & Nm & External torque in the body-fixed frame \\
-$ g $ & & $\frac{\mathrm{m}}{\mathrm{s}^2}$ & Gravitational acceleration \\
+$ g $ & 3 & $\frac{\mathrm{m}}{\mathrm{s}^2}$ & Gravitational acceleration \\
 \hline
-$V_A$ & & $\frac{\mathrm{m}}{\mathrm{s}}$ & Airspeed \\
-$ T $ & & K & Air temperature \\
-$ \rho $ & & $\frac{\mathrm{kg}}{\mathrm{m}^3}$ & Air density \\
-$ p $ & & Pa & Static pressure \\
-$\bar p$ & & Pa & Dynamic pressure \\
+%$V_A$ & 1 & $\frac{\mathrm{m}}{\mathrm{s}}$ & Airspeed \\
+$ T $ & 1 & K & Air temperature \\
+$ \rho $ & 1 & $\frac{\mathrm{kg}}{\mathrm{m}^3}$ & Air density \\
+$ p $ & 1 & Pa & Static pressure \\
+$\bar p$ & 1 & Pa & Dynamic pressure \\
+\hline
+$C_i$ & 1 & & Aerodynamic coefficient \\
+$A_i$ & 1 & $\mathrm{m}^2$ & Aerodynamic reference area \\
+$d_i$ & 1 & $\mathrm{m}$ & Distance vector, center of pressure $i$ $\rightarrow$ center of gravity \\
 \end{tabular}
 \end{center}
 \caption{Important modelling variables} \label{tab:symbols_modeling}

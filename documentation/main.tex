@@ -1,7 +1,11 @@
-\documentclass[a4paper, 12pt]{report} %% use report if this gets extensive, use chapters
+\documentclass[a4paper, 12pt]{report} 
 \usepackage[top=2.4cm, left=2.4cm,right=2.4cm,bottom=2.4cm]{geometry}
 \usepackage[english]{babel}
 \usepackage[bottom]{footmisc}
+\raggedbottom
+\clubpenalty=150
+\widowpenalty=150
+\interlinepenalty=100
 
 \usepackage{fancyhdr}
 \usepackage{chngcntr}
@@ -13,7 +17,8 @@
 
 \usepackage{graphicx}
 \usepackage{tikz}
-\usetikzlibrary{shapes,arrows, calc}
+\usetikzlibrary{shapes, arrows, calc, decorations.markings, arrows.meta}
+\usepackage{tikz-3dplot}
 \usepackage{pgfplots}
 \pgfplotsset{width=10cm,compat=1.18}
 \usepackage{caption}
@@ -26,6 +31,8 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{bm}
+
+\usepackage[T1]{fontenc}
 
 \usepackage{hyperref}
 \hypersetup{
@@ -45,6 +52,9 @@
 }
 \makeatother
 
+
+%%%%%%%%% Header / Footer
+
 \renewcommand{\thechapter}{\Roman{chapter}}
 \renewcommand{\thesection}{\arabic{section}}
 \counterwithout{section}{chapter}
@@ -58,9 +68,16 @@
 %%%%%%%%% Document
 
 \begin{document}
+\pagenumbering{roman}
 
-\title{{\Large Waterloo Rocketry 2025 - Aurora} \\[1em] \Huge 
-Roll Control Design and Simulation of a Canard-controlled Sounding Rocket}
+\title{
+{\Large Waterloo Rocketry 2025 - Aurora} \\[0.3em]
+{\Large Controls subsystem
+%\\ Estimation, Control, and Simulation
+} \\[1em]
+\Huge \bfseries
+{Roll Control Design and Simulation of a Canard-controlled Sounding Rocket}
+}
 \author{Finn Breuer \footnote{Technische Universität Hamburg, finn.breuer@tuhh.de} 
         \and 
         Joe Dolina \footnote{University of Waterloo}
@@ -70,9 +87,12 @@ Roll Control Design and Simulation of a Canard-controlled Sounding Rocket}
 \maketitle 
 
 \tableofcontents
+\addtocounter{page}{1}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
+\pagenumbering{arabic}
+%\setcounter{page}{1}
 \pagestyle{fancy}
 
 %%%% Design part
@@ -81,10 +101,14 @@ Roll Control Design and Simulation of a Canard-controlled Sounding Rocket}
 \chapterauthor{Finn Breuer}
 \fancyfoot[R]{\itshape Finn Breuer}
 
-\input{modeling}
+\input{model}
+%\newpage
 \input{estimator}
+%\newpage
 \input{controller}
-\input{appendix-finn}
+\newpage
+\input{numerics}
+\input{implementation}
 \input{symbols-finn}
 
 %%%% Simulation part
@@ -94,6 +118,7 @@ Roll Control Design and Simulation of a Canard-controlled Sounding Rocket}
 \fancyfoot[R]{\itshape Joe Dolina, Tristan Yan-Klassen}
 
 \input{plant}
+\newpage
 \input{simulation-results}
 
 

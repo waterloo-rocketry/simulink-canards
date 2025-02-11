@@ -79,4 +79,4 @@ These blocks are composed to calculate the net normal force and moment:
 \end{figure}
 
 \subsubsection{Simulated Sensor Outputs}
-In order to test the robustness of the controller to real-world sensor outputs, IMU (accelerometer, gyroscope, magnetometer) and barometer (pressure, temperature) outputs are simulated, adding noise and drift. This is done through custom MatLab scripts that track drift over the simulation and continuously add it to the measured quantities. 
+In order to test the robustness of the controller to real-world sensor outputs, the IMU (accelerometer, gyroscope), magnetometer, and barometer (only pressure) outputs are simulated, adding noise and bias. This is done through custom MatLab scripts that track drift over the simulation and continuously add it to the measured quantities. 
