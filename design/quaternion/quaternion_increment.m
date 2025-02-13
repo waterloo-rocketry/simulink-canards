@@ -8,7 +8,7 @@ function [q_new] = quaternion_increment(q, omega, dt)
     dphi = norm(omega) * dt / 2;
     dn = omega / norm(omega);
 
-    dq = [sin(dphi); dn*cos(dphi)];
+    dq = [cos(dphi); dn*sin(dphi)];
      
     % quaternion derivative
     q_new = quaternion_multiply(q, dq);
