@@ -2,7 +2,7 @@ function [q_prod] = quaternion_multiply(q, r)
     % quaternion multiplication
     
     %%% norm quaternions
-    q = 1/norm(q) * q;
+    % q = 1/norm(q) * q;
 
    % Quaternion product matrix
     Q = [q(1), -q(2), -q(3), -q(4);
