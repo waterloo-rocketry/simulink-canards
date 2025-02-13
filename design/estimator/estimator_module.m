@@ -53,6 +53,7 @@ function [xhat, Phat, bias, out] = estimator_module(timestamp, IMU, cmd, encoder
     t = timestamp;
 
     if init_phase == 0
+        u(2:4) = model_acceleration(x, u(2:end));
         [xhat, Phat] = ekf_algorithm_cd(x, P, u, y, b, t, Q, R, T);
         x = xhat; P = Phat; bias = b;
     end
