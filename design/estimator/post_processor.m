@@ -1,29 +1,27 @@
-function [u] = controller_module(timestamp, x)
-    % Top-level controller module. Calls controller algorithm. Sets reference signal.
+function [output] = post_processor(x)
+    % Computes roll state and scheduling variables for controller.
+    % Output: Struct with .state, .sched
     
-    %% stuff
-    time_start = 5; % pad delay time
-    t = timestamp - time_start;
-    u_max = deg2rad(20); % cap output to this angle
+    %% Roll state
+    % decompose state vector: [q(4); w(3); v(3); alt; Cl; delta]
+    q = x(1:4); w = x(5:7); v = x(8:10); alt = x(11); Cl = x(12); delta = x(13);
 
-    %% reference signal
-    %%% includes multiple roll angle steps. Reference r [rad].
+    % compute rotational matrix (attitude transformation matrix, between body frame and ground frame)
+    S = quaternion_rotmatrix(q);
 
-    r = 0;
-    if t>5
-        if t<12
-            r = 1;
-        elseif t<19
-            r = -1;
-        elseif t>26
-            r = 0;
-        end
-    end
+    % compute roll angle       
+    phi = atan2(S(2,3), S(3,3)); % double check if this is the correct angle
+    % note: this has singularities at +- 90° (Zipfel p. 127)
+    
+    % cat roll state
+    output.state = [phi; w(1); delta];
 
-    %% compute controller output
-    u = control_algorithm(x, r);
+    %% scheduling variables
+    % calculate air data
+    [~, ~, rho, ~] = model_airdata(alt);
+    airspeed = norm(v);
+    p_dyn = rho/2*airspeed^2;
 
-    %%% limit output to allowable angle
-    u = min(max(u, -u_max), u_max);
+    output.sched = [p_dyn; Cl];
 end
 
