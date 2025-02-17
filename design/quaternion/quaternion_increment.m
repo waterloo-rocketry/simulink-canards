@@ -2,7 +2,7 @@ function [q_new] = quaternion_increment(q, omega, dt)
     % computes new quaternion from old quaternion and body rates
 
     % norm quaternions
-    q = 1/norm(q) * q;
+    q = q / norm(q);
     
     % incremental quaternion
     dphi = norm(omega) * dt / 2;

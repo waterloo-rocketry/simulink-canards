@@ -13,10 +13,10 @@ function [x_new, P_new] = ekf_algorithm_cd(x, P, u, y, b, t, Q, R, T)
     %%% solve IVP for x: x_dot = f(x, u)
     % [x_pred] = solver_rk4(@model_f, T, step, t, x, u); % RK4
     % [x_pred] = solver_lie_euler(@model_f, T, step, t, x, u); % Lie group & explicit Euler
-    [x_pred] = solver_euler(@model_dynamics, T, t, x, u); % Explicit Euler
+    [x_pred] = solver_euler(@model_dynamics_continuous, T, t, x, u); % Explicit Euler
 
     %%% compute Jacobian: F = df/dx
-    F = jacobian(@model_dynamics, t, x, u); 
+    F = jacobian(@model_dynamics_continuous, t, x, u); 
 
     %%% solve IVP for P: P_dot = F*P + P*F'+ Q
     P_dot = F*P + P*F'+ Q;

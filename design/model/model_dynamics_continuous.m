@@ -24,32 +24,31 @@ function [x_dot] = model_dynamics_continuous(t, x, u)
     p_dyn = rho/2*norm(v)^2;
 
     %%% angle of attack/sideslip
-    if abs(v(1)) >= 0 
-        sin_alpha = v(3)/v(1) / sqrt(v(3)^2/v(1)^2 + 1);
-        sin_beta = v(3)/v(1) / sqrt(v(3)^2/v(1)^2 + 1);
+    if abs(v(1)) >= 0.5
+        sin_alpha = v(3)/v(1) / sqrt( v(3)^2/v(1)^2 + 1);
+        sin_beta = v(2)/v(1) / sqrt( v(2)^2/v(1)^2 + 1);
     else
         sin_alpha = sign(v(3)); 
-        sin_alpha = sign(v(2));
+        sin_beta = sign(v(2));
     end
 
     %%% torques
     torque_canards = Cl *  delta * param.c_canard * p_dyn *[1;0;0];
-    torque_aero = p_dyn * ( param.Cn_alpha*[0; v(3); v(2)] + param.Cn_omega*[0; w(2); w(3)] ) * param.c_aero;
-    torque = torque_aero + torque_canards;
-    % torque = [0;0;0];
+    torque_aero = p_dyn * ( param.Cn_alpha*[0; sin_alpha; -sin_beta] + param.Cn_omega*[0; w(2); w(3)] ) * param.c_aero;
+    torque = torque_canards + torque_aero;
+    torque = [0;0;0];
 
     %% derivatives
 
     % quaternion derivatives
-    q_dot = quaternion_deriv(q, w);
+    q_dot = quaternion_derivative(q, w);
 
     % rate derivatives
     w_dot = inv(param.J)*(torque - cross(w, param.J*w));
     
     % velocity derivatives 
     %%% acceleration specific force
-    g_body = (S)*param.g;
-    v_dot = a - cross(w,v) + g_body;
+    v_dot = a - cross(w,v) + S*param.g;
 
     % altitude derivative
     v_earth = (S')*v;

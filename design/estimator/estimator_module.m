@@ -12,13 +12,13 @@ function [xhat, Phat, bias, out] = estimator_module(timestamp, IMU, cmd, encoder
 
     %%% Q is a square 13 matrix, tuning for prediction E(noise)
     %%% x = [   q(4),           w(3),           v(3),      alt(1), Cl(1), delta(1)]
-    Q = diag([ones(1,4)*3e-4, ones(1,3)*5e1, ones(1,3)*2e-1, 1e-2,  10, 1]);
+    Q = diag([ones(1,4)*1e-3, ones(1,3)*5e1, ones(1,3)*2e-1, 1e-2,  10, 10]);
     % Q(1:4, 11) = 10;
     Q = (Q+Q')/2;
     
     %%% R is a square 7*a matrix (a amount of sensors), tuning for measurement E(noise)
-    %%% y = [   W(3),          Mag(3),     P(1), enc(1)]
-    R = diag([ones(1,3)*1e-3, ones(1,3)*5e0, 2e1, 0.1]);
+    %%% y = [   W(3),          Mag(3),     P(1), AHRS filtered quat, enc(1)]
+    R = diag([ones(1,3)*1e-4, ones(1,3)*10e0, 2e1, ones(1,4)*0.1, 0.01]);
     R = (R+R')/2;
 
     %% concoct y and u
@@ -54,7 +54,7 @@ function [xhat, Phat, bias, out] = estimator_module(timestamp, IMU, cmd, encoder
 
     if init_phase == 0
         u(2:4) = model_acceleration(x, u(2:end));
-        [xhat, Phat] = ekf_algorithm_cd(x, P, u, y, b, t, Q, R, T);
+        [xhat, Phat] = ekf_algorithm_d(x, P, u, y, b, t, Q, R, T);
         x = xhat; P = Phat; bias = b;
     end
     

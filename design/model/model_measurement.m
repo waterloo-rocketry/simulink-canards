@@ -55,6 +55,9 @@ function [y] = model_measurement(t, x, b)
     %% canard angle
     D = delta;
 
+    %% filtered quaternion
+    Q = q;
+
     %% measurement prediction
-    y = [W; M; P; D];
+    y = [W; M; P; Q; D];
 end

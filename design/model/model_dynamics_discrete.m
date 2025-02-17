@@ -1,4 +1,4 @@
-function [x_new] = model_dynamics_discrete(t, x, u, T)
+function [x_new] = model_dynamics_discrete(T, x, u)
     % Computes state derivative with predictive model. Use ODE solver to compute next state.
     
     %% decomp
@@ -24,32 +24,33 @@ function [x_new] = model_dynamics_discrete(t, x, u, T)
     p_dyn = rho/2*norm(v)^2;
 
     %%% angle of attack/sideslip
-    if abs(v(1)) >= 0 
-        sin_alpha = v(3)/v(1) / sqrt(v(3)^2/v(1)^2 + 1);
-        sin_beta = v(3)/v(1) / sqrt(v(3)^2/v(1)^2 + 1);
+    if abs(v(1)) >= 0.5
+        sin_alpha = v(3)/v(1) / sqrt( v(3)^2/v(1)^2 + 1);
+        sin_beta = v(2)/v(1) / sqrt( v(2)^2/v(1)^2 + 1);
     else
         sin_alpha = sign(v(3)); 
-        sin_alpha = sign(v(2));
+        sin_beta = sign(v(2));
     end
 
     %%% torques
     torque_canards = Cl *  delta * param.c_canard * p_dyn *[1;0;0];
     torque_aero = p_dyn * ( param.Cn_alpha*[0; sin_alpha; -sin_beta] + param.Cn_omega*[0; w(2); w(3)] ) * param.c_aero;
-    torque = torque_aero + torque_canards;
-    % torque = [0;0;0];
+    torque = torque_canards + torque_aero;
+    torque = [0;0;0];
 
-    %% derivatives
+    %% time updates
 
     % quaternion update
-    q_new = quaternion_increment(q, w, T);
+    % q_new = quaternion_increment(q, w, T);
+    q_new = q + T * quaternion_derivative(q, w);
+    q_new = q_new / norm(q_new);
 
     % rate update
     w_new = w + T * inv(param.J) * (torque - cross(w, param.J*w));
     
     % velocity update 
     %%% acceleration specific force    
-    g_body = (S)*param.g;
-    v_new = v + T * (a - cross(w,v) + g_body);
+    v_new = v + T * (a - cross(w,v) + S*param.g);
 
     % altitude update
     v_earth = (S')*v;
