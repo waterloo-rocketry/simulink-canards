@@ -40,7 +40,7 @@ function [xhat, Phat, bias, out] = estimator_module(timestamp, IMU, cmd, encoder
     
     %% Initializor filter iteration
     if init_phase ~= 0 
-        [xhat, bias, ~] = initializor(meas);
+        [xhat, bias, ~] = init_algorithm(meas);
         if (norm(meas(1:3,1))-9.81) >= flight_phase
             init_phase = 0;
         else

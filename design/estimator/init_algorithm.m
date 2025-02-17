@@ -1,4 +1,4 @@
-function [x_init, bias, out] = initializor(meas)
+function [x_init, bias, out] = init_algorithm(meas)
     % Computes inital state and covariance estimate for EKF, and bias values for the IMU
     % Uses all available sensors: Gyroscope W, Magnetometer M, Accelerometer A, Barometer P
     % Outputs: initial state, sensor bias matrix
