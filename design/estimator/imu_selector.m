@@ -20,6 +20,7 @@ function [meas, y, u] = imu_selector(IMU, IMU_select)
     omega = empty3;
     mag = empty3;
     baro = empty1;
+    filtered_quat = zeros(4*norm(IMU_select,1),1);
     k = 0;
 
     for i = 1:length(IMU_select)
@@ -29,7 +30,7 @@ function [meas, y, u] = imu_selector(IMU, IMU_select)
                 case 1 
                     sensor = IMU.IMU1;
                 case 2 
-                    sensor = IMU.IMU1;
+                    sensor = IMU.IMU2;
                 case 3 
                     sensor = IMU.IMU3;
                 otherwise 
@@ -44,15 +45,16 @@ function [meas, y, u] = imu_selector(IMU, IMU_select)
 
             %%% fill meas matrix, columns are the IMU vectors
             k = k+1;
-            meas(:, k) = sensor;
+            meas(:, k) = sensor(1:10,1);
             %%% append vectors with IMUi
             accel(3*(k-1)+1 : 3*k, :) = sensor(1:3);
             omega(3*(k-1)+1 : 3*k, :) = sensor(4:6);
             mag(3*(k-1)+1 : 3*k, :) = sensor(7:9);
             baro(k, :) = sensor(10);
+            filtered_quat(4*(k-1)+1 : 4*k, :) = sensor(11:14);
         end
     end
 
-    y = [omega; mag; baro];
+    y = [omega; mag; baro; filtered_quat];
     u = [accel];
 end
