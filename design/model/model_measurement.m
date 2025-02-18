@@ -8,13 +8,15 @@ function [y] = model_measurement(t, x, b)
     % decompose bias matrix: [b_A(3,i); b_W(3, i); M_E(3, i); b_P(1, i)]
     b_W = b(4:6,:); M_E = b(7:9,:);
 
-    % global IMU_select
-
     %% load parameters
     persistent param
     if isempty(param)
         param = load("model\model_params.mat");
     end
+
+    %% compute rotation matrix 
+    %%% attitude transformation, inertial to body frame
+    S = quaternion_rotmatrix(q);
 
     %% rates
     if isreal(w)
@@ -34,10 +36,8 @@ function [y] = model_measurement(t, x, b)
         M = 1i*zeros(3*size(b,2), 1);
     end
     for k = 1:size(b,2)
-        % S = quaternion_rotmatrix(q);
-        % M_body = (S)*M_E(:,i); % M_E is initial orientation of magnetic field
-        M_body = quaternion_rotate(q, M_E(:,k)); % Earth magnetic field in body frame
-        M(3*(k-1)+1 : 3*k) = M_body; % TODO: add iron corrections
+        M(3*(k-1)+1 : 3*k) = S*M_E(:,k); % % Earth magnetic field in body frame 
+        % TODO: add iron corrections
     end
 
     %% atmosphere model
