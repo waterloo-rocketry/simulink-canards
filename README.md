@@ -1,19 +1,27 @@
 # How to use
+## Setup
 1. Clone the repo `git clone https://github.com/waterloo-rocketry/simulink-canards.git`
 2. Make sure you have MATLAB **2024b** installed (The specific version matters cause Simulink ;-;)
 3. Install (do this with Matlab install when you can select multiple at once, if possible):
-  - Simulink
-  - Signal Processing Toolbox
-  - DSP System Toolbox
-  - Aerospace Toolbox
-  - Aerospace Blockset
-  - Control System Toolbox
-  - Instrument Control Toolbox
-  - MATLAB Support for MinGW-w64 C/C++/Fortran Compiler
+    - Simulink
+    - Signal Processing Toolbox
+    - DSP System Toolbox
+    - Aerospace Toolbox
+    - Aerospace Blockset
+    - Control System Toolbox
+    - Instrument Control Toolbox
+    - MATLAB Support for MinGW-w64 C/C++/Fortran Compiler
 4. In Matlab run `mex -setup C` and `mex -setup C++`
 
+## Using the Sim
+1. open the `CC_Flight_Simulation.slx` in the `plant-model` folder \
+   a. Open as model and project \
+   b. Click on "continue" in the pop-up window   
+2. When everything has loaded and simulink is open, click the big green start button in center of the top header
+
 # Documentation
-Most up to date internal documentation is [here](https://www.overleaf.com/project/67239de67b73b702d3233692)
+Most up to date internal documentation is [here](https://www.overleaf.com/project/67239de67b73b702d3233692). \
+A backup is on the `documentation` [branch](https://github.com/waterloo-rocketry/simulink-canards/tree/documentation).
 
 ## Summary
 

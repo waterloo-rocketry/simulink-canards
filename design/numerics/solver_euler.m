@@ -1,4 +1,4 @@
-function [x_1] = solver_euler(f,T,step,t,x0,u) %#codegen
+function [x_1] = solver_euler(f,T,t,x0,u) %#codegen
     % Computes solution of Vector-valued IVP using explicit Euler.
     % x_new at time t+T, using full size step
    

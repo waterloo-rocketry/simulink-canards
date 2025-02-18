@@ -2,7 +2,10 @@ function [A,B,C,sys_roll] = model_roll(x, dynamicpressure, canardcoeff)
     % Computes state jacobian for roll dynamics
     
     % get parameters
-    model_params
+    persistent param
+    if isempty(param)
+        param = load("design\model\model_params.mat");
+    end
 
     % check if state is provided
     if isempty(x) == 0
@@ -25,10 +28,11 @@ function [A,B,C,sys_roll] = model_roll(x, dynamicpressure, canardcoeff)
 
     % simplified linear roll model
     %%% x_roll = [phi; w; delta]
+    L_delta = Cl*param.c_canard*p_dyn/param.J(1);
 
     A = [0, 1, 0; % roll angle is integral of roll rate
-         0, 0, Cl*c_canard*p_dyn/J(1); 
-         0, 0, -1/tau]; % 1st order actuator dynamics
+         0, 0, L_delta; 
+         0, 0, -1/param.tau]; % 1st order actuator dynamics
 
     B = [0; 0; 1]; % adjust scaling for servo to canard angle ratio
 

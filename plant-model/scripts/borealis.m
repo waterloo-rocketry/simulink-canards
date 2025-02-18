@@ -5,18 +5,20 @@ or_data = readtable("plant-model\Data\Borealis\Borealis_flight_no_wind.csv");
 location = [10; 43.47; -80.54]; % launch location on earth. Altitude, Latitude, Longitude
 rail_angle = deg2rad(-5); % negative is pitched downrange
 rail_length = 8.28; % delta-altitude for rail constraints
-time_idle = 2; % wait time on the rail before launch
+time_idle = 5; % wait time on the rail before launch
 
 %% Sensor parameters
 samplingrate = 0.005; % sampling period of the estimator
 Ls1 = [-2.4;0;0]; % mounting location of IMU 1 relative CG
 Ss1 = eye(3); % mounting orientation of IMU 1 relative body frame
+Ls2 = [-2.5;0;0]; % mounting location of IMU 2 relative CG
+Ss2 = eye(3); % mounting orientation of IMU 2 relative body frame
 
 %% Actuator parameters
 act_freq = 58; % natural frequency, approx 1/timeconstant
 act_damping = 0.9; % damping ratio
 act_backlash = 0.1; % play in deg
-act_anglelimit = 15; % max deflection in deg
+act_anglelimit = 45; % max deflection in deg
 act_ratelimit = 600; % max rate in deg/s
 
 %% Reference Geometry
