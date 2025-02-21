@@ -3,7 +3,7 @@ function [y] = model_measurement(t, x, b)
 
     %% decomp
     % decompose state vector: [q(4); w(3); v(3); alt; Cl; delta]
-    q = x(1:4); w = x(5:7); v = x(8:10); alt = x(11); Cl = x(12); delta = x(13);
+    q = x(1:4); w = x(5:7); a = x(8:10); v = x(11:13); alt = x(14); Cl = x(15); delta = x(16);
 
     % decompose bias matrix: [b_A(3,i); b_W(3, i); M_E(3, i); b_P(1, i)]
     b_W = b(4:6,:); M_E = b(7:9,:);
@@ -18,6 +18,17 @@ function [y] = model_measurement(t, x, b)
     %%% attitude transformation, inertial to body frame
     S = quaternion_rotmatrix(q);
 
+    %% acceleration
+    if isreal(w)
+        A = zeros(3*size(b,2), 1);
+    else
+        A = 1i*zeros(3*size(b,2), 1);
+    end
+    for k = 1:size(b,2)
+        dk = param.d_k(:, k);
+        A(3*(k-1)+1 : 3*k) = a + cross(w, cross(w, dk)); % + cross(w_dot, dk);% 
+    end   
+    
     %% rates
     if isreal(w)
         W = zeros(3*size(b,2), 1);
@@ -59,5 +70,5 @@ function [y] = model_measurement(t, x, b)
     Q = q;
 
     %% measurement prediction
-    y = [W; M; P; Q; D];
+    y = [A; W; M; P; Q; D];
 end

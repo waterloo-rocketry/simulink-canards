@@ -10,24 +10,24 @@ function [xhat, Phat, bias, out] = estimator_module(timestamp, IMU, cmd, encoder
     IMU_select = [1; 0,; 0]; % select IMUs, 1 is on, 0 is off
     flight_phase = 5; % acceleration threshold to detect boost phase
 
-    %%% Q is a square 13 matrix, tuning for prediction E(noise)
-    %%% x = [   q(4),           w(3),           v(3),      alt(1), Cl(1), delta(1)]
-    Q = diag([ones(1,4)*1e-3, ones(1,3)*5e1, ones(1,3)*2e-1, 1e-2,  10, 10]);
+    %%% Q is a square 16 matrix, tuning for prediction E(noise)
+    %%% x = [   q(4),           w(3),        a(3),              v(3),     alt(1), Cl(1), delta(1)]
+    Q = diag([ones(1,4)*1e-12*0, ones(1,3)*1e2, ones(1,3)*1e3, ones(1,3)*1e-1, 1e-2,  10, 10]);
     % Q(1:4, 11) = 10;
     Q = (Q+Q')/2;
     
     %%% R is a square 7*a matrix (a amount of sensors), tuning for measurement E(noise)
-    %%% y = [   W(3),          Mag(3),     P(1), AHRS filtered quat, enc(1)]
-    R = diag([ones(1,3)*1e-4, ones(1,3)*10e0, 2e1, ones(1,4)*0.1, 0.01]);
+    %%% y = [   A(3),           W(3),          Mag(3),       P(1), AHRS filtered quat, enc(1)]
+    R = diag([ones(1,3)*1e-2, ones(1,3)*1e-5, ones(1,3)*1e-3, 5e0, ones(1,4)*1e-5, 0.01]);
     R = (R+R')/2;
 
     %% concoct y and u
-    [meas, y, u] = imu_selector(IMU, IMU_select);
+    [meas, y] = imu_selector(IMU, IMU_select);
     y = [y; encoder];
-    u = [cmd; u];
+    u = [cmd];
 
     %% initialize at beginning
-    xhat = zeros(13,1); Phat = zeros(13); bias = zeros(size(meas)); out = zeros(3,1);
+    xhat = zeros(16,1); Phat = zeros(16); bias = zeros(size(meas)); out = zeros(3,1);
     if isempty(x)
         x = xhat; P = Phat; b = bias;
         init_phase = 1;
@@ -53,7 +53,7 @@ function [xhat, Phat, bias, out] = estimator_module(timestamp, IMU, cmd, encoder
     t = timestamp;
 
     if init_phase == 0
-        u(2:4) = model_acceleration(x, u(2:end));
+        % u(2:4) = model_acceleration(x, u(2:end));
         [xhat, Phat] = ekf_algorithm_d(x, P, u, y, b, t, Q, R, T);
         x = xhat; P = Phat; bias = b;
     end

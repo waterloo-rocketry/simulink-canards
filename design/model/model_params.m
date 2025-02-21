@@ -28,6 +28,7 @@ length_cg = 0; % center of gravity
 length_cp = -0.5; % center of pressure
 area_reference = pi*(8*0.0254/2)^2; % cross section of body tube
 c_aero = area_reference * (length_cp-length_cg);
+CD = 5;       % drag coefficient coefficent 
 Cn_alpha = 5; % pitch forcing coefficent 
 Cn_omega = 0; % pitch damping coefficent 
 

@@ -58,12 +58,13 @@ function [x_init, bias, out] = init_algorithm(meas)
     
     %%% set constant initials
     w = [0; 0; 0];
+    a = [0; 0; 0];
     v = [0; 0; 0];
     Cl = param.Cl_alpha;
     delta = 0;
 
     %%% conconct state vector
-    x_init = [q;w;v;alt;Cl;delta];
+    x_init = [q;w;a;v;alt;Cl;delta];
 
     %% Bias output
     bias = zeros(size(meas)); % prep bias matrix

@@ -3,10 +3,10 @@ function [x_new] = model_dynamics_discrete(T, x, u)
     
     %% decomp
     % decompose state vector: [q(4); w(3); v(3); alt; Cl; delta]
-    q = x(1:4); w = x(5:7); v = x(8:10); alt = x(11); Cl = x(12); delta = x(13);
+    q = x(1:4); w = x(5:7); a = x(8:10); v = x(11:13); alt = x(14); Cl = x(15); delta = x(16);
 
     % decompose input vector: [delta_u(1), A(3)]
-    delta_u = u(1); a = u(2:4);
+    delta_u = u(1); %a = u(2:4);
 
     %% load parameters
     persistent param
@@ -32,11 +32,17 @@ function [x_new] = model_dynamics_discrete(T, x, u)
         sin_beta = sign(v(2));
     end
 
+    %%% forces
+    force_axial = p_dyn * 2*param.CD * [1;0;0] * param.area_reference;
+    force_normal = p_dyn * ( param.Cn_alpha*[0; -sin_beta; -sin_alpha] + param.Cn_omega*[0; w(2); w(3)] ) * param.area_reference;
+    force = force_axial + force_normal;
+    % force = [0;0;0];
+
     %%% torques
     torque_canards = Cl *  delta * param.c_canard * p_dyn *[1;0;0];
     torque_aero = p_dyn * ( param.Cn_alpha*[0; sin_alpha; -sin_beta] + param.Cn_omega*[0; w(2); w(3)] ) * param.c_aero;
     torque = torque_canards + torque_aero;
-    torque = [0;0;0];
+    % torque = [0;0;0];
 
     %% time updates
 
@@ -48,6 +54,9 @@ function [x_new] = model_dynamics_discrete(T, x, u)
     % rate update
     w_new = w + T * inv(param.J) * (torque - cross(w, param.J*w));
     
+    % acceleration update
+    a_new = force / param.m;
+
     % velocity update 
     %%% acceleration specific force    
     v_new = v + T * (a - cross(w,v) + S*param.g);
@@ -65,5 +74,5 @@ function [x_new] = model_dynamics_discrete(T, x, u)
     delta_new = delta + T * (-1/param.tau * (delta - delta_u));
     
     %% concoct state derivative vector
-    x_new = [q_new; w_new; v_new; alt_new; Cl_new; delta_new];
+    x_new = [q_new; w_new; a_new; v_new; alt_new; Cl_new; delta_new];
 end

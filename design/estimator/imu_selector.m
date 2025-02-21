@@ -1,4 +1,4 @@
-function [meas, y, u] = imu_selector(IMU, IMU_select)
+function [meas, y] = imu_selector(IMU, IMU_select)
     % Selects IMUs and rearanges IMU struct to vectors
     % Rotates IMU frame to body frame
     % IMU_select is vector containing zeros at indexes of dead IMUs
@@ -55,6 +55,6 @@ function [meas, y, u] = imu_selector(IMU, IMU_select)
         end
     end
 
-    y = [omega; mag; baro; filtered_quat];
-    u = [accel];
+    y = [accel; omega; mag; baro; filtered_quat];
+    % u = [accel];
 end
