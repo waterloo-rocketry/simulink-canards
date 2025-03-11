@@ -22,7 +22,7 @@ function [xhat, Phat, bias, controller_input] = estimator_module(timestamp, IMU,
     R = (R+R')/2;
 
     %% concoct y and u
-    [meas, y, u] = imu_selector(IMU, IMU_select);
+    [meas, y, u] = imu_handler(IMU, IMU_select);
     y = [y; encoder];
     u = [cmd; u];
 
@@ -54,7 +54,7 @@ function [xhat, Phat, bias, controller_input] = estimator_module(timestamp, IMU,
 
     if init_phase == 0
         u(2:4) = model_acceleration(x, u(2:end));
-        [xhat, Phat] = ekf_algorithm_d(x, P, u, y, b, t, Q, R, T);
+        [xhat, Phat] = ekf_algorithm(x, P, u, y, b, t, Q, R, T);
         x = xhat; P = Phat; bias = b;
     end
     

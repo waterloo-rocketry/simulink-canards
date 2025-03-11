@@ -1,4 +1,4 @@
-function [x_new, P_new] = ekf_algorithm_d(x, P, u, y, b, t, Q, R, T)
+function [x_new, P_new] = ekf_algorithm(x, P, u, y, b, t, Q, R, T)
     % Computes EKF iteration. Uses model_f for prediction and model_h for correction.
     % Inputs: estimates x, P; control u; measurement y; sensor bias b; timecode t
     % Input parameters: weighting Q, R; time difference to last compute T; 
@@ -9,10 +9,10 @@ function [x_new, P_new] = ekf_algorithm_d(x, P, u, y, b, t, Q, R, T)
     % Uses discrete-time dynamics and analytical Jacobian
     
     %%% discrete dynamics
-    [x_pred] = model_dynamics_discrete(T, x, u); 
+    [x_pred] = model_dynamics(T, x, u); 
 
     %%% discrete Jacobian: F = df/dx
-    F = jacobian(@model_dynamics_discrete, T, x, u); 
+    F = jacobian(@model_dynamics, T, x, u); 
 
     %%% discrete covariance
     P_pred = F * P * F' + T*Q;
