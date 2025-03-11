@@ -32,7 +32,7 @@ Cn_alpha = 5; % pitch forcing coefficent
 Cn_omega = 0; % pitch damping coefficent 
 
 %% Canards, Actuator
-tau = 1/20; % time constant of first order actuator dynamics
+tau = 1/40; % time constant of first order actuator dynamics
 Cl_alpha = 1.5; % estimated coefficient of lift, const with Ma
 tau_cl_alpha = 2; % time constant to converge Cl back to 1.5 in filter
 area_canard = 0.02; % total canard area 
