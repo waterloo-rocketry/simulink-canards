@@ -1,10 +1,10 @@
-function [u] = controller_module(timestamp, x)
+function [u] = controller_module(timestamp, input)
     % Top-level controller module. Calls controller algorithm. Sets reference signal.
     
     %% stuff
     time_start = 5; % pad delay time
     t = timestamp - time_start;
-    u_max = deg2rad(20); % cap output to this angle
+    u_max = deg2rad(10); % cap output to this angle
 
     %% reference signal
     %%% includes multiple roll angle steps. Reference r [rad].
@@ -21,7 +21,7 @@ function [u] = controller_module(timestamp, x)
     end
 
     %% compute controller output
-    u = control_algorithm(x, r);
+    u = control_algorithm(input, r);
 
     %%% limit output to allowable angle
     u = min(max(u, -u_max), u_max);

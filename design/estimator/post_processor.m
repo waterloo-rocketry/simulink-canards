@@ -1,6 +1,8 @@
 function [output] = post_processor(x)
     % Computes roll state and scheduling variables for controller.
-    % Output: Struct with .state, .sched
+    % Output: vector with (1:3) state, (4:5) flight conditions
+
+    output = zeros(5,1);
     
     %% Roll state
     % decompose state vector: [q(4); w(3); v(3); alt; Cl; delta]
@@ -14,7 +16,7 @@ function [output] = post_processor(x)
     % note: this has singularities at +- 90° (Zipfel p. 127)
     
     % cat roll state
-    output.state = [phi; w(1); delta];
+    output(1:3,:) = [phi; w(1); delta];
 
     %% scheduling variables
     % calculate air data
@@ -22,6 +24,6 @@ function [output] = post_processor(x)
     airspeed = norm(v);
     p_dyn = rho/2*airspeed^2;
 
-    output.sched = [p_dyn; Cl];
+    output(4:5,:) = [p_dyn; Cl];
 end
 
