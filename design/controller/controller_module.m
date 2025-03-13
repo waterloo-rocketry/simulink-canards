@@ -1,4 +1,4 @@
-function [u] = controller_module(timestamp, input)
+function [u] = controller_module(timestamp, roll_state, flight_cond)
     % Top-level controller module. Calls controller algorithm. Sets reference signal.
     
     %% settings
@@ -29,14 +29,14 @@ function [u] = controller_module(timestamp, input)
     %%% Gain scheduling
     Ks = zeros(1,4);
     % get gain from schedule
-    Ks = control_scheduler(table, input(4:5));
+    Ks = control_scheduler(flight_cond);
     K = Ks(1:3);
     K_pre = Ks(4);
     
     %%% Feedback law
     % two degree of freedom, full state feedback + feedforward
-    u = K*input(1:3) + K_pre*r; 
-    
+    u = K*roll_state + K_pre*r; 
+
     %%% limit output to allowable angle
     u = min(max(u, -u_max), u_max);
 end
