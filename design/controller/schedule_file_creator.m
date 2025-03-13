@@ -15,12 +15,18 @@ fprintf(fid, '// Controller gains \n\n');
 
 %%% table information
 fprintf(fid, '// Gain table information \n');
+fprintf(fid, 'const int GAINS_AMOUNT = %d;\n\n', size(table.Ks, 3));
 fprintf(fid, 'const int GAINS_P_SIZE = %d;\n', table.info.P_size);
 fprintf(fid, 'const int GAINS_C_SIZE = %d;\n\n', table.info.C_size);
 fprintf(fid, 'const float GAINS_P_SCALE = %f;\n', table.info.P_scale);
 fprintf(fid, 'const float GAINS_C_SCALE = %f;\n\n', table.info.C_scale);
 fprintf(fid, 'const float GAINS_P_OFFSET = %f;\n', table.info.P_offset);
 fprintf(fid, 'const float GAINS_C_OFFSET = %f;\n\n', table.info.C_offset);
+
+fprintf(fid, '// Conversion \n');
+fprintf(fid, '// from flight conditions to natural table coordinates \n');
+fprintf(fid, '// int x_nat = (int) (x_fc - x_OFFSET) / x_SCALE \n\n');
+
 
 %% write gain array
 for gain_number = 1:size(table.Ks, 3)
@@ -49,5 +55,5 @@ function [] = write_array(fid, Ks, gain_number, P_size, C_size)
             fprintf(fid, '\n');
         end
     end
-    fprintf(fid, '};\n');
+    fprintf(fid, '};\n\n');
 end
