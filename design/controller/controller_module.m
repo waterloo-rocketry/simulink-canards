@@ -1,14 +1,15 @@
 function [u] = controller_module(timestamp, input)
     % Top-level controller module. Calls controller algorithm. Sets reference signal.
     
-    %% stuff
+    %% settings
     time_start = 5; % pad delay time
-    t = timestamp - time_start;
     u_max = deg2rad(10); % cap output to this angle
 
-    %% reference signal
-    %%% includes multiple roll angle steps. Reference r [rad].
-
+    %% Reference signal
+    % Generates reference signal for roll program
+    % includes multiple roll angle steps. Reference r [rad].
+    
+    t = timestamp - time_start;
     r = 0;
     if t>5
         if t<12
@@ -20,9 +21,22 @@ function [u] = controller_module(timestamp, input)
         end
     end
 
-    %% compute controller output
-    u = control_algorithm(input, r);
+    %% controller algorithm
+    % Computes control output. Uses gain schedule table and simplified roll model
+    % Inputs: roll state input(1:3), flight conditions input(4:5), reference signal r
+    % Outputs: control input u
 
+    %%% Gain scheduling
+    Ks = zeros(1,4);
+    % get gain from schedule
+    Ks = control_scheduler(table, input(4:5));
+    K = Ks(1:3);
+    K_pre = Ks(4);
+    
+    %%% Feedback law
+    % two degree of freedom, full state feedback + feedforward
+    u = K*input(1:3) + K_pre*r; 
+    
     %%% limit output to allowable angle
     u = min(max(u, -u_max), u_max);
 end

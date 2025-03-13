@@ -1,9 +1,15 @@
-function [K] = control_scheduler(table, variables)
+function [K] = control_scheduler(flight_cond)
     % determines feedback gain from states. Interpolates from look-up table
     % input: full state x
     % output: K = [phi, p, delta, pre]
 
-    dynamicpressure = variables(1); canardcoeff = variables(2);
+    dynamicpressure = flight_cond(1); canardcoeff = flight_cond(2);
+
+    persistent table; 
+
+    if isempty(table)
+        table = load("controller\gains.mat", "Ks", "P_mesh", "C_mesh");
+    end
     
     %% Load table
     Ks = table.Ks;
@@ -13,7 +19,7 @@ function [K] = control_scheduler(table, variables)
     %% Interpolate table
     K = zeros(1,4);
     for i=1:4
-        %%% interpolate linearly between design points, output 0 if state outside of table
+        %%% bilinear interpolation between design points, output 0 if state outside of table
         K(i) = interp2(P_mesh, C_mesh, Ks(:,:,i), canardcoeff, dynamicpressure, 'linear', 0); 
     end
 end
