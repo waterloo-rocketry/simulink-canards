@@ -1,4 +1,4 @@
-function [y] = model_measurement_imu1(t, x, bias)
+function [y] = model_meas_imu1(t, x, bias)
     % Computes measurement prediction using current state and sensor biases
 
     %% decomp

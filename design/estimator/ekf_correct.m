@@ -18,14 +18,14 @@ function [x_new, P_new] = ekf_correct(x, P, y, b, R)
     %%% compute Kalman gain (and helper matrices)
     L = H*P*H' + R;
     K = P*(H') * inv(L);
-    E = eye(length(x))-K*H;
+    E = eye(length(x)) - K * H;
     
     %%% correct covariance estimate
-    P_corr = E*P*E' + K*R*K'; % joseph stabilized
+    P_corr = E * P * E' + K * R * K'; % joseph stabilized
 
     %%% correct state estimate
-    x_corr = x + K*innovation;
-    x_corr(1:4) = x_corr(1:4)/norm(x_corr(1:4)); % norm quaternions
+    x_corr = x + K * innovation;
+    x_corr(1:4) = x_corr(1:4) / norm(x_corr(1:4)); % norm quaternions
 
     %%% return a-posteriori estimates
     x_new = x_corr; P_new = P_corr;

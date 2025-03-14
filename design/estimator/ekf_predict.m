@@ -15,7 +15,7 @@ function [x_new, P_new] = ekf_predict(x, P, u, Q, step)
     F = jacobian(@model_dynamics, step, x, u); 
 
     %%% discrete covariance
-    P_pred = F * P * F' + step*Q;
+    P_pred = F * P * F' + step * Q;
 
     %%% return a-priori estimates
     x_new = x_pred; P_new = P_pred;

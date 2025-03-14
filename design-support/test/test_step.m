@@ -25,7 +25,7 @@ for i=1:length(V)
 
     [A, B, C, ~] = model_roll(x);
     sys_ol = c2d(ss(A, B, eye(3), 0), T_sample);
-    [phi, gamma] = ssdata(sys_d_ol);
+    [phi, gamma] = ssdata(sys_ol);
     sys_cl = K_pre*ss(phi+gamma*K, gamma, eye(3), 0, T_sample);
 
     sys_array(:,:,1,i) = sys_cl;

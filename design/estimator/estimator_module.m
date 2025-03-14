@@ -1,4 +1,4 @@
-function [xhat, Phat, bias, controller_input] = estimator_module(timestamp, IMU, cmd, encoder)
+function [xhat, Phat, bias, controller_input] = estimator_module(timestamp, IMU_1, IMU_2, IMU_3, cmd, encoder)
     % Top-level estimator module. Calls EKF algorithm.
     % Inputs: concocted measurement and output vectors with multiple sensors. Not yet fully supported, work in progress
     % IMU = struct of IMUi = [accel; omega; mag; baro] 
@@ -40,7 +40,7 @@ function [xhat, Phat, bias, controller_input] = estimator_module(timestamp, IMU,
     
     %% Initializor filter iteration
     if init_phase ~= 0 
-        [xhat, bias, ~] = init_algorithm(meas);
+        [xhat, bias, ~] = init_algorithm(IMU_1, IMU_2, IMU_3);
         if (norm(meas(1:3,1))-9.81) >= flight_phase
             init_phase = 0;
         else
