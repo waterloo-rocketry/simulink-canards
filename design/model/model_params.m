@@ -8,7 +8,6 @@ S_k = cat(3, S1, S2, S3);
 d1 = [0; 0; 0]; % center of sensor frame
 d2 = [0; 0; 0]; % center of sensor frame
 d3 = [0; 0; 0]; % center of sensor frame
-d_k = [d1, d2, d3];
 
 B1 = eye(3); % Soft iron compensation
 B2 = eye(3); % Soft iron compensation

@@ -1,4 +1,4 @@
-function [x_new, P_new] = ekf_predict(x, P, u, Q, step)
+function [x_new, P_new] = ekf_predict(model_dynamics, x, P, u, Q, step)
     % Computes EKF prediction step.
     % Inputs: estimates x, P; control u; 
     % Input parameters: weighting Q; time difference to last compute step; 

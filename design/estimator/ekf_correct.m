@@ -1,4 +1,4 @@
-function [x_new, P_new] = ekf_correct(x, P, y, b, R)
+function [x_new, P_new] = ekf_correct(model_measurement, x, P, y, b, R)
     % Computes EKF correction step.
     % Inputs: estimates x, P; measurement y; sensor bias b;
     % Input parameters: weighting R; 

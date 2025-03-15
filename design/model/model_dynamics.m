@@ -5,8 +5,8 @@ function [x_new] = model_dynamics(T, x, u)
     % decompose state vector: [q(4); w(3); v(3); alt; Cl; delta]
     q = x(1:4); w = x(5:7); v = x(8:10); alt = x(11); Cl = x(12); delta = x(13);
 
-    % decompose input vector: [delta_u(1), A(3)]
-    delta_u = u(1); a = u(2:4);
+    % decompose input vector
+    delta_u = u.cmd; a = u.accel;
 
     %% load parameters
     persistent param

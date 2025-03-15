@@ -1,4 +1,4 @@
-function [a] = model_acceleration(x, A)
+function [a] = model_acceleration(x, IMU_1, IMU_2, IMU_3)
     % Top-level controller module. Calls controller algorithm. Sets reference signal.
     
     %% decomp
@@ -16,17 +16,19 @@ function [a] = model_acceleration(x, A)
         param = load("model\model_params.mat");
     end
     
-    %% average acceleration measurements
-    %%% acceleration specific force
+    %% average acceleration (specific force)
     a = zeros(3,1);
-    %%% average specific force of selected sensors
-    for k = 1:length(IMU_select)
-        if IMU_select(k) == 1
-            dk = param.d_k(:, k);
-            ak = A( 3*(k-1)+1 : 3*k ) - cross(w, cross(w, dk)); % - cross(w_dot, dk);
-            a = a + ak/(length(A)/3);
-        end
+    %%% average specific force
+    if IMU_select(1) == 1 % only add alive IMUs to average
+        a = a + IMU_1(1:3) - cross(w, cross(w, d1)); % correction for centrifugal force
     end
+    if IMU_select(2) == 1
+        a = a + IMU_2(1:3) - cross(w, cross(w, d2));
+    end
+    if IMU_select(3) == 1
+        a = a + IMU_3(1:3) - cross(w, cross(w, d3));
+    end
+    a = a / norm(IMU_select, 1); % divide by number of alive IMUs
 
 end
 
