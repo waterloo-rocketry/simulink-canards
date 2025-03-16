@@ -1,4 +1,4 @@
-function [y] = model_meas_imu1(t, x, bias)
+function [y] = model_meas_imu2(t, x, bias)
     % Computes measurement prediction using current state and sensor biases
 
     %% decomp
@@ -25,9 +25,6 @@ function [y] = model_meas_imu1(t, x, bias)
     %% atmosphere model
     [P, ~, ~, ~] = model_airdata(alt);
 
-    %% filtered quaternion
-    Q = q;
-    
     %% measurement prediction
-    y = [W; M; P; Q];
+    y = [W; M; P];
 end
