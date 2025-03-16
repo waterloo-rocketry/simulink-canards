@@ -12,10 +12,7 @@ function [altitude] = model_altdata(p_static)
                       % base height, P_base, T_base, lapse rate;
     air_r0 = 6356766; % mean earth radius
     g0 = 9.8; % zero height gravity
-
-    % geopotential altitude
-    alt = air_r0*alt / (air_r0 -alt);
-    
+  
     % select atmosphere behaviour from table
     layer = air_atmosphere(1,:);
 

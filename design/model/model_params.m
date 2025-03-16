@@ -5,6 +5,7 @@ S1 = eye(3); % IMU 1, rotation transform from sensor frame to body frame
 S2 = eye(3); % IMU 2, rotation transform from sensor frame to body frame
 S3 = eye(3); % IMU 3, rotation transform from sensor frame to body frame
 S_k = cat(3, S1, S2, S3);
+
 d1 = [0; 0; 0]; % center of sensor frame
 d2 = [0; 0; 0]; % center of sensor frame
 d3 = [0; 0; 0]; % center of sensor frame
