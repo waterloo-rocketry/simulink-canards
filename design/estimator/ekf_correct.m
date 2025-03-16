@@ -16,8 +16,8 @@ function [x_new, P_new] = ekf_correct(model_measurement, x, P, y, b, R)
     H = jacobian(@model_measurement, 0, x, b); 
 
     %%% compute Kalman gain (and helper matrices)
-    L = H*P*H' + R;
-    K = P*(H') * inv(L);
+    L = H * P * H' + R;
+    K = P * H' * inv(L);
     E = eye(length(x)) - K * H;
     
     %%% correct covariance estimate
