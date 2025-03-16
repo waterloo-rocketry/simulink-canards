@@ -1,39 +1,56 @@
-function [x_init, bias_1, bias_2, bias_3] = idle_filter(IMU_1, IMU_2, IMU_3)
+function [x_init, bias_1, bias_2, bias_3] = pad_filter(IMU_1, IMU_2, IMU_3)
     % Computes inital state and covariance estimate for EKF, and bias values for the IMU
     % Uses all available sensors: Gyroscope W, Magnetometer M, Accelerometer A, Barometer P
     % Outputs: initial state, sensor bias matrix
 
     global IMU_select
 
+    persistent filtered_1 filtered_2 filtered_3; % remembers from last iteration
+
     %% parameters
     persistent param
     if isempty(param)
         param = load("model\model_params.mat");
+    end 
+
+
+    %% Initialization
+
+    if isempty(filtered_1)
+        if IMU_select(1) == 1 % if IMU_i alive
+            filtered_1 = IMU_1(1:10);
+        else
+            filtered_1 = zeros(10,1);
+        end
     end
- 
+    if isempty(filtered_2)
+        if IMU_select(2) == 1 % if IMU_i alive
+            filtered_2 = IMU_2(1:10);
+        else
+            filtered_2 = zeros(10,1);
+        end
+    end
+    if isempty(filtered_3)
+        if IMU_select(3) == 1
+            filtered_3 = IMU_3(1:10);
+        else
+            filtered_3 = zeros(10,1);
+        end
+    end
+
 
     %% lowpass filter
 
     alpha = 0.005; % low pass time constant
-    persistent filtered_1 filtered_2 filtered_3; % remembers from last iteration
     % filtered = filtered + alpha*(measured-filtered);
 
-    if IMU_select(1) == 1 % if IMU_i alive
-        if isempty(filtered_1)
-            filtered_1 = IMU_1(1:10);
-        end
+    if IMU_select(1) == 1
         filtered_1 = filtered_1 + alpha * (IMU_1(1:10) - filtered_1);
     end
     if IMU_select(2) == 1
-        if isempty(filtered_2)
-            filtered_2 = IMU_2(1:10);
-        end
         filtered_2 = filtered_2 + alpha * (IMU_2(1:10) - filtered_2);
     end
     if IMU_select(3) == 1
-        if isempty(filtered_3)
-            filtered_3 = IMU_3(1:10);
-        end
         filtered_3 = filtered_3 + alpha * (IMU_3(1:10) - filtered_3);
     end
 
@@ -54,14 +71,14 @@ function [x_init, bias_1, bias_2, bias_3] = idle_filter(IMU_1, IMU_2, IMU_3)
     a = a / norm(IMU_select, 1); % divide by number of alive IMUs
 
     %%% gravity vector in body-fixed frame
-    psi = atan(-a(2)/a(1)); % rail yaw angle
-    theta = atan(a(3)/a(1)); % rail pitch angle
+    psi = atan(-a(2) / a(1)); % rail yaw angle
+    theta = atan(a(3) / a(1)); % rail pitch angle
 
     %%% compute launch attitude quaternion
-    q = [cos(psi/2)*cos(theta/2); 
-         -sin(psi/2)*sin(theta/2);
-         cos(psi/2)*sin(theta/2);
-         sin(psi/2)*cos(theta/2)];
+    q = [cos(psi/2) * cos(theta/2); 
+         -sin(psi/2) * sin(theta/2);
+         cos(psi/2) * sin(theta/2);
+         sin(psi/2) * cos(theta/2)];
 
     %%% compute altitude
     p = 0; % barometric pressure p
@@ -98,9 +115,15 @@ function [x_init, bias_1, bias_2, bias_3] = idle_filter(IMU_1, IMU_2, IMU_3)
     % did not add accelerometer bias determination yet, leave out for now
 
     %%% gyroscope
-    bias_1(4:6) = filtered_1(4:6);
-    bias_2(4:6) = filtered_2(4:6);
-    bias_3(4:6) = filtered_3(4:6);
+    if IMU_select(1) == 1
+        bias_1(4:6) = filtered_1(4:6);
+    end
+    if IMU_select(2) == 1
+        bias_2(4:6) = filtered_2(4:6);
+    end
+    if IMU_select(3) == 1 
+        bias_3(4:6) = filtered_3(4:6);
+    end
     
     %%% earth magnetic field
     ST = transpose(quaternion_rotmatrix(q)); % launch attitude  
@@ -123,4 +146,3 @@ function [x_init, bias_1, bias_2, bias_3] = idle_filter(IMU_1, IMU_2, IMU_3)
     % (barometer bias) = (pressure) - (expected pressure)
 
 end
-

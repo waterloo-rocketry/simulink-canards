@@ -26,9 +26,9 @@ function [xhat, Phat, controller_input, bias_1, bias_2, bias_3] = estimator_modu
     T = timestamp - t; % time step size for integrators
     t = timestamp;
     
-    %% Idle filter iteration
+    %% Pad filter iteration
     if init_phase ~= 0 % only before ignition
-        [xhat, bias_1, bias_2, bias_3] = idle_filter(IMU_1, IMU_2, IMU_3);
+        [xhat, bias_1, bias_2, bias_3] = pad_filter(IMU_1, IMU_2, IMU_3);
 
         if t >= idle_time % mock for flight phase
             init_phase = 0;
