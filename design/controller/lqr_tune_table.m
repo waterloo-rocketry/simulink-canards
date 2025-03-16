@@ -1,10 +1,11 @@
 %% define dimensions
 V_max = 1000; % max velocity
-CL_max = 10; % max abs(coefficient)
+C_max = 10; % max canard coefficient
+C_min = -10; % min canard coefficient
 
 % amount of design point for each dimension
-P_amount = 200; % dynamic pressure
-C_amount = 30; % coefficient of lift
+P_size = 200; % dynamic pressure
+C_size = 30; % coefficient of lift
 
 %% tuning parameters
 Q = diag([10, 0, 10]);
@@ -18,12 +19,12 @@ C = [1, 0, 0]; % output channel
 % calculate air data
 [~, ~, rho_max, ~] = model_airdata(0);
 
-p_min = 100;
-p_max = rho_max/2*V_max^2;
+P_min = 100;
+P_max = rho_max/2*V_max^2;
 
 % Dimensions are (dynamic pressure, coefficent of lift)
-Ps = linspace(p_min,p_max, P_amount);
-Cls = linspace(-CL_max, CL_max, C_amount);
+Ps = linspace(P_min,P_max, P_size);
+Cls = linspace(C_min, C_max, C_size);
 Ps(Ps==0)=[];
 Cls(Cls==0)=[];
 
@@ -39,7 +40,7 @@ for i=1:m
     for k=1:n
         [F_roll, B, ~, ~] = model_roll([], Ps(i), Cls(k));
 
-        R = (Ps(i)) / 100; % scale R by dynamic pressure
+        R = (Ps(i)) / 1000; % scale R by dynamic pressure
 
         K = -lqrd(F_roll,B,Q,R,N, T_sample);    
         Ks(i,k,1:3) = K;
@@ -55,7 +56,13 @@ end
 
 
 %% save and export
-save("design/controller/gains.mat", "Ks", "P_mesh", "C_mesh");
+%%% matlab .mat file
+info.P_size = P_size; info.P_scale = (P_max-P_min)/P_size ; info.P_offset = P_min; 
+info.C_size = C_size; info.C_scale = (C_max-C_min)/C_size; info.C_offset = C_min; 
+save("design/controller/gains.mat", "Ks", "P_mesh", "C_mesh", "info");
+
+%%% embedded .c file
+run('schedule_file_creator.m')
 
 %% Plot
 if 0

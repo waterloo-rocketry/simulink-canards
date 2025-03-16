@@ -4,11 +4,11 @@ clear
 S1 = eye(3); % IMU 1, rotation transform from sensor frame to body frame
 S2 = eye(3); % IMU 2, rotation transform from sensor frame to body frame
 S3 = eye(3); % IMU 3, rotation transform from sensor frame to body frame
-S_k = [S1, S2, S3];
+S_k = cat(3, S1, S2, S3);
+
 d1 = [0; 0; 0]; % center of sensor frame
 d2 = [0; 0; 0]; % center of sensor frame
 d3 = [0; 0; 0]; % center of sensor frame
-d_k = [d1, d2, d3];
 
 B1 = eye(3); % Soft iron compensation
 B2 = eye(3); % Soft iron compensation
@@ -32,7 +32,7 @@ Cn_alpha = 5; % pitch forcing coefficent
 Cn_omega = 0; % pitch damping coefficent 
 
 %% Canards, Actuator
-tau = 1/20; % time constant of first order actuator dynamics
+tau = 1/40; % time constant of first order actuator dynamics
 Cl_alpha = 1.5; % estimated coefficient of lift, const with Ma
 tau_cl_alpha = 2; % time constant to converge Cl back to 1.5 in filter
 area_canard = 0.02; % total canard area 

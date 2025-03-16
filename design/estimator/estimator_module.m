@@ -1,4 +1,4 @@
-function [xhat, Phat, bias, out] = estimator_module(timestamp, IMU, cmd, encoder)
+function [xhat, Phat, controller_input, bias_1, bias_2, bias_3] = estimator_module(timestamp, IMU_1, IMU_2, IMU_3, cmd, encoder)
     % Top-level estimator module. Calls EKF algorithm.
     % Inputs: concocted measurement and output vectors with multiple sensors. Not yet fully supported, work in progress
     % IMU = struct of IMUi = [accel; omega; mag; baro] 
@@ -7,29 +7,13 @@ function [xhat, Phat, bias, out] = estimator_module(timestamp, IMU, cmd, encoder
     global IMU_select 
     
     %% settings
-    IMU_select = [1; 0,; 0]; % select IMUs, 1 is on, 0 is off
-    flight_phase = 5; % acceleration threshold to detect boost phase
-
-    %%% Q is a square 13 matrix, tuning for prediction E(noise)
-    %%% x = [   q(4),           w(3),           v(3),      alt(1), Cl(1), delta(1)]
-    Q = diag([ones(1,4)*1e-3, ones(1,3)*5e1, ones(1,3)*2e-1, 1e-2,  10, 10]);
-    % Q(1:4, 11) = 10;
-    Q = (Q+Q')/2;
-    
-    %%% R is a square 7*a matrix (a amount of sensors), tuning for measurement E(noise)
-    %%% y = [   W(3),          Mag(3),     P(1), AHRS filtered quat, enc(1)]
-    R = diag([ones(1,3)*1e-4, ones(1,3)*10e0, 2e1, ones(1,4)*0.1, 0.01]);
-    R = (R+R')/2;
-
-    %% concoct y and u
-    [meas, y, u] = imu_selector(IMU, IMU_select);
-    y = [y; encoder];
-    u = [cmd; u];
+    IMU_select = [1; 0; 1]; % select IMUs, 1 is on, 0 is off
+    idle_time = 5; % wait time to handover
 
     %% initialize at beginning
-    xhat = zeros(13,1); Phat = zeros(13); bias = zeros(size(meas)); out = zeros(3,1);
+    xhat = zeros(13,1); Phat = zeros(13); bias_1 = zeros(10, 1); bias_2 = zeros(10, 1); bias_3 = zeros(10, 1);
     if isempty(x)
-        x = xhat; P = Phat; b = bias;
+        x = xhat; P = Phat; b.bias_1 = bias_1; b.bias_2 = bias_2; b.bias_3 = bias_3;
         init_phase = 1;
         if timestamp >= 0.005
                 t = timestamp-0.005;
@@ -38,28 +22,70 @@ function [xhat, Phat, bias, out] = estimator_module(timestamp, IMU, cmd, encoder
         end
     end
     
-    %% Initializor filter iteration
-    if init_phase ~= 0 
-        [xhat, bias, ~] = init_algorithm(meas);
-        if (norm(meas(1:3,1))-9.81) >= flight_phase
+    %% timecode
+    T = timestamp - t; % time step size for integrators
+    t = timestamp;
+    
+    %% Pad filter iteration
+    if init_phase ~= 0 % only before ignition
+        [xhat, bias_1, bias_2, bias_3] = pad_filter(IMU_1, IMU_2, IMU_3);
+
+        if t >= idle_time % mock for flight phase
             init_phase = 0;
         else
-            x = xhat; b = bias;
+            x = xhat; b.bias_1 = bias_1; b.bias_2 = bias_2; b.bias_3 = bias_3;
         end
     end 
 
     %% EKF iteration
-    T = timestamp - t; % time period for integrators
-    t = timestamp;
+    if init_phase == 0 % in flight
+        % [xhat, Phat] = ekf_algorithm(x, P, u, y, b, t, Q, R, T);
 
-    if init_phase == 0
-        u(2:4) = model_acceleration(x, u(2:end));
-        [xhat, Phat] = ekf_algorithm_d(x, P, u, y, b, t, Q, R, T);
-        x = xhat; P = Phat; bias = b;
+        % Prediction step
+        %%% Q is a square 13 matrix, tuning for prediction E(noise)
+        %%% x = [   q(4),           w(3),           v(3),      alt(1), Cl(1), delta(1)]
+        Q = diag([ones(1,4)*1e-10, ones(1,3)*1e2, ones(1,3)*2e-2, 1e-2,  10, 10]);
+        
+        u.accel = model_acceleration(x, IMU_1, IMU_2, IMU_3);
+        u.cmd = cmd;
+        [xhat, Phat] = ekf_predict(@model_dynamics, x, P, u, Q, T);
+        x = xhat; P = Phat;
+
+        % Correction step, sequential for each IMU
+        %%% R is a square matrix (size depending on amount of sensors), tuning for measurement E(noise)
+        
+        %%% y = [enc(1)]
+        R = 0.01;
+        [xhat, Phat] = ekf_correct(@model_meas_encoder, x, P, encoder, 0, R);
+        x = xhat; P = Phat;
+
+        if IMU_select(1) == 1 % only correct with alive IMUs
+            %%% y = [   W(3),          Mag(3),     P(1), AHRS filtered quat]
+            R = diag([ones(1,3)*1e-5, ones(1,3)*5e-2, 2e1, ones(1,4)*1e-2]);
+
+            [xhat, Phat] = ekf_correct(@model_meas_imu1, x, P, IMU_1(4:end), b.bias_1, R);
+            x = xhat; P = Phat;
+        end
+
+        if IMU_select(2) == 1
+            %%% y = [   W(3),          Mag(3),     P(1)]
+            R = diag([ones(1,3)*1e-5, ones(1,3)*1e-1, 2e1]);
+
+            [xhat, Phat] = ekf_correct(@model_meas_imu2, x, P, IMU_2(4:end), b.bias_2, R);
+            x = xhat; P = Phat;
+        end
+
+        if IMU_select(3) == 1
+            %%% y = [   W(3),          Mag(3),     P(1)]
+            R = diag([ones(1,3)*2e-5, ones(1,3)*1e-1, 3e1]);
+
+            [xhat, Phat] = ekf_correct(@model_meas_imu3, x, P, IMU_3(4:end), b.bias_3, R);
+            x = xhat; P = Phat;
+        end 
     end
     
-    %% troubleshooting
-    % timestamp
-    % init_phase
-end
 
+    %% Controller post processing
+    controller_input = post_processor(xhat);
+
+end

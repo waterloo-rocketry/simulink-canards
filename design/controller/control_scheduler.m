@@ -1,25 +1,14 @@
-function [K] = control_scheduler(table, x, dynamicpressure, canardcoeff)
+function [K] = control_scheduler(flight_cond)
     % determines feedback gain from states. Interpolates from look-up table
     % input: full state x
     % output: K = [phi, p, delta, pre]
 
-    % check if state is provided
-    if isempty(x) == 0
-        % decompose state vector: [q(4); w(3); v(3); alt; Cl; delta]
-        v = x(8:10); alt = x(11); Cl = x(12);
-       
-        % calculate air data
-        [~, ~, rho, ~] = model_airdata(alt);
-        airspeed = norm(v);
-        p_dyn = rho/2*airspeed^2;
-    end 
+    dynamicpressure = flight_cond(1); canardcoeff = flight_cond(2);
 
-    % check for optinonal inputs
-    if nargin > 2 && isempty(dynamicpressure) == 0
-        p_dyn = dynamicpressure;
-    end
-    if nargin > 2 && isempty(canardcoeff) == 0
-       Cl = canardcoeff; 
+    persistent table; 
+
+    if isempty(table)
+        table = load("controller\gains.mat", "Ks", "P_mesh", "C_mesh");
     end
     
     %% Load table
@@ -30,8 +19,8 @@ function [K] = control_scheduler(table, x, dynamicpressure, canardcoeff)
     %% Interpolate table
     K = zeros(1,4);
     for i=1:4
-        %%% interpolate linearly between design points, output 0 if state outside of table
-        K(i) = interp2(P_mesh, C_mesh, Ks(:,:,i), Cl, p_dyn, 'linear', 0); 
+        %%% bilinear interpolation between design points, output 0 if state outside of table
+        K(i) = interp2(P_mesh, C_mesh, Ks(:,:,i), canardcoeff, dynamicpressure, 'linear', 0); 
     end
 end
 

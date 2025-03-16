@@ -1,12 +1,12 @@
-function [x_new] = model_dynamics_discrete(T, x, u)
+function [x_new] = model_dynamics(T, x, u)
     % Computes state derivative with predictive model. Use ODE solver to compute next state.
     
     %% decomp
     % decompose state vector: [q(4); w(3); v(3); alt; Cl; delta]
     q = x(1:4); w = x(5:7); v = x(8:10); alt = x(11); Cl = x(12); delta = x(13);
 
-    % decompose input vector: [delta_u(1), A(3)]
-    delta_u = u(1); a = u(2:4);
+    % decompose input vector
+    delta_u = u.cmd; a = u.accel;
 
     %% load parameters
     persistent param
@@ -21,12 +21,12 @@ function [x_new] = model_dynamics_discrete(T, x, u)
     %% aerodynamics
     %%% air data
     [~, ~, rho, ~] = model_airdata(alt);
-    p_dyn = rho/2*norm(v)^2;
+    p_dyn = rho / 2 * norm(v)^2;
 
     %%% angle of attack/sideslip
     if abs(v(1)) >= 0.5
-        sin_alpha = v(3)/v(1) / sqrt( v(3)^2/v(1)^2 + 1);
-        sin_beta = v(2)/v(1) / sqrt( v(2)^2/v(1)^2 + 1);
+        sin_alpha = v(3)/v(1) / sqrt( v(3)^2/v(1)^2 + 1 );
+        sin_beta = v(2)/v(1) / sqrt( v(2)^2/v(1)^2 + 1 );
     else
         sin_alpha = sign(v(3)); 
         sin_beta = sign(v(2));
