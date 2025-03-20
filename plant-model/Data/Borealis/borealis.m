@@ -1,5 +1,7 @@
 %% OR Simulation Output Data
 or_data = readtable("plant-model\Data\Borealis\Borealis_flight_no_wind.csv");
+or_override_aoa_cna = readtable("plant-model\Data\Borealis\borealis_aoa_cna.csv");
+or_override_mach_cna = readtable("plant-model\Data\Borealis\borealis_mach_cna.csv");
 
 %% Initial values
 location = [10; 43.47; -80.54]; % launch location on earth. Altitude, Latitude, Longitude
@@ -25,6 +27,9 @@ act_ratelimit = 600; % max rate in deg/s
 %Reference parameters   
 Lr = 0.152; % reference length [m]
 Ar = pi * (Lr^2) / 4; % reference area [m^2]
+
+% center of pressure location, for Cn_alpha override
+x_cp_tot = -3.17; % [m]
 
 %Nosecone parameters
 logiva = 0.638; % nosecone length [m]
@@ -121,6 +126,15 @@ unique_data(unique_data(:, 1) < 0.3, 2) = Cd_at_03;
 lookup_table = unique_data;
 CD_input = lookup_table(:, 1); % Mach #
 CD_data = lookup_table(:, 2); % Cd
+
+%% Cn_alpha tables
+
+CNa_input_aoa = deg2rad(or_override_aoa_cna.Var1); % angle of attack
+CNa_data_aoa = or_override_aoa_cna.Var2; % CN_alpha
+
+CNa_input_mach = or_override_mach_cna.Var1; % Mach number
+CNa_data_mach = or_override_mach_cna.Var2; % CN_alpha
+
 
 %% Aero
 % Nose
