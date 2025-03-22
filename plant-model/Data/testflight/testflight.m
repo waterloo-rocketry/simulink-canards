@@ -1,14 +1,7 @@
 %% OR Simulation Output Data
 or_data = readtable("plant-model\Data\testflight\testflight_cycle_1_1_no_wind.csv");
-
-% for i=1:width(or_data)
-%     %or_data.x_Time_s_(isnan(or_data.x_Time_s_)) = or_data.x_Time_s_();
-%     a = table2array(or_data(:, i));
-%     a_last = a(find(~isnan(a), 1, 'last'));
-%     a(isnan(a)) = a_last;
-%     or_data(:, i) = array2table(a, 'VariableNames', or_data.Properties.VariableNames(i));
-% end
-
+or_override_aoa_cna = readtable("plant-model\Data\testflight\testflight_aoa_cna.csv");
+or_override_mach_cna = readtable("plant-model\Data\testflight\testflight_mach_cna.csv");
 %% Initial values
 location = [10; 43.47; -80.54]; % launch location on earth. Altitude, Latitude, Longitude
 rail_angle = deg2rad(-5); % negative is pitched downrange
@@ -31,30 +24,40 @@ act_ratelimit = 600; % max rate in deg/s
 
 %% Aerodynamics Reference Geometry
 %Reference parameters   
-Lr = 0.152; % reference length [m]
+Lr = 0.203; % reference length [m]
 Ar = pi * (Lr^2) / 4; % reference area [m^2]
 
+% center of pressure location, for Cn_alpha override
+x_cp_tot = -2.1; % [m]
+
+% TEMP Cnalfa overrides - testflight
+CNa_nosecone = 2;
+CNa_body = 3;
+CNa_fins = 7.225;
+CNa_tail = 0;
+CNa_canard = 2;
+
 %Nosecone parameters
-logiva = 0.638; % nosecone length [m]
-r0 = 0.152 / 2; % nosecone radius [m]
+logiva = 1.02; % nosecone length [m]
+r0 = 0.203 / 2; % nosecone radius [m]
 
 %Body parameters
-l0 = 4.05; % rocket length [m]
+l0 = 2.72; % rocket length [m]
 lTubo = l0 - logiva; % fuselage length only [m]
 Rs = 20 / 10^6; % RMC(?) roughness 20 um smooth paint
 
 %Fin parameters
 Cr = 0.254; %[m] root chord?
-Ct = 0.229; %[m] tip chord?
+Ct = 0.152; %[m] tip chord?
 span = 0.178; %[m] height?
-sweep = 0.114; % [m]
-pos_aletas = -l0 + (28.3+7.94-1.27)/100; % postion of fins measured from nosecone [m]
-N_fins = 3; % Number of fins
+sweep = 0.0508; % [m]
+pos_aletas = -l0 + 5.08/100; % postion of fins measured from nosecone [m]
+N_fins = 4; % Number of fins
 cant_angle_rad = deg2rad(0); % fin cant angle [rad]
 
 %Tail parameters
 rt = 0.152 / 2; % tail radius [m]
-h = 0.0794; % tail length [m]
+h = 0; % tail length [m]
 r2 = 0.14 / 2; % smallest tail radius(?) [m]
 pos_tail = -l0 + h; % tail position measured from nosecone
 

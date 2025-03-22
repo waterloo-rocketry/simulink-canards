@@ -1,20 +1,11 @@
 %% Choose rocket
-
-run('plant-model\Data\Borealis\borealis.m')
-%run('plant-model\Data\Aurora\aurora.m')
-% run('plant-model\Data\testflight\testflight.m')
+% run('plant-model\Data\Borealis\borealis.m')
+run('plant-model\Data\testflight\testflight.m')
 
 %% data pre-processing
 clear estimator_module
 
 run('plant-model\scripts\data_preparation.m')
-
-% TEMP Cnalfa overrides
-CNa_nosecone = 2;
-CNa_body = 5;
-CNa_fins = 9.6;
-CNa_tail = -0.319;
-CNa_canard = 2;
 
 %%% reference computations (used to check internal computation against OR net values only)
 % Total normal force derivative

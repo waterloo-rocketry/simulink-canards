@@ -31,6 +31,13 @@ Ar = pi * (Lr^2) / 4; % reference area [m^2]
 % center of pressure location, for Cn_alpha override
 x_cp_tot = -3.17; % [m]
 
+% TEMP Cnalfa overrides - borealis
+CNa_nosecone = 2;
+CNa_body = 5;
+CNa_fins = 9.6;
+CNa_tail = -0.319;
+CNa_canard = 2;
+
 %Nosecone parameters
 logiva = 0.638; % nosecone length [m]
 r0 = 0.152 / 2; % nosecone radius [m]
