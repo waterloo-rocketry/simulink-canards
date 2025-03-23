@@ -4,6 +4,7 @@ run('plant-model\Data\testflight\testflight.m')
 
 %% data pre-processing
 clear estimator_module
+clear control_scheduler
 
 run('plant-model\scripts\data_preparation.m')
 

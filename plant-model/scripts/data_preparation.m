@@ -1,4 +1,5 @@
 %% Data preparation for simulation
+or_data = fillmissing(or_data, 'previous');
 
 %% MCI
 % Wet
