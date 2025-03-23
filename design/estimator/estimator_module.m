@@ -44,7 +44,7 @@ function [xhat, Phat, controller_input, bias_1, bias_2, bias_3] = estimator_modu
         % Prediction step
         %%% Q is a square 13 matrix, tuning for prediction E(noise)
         %%% x = [   q(4),           w(3),           v(3),      alt(1), Cl(1), delta(1)]
-        Q = diag([ones(1,4)*1e-10, ones(1,3)*1e2, ones(1,3)*2e-2, 1e-2,  10, 10]);
+        Q = diag([ones(1,4)*1e-10, ones(1,3)*1e2, ones(1,3)*2e-2, 1e-2,  1, 10]);
         
         u.accel = model_acceleration(x, IMU_1, IMU_2, IMU_3);
         u.cmd = cmd;
