@@ -63,9 +63,9 @@ pos_tail = -l0 + h; % tail position measured from nosecone
 
 % Canards parameters 
 N_canard = 2;
-Cr_canard = 40 / 1000;
-Ct_canard = 40 / 1000; % "The tip is the size of the root to take advantage of the fact that the further away from the rocket, the greater the moment arm."
-span_canard = 80 / 1000;
-arm_canard = 10/1000; % Moment arm from fin to fuselage
-alfa_canard = deg2rad(0); % Canard maximum angle of attack
+Cr_canard = 4 * 0.0254; % root chord
+Ct_canard = 1 / 1000; % tip chord 
+span_canard = 2.5 * 0.0254; % root to tip length
+arm_canard = 1 * 0.0254; % Moment arm from fin to fuselage
+alfa_canard = deg2rad(12); % Canard maximum angle of attack
 pos_canard = -(558.29 + 40)/1000; %TODO: add this
