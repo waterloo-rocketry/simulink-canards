@@ -1,0 +1,67 @@
+\usepackage[bottom]{footmisc}
+
+\usepackage{parskip}
+
+\usepackage[backend=biber, style=numeric, sorting=none]{biblatex}
+
+\usepackage{csquotes}
+
+\usepackage{hyperref}
+
+\usepackage[T1]{fontenc}
+
+\usepackage{fancyhdr}
+\usepackage{chngcntr}
+
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{shapes, arrows, calc, decorations.markings, arrows.meta}
+\usepackage{tikz-3dplot}
+\usepackage{pgfplots}
+\pgfplotsset{width=10cm,compat=1.18}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{url}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bm}
+
+%%%%%%%% Custom commands
+\newcommand\chapterauthor[1]{\authortoc{#1} \printchapterauthor{#1} \authorfoot{#1}}
+%\WithSuffix\newcommand\chapterauthor*[1]{\printchapterauthor{#1} \authorfoot{#1}}
+
+\makeatletter
+\newcommand{\printchapterauthor}[1]{%
+  {\parindent0pt\vspace*{-30pt}%
+  \linespread{1.1}\large\bfseries#1%
+  \par\nobreak\vspace*{35pt}}
+  \@afterheading% 
+}
+\newcommand{\authortoc}[1]{%
+  \addtocontents{toc}{\vskip-9pt}%
+  \addtocontents{toc}{%
+    \protect\contentsline{chapter}%
+    {\hskip1.4em\protect\normalsize#1}{}{}}
+  \addtocontents{toc}{\vskip5pt}%
+}
+\newcommand{\authorfoot}[1]{%
+   \fancyfoot[R]{\itshape#1}%
+}
+\makeatother
+
+
+%%%%%%%%% Header / Footer
+
+\renewcommand{\thechapter}{\Roman{chapter}}
+\renewcommand{\thesection}{\arabic{section}}
+\counterwithout{section}{chapter}
+
+\renewcommand{\chaptermark}[1]{\markboth{\itshape\MakeUppercase{\thechapter.\ #1}}{}}
+\fancyhead[R]{\thepage}
+\fancyhead[C]{}
+\setlength{\headheight}{20pt}
+\setlength{\headsep}{17pt}
+\fancyfoot[C]{\thepage}
+\fancyfoot[L]{\itshape \leftmark}
+\renewcommand{\footrulewidth}{0.4pt}
