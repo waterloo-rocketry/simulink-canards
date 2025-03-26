@@ -22,7 +22,7 @@ where the matrices $A,C$ are the Jacobians of $f,h$ with respect to the state $x
 The state $x$ describes a collection of variables, which describe the dynamics of the system in a collection of first order differential equations.
 \footnote{For example: a mass-spring-damper system has two state variables, position and velocity. These describe the energy stores of the system, potential of the deformed spring and kinetic of the moving mass.}
 These states do not have to have a physical meaning \footnote{For example, one could describe a system with its input-output relationship, without assigning a meaning to the variables of the differential equations.}, but they will in this case as they describe the system well.
-From textbooks \cite{zipfel2007, stevens2015, tewari2011},  lectures \cite{theis2023}, papers \cite{minh2012, theis2015}, the industry standard for choosing states of aeronautical vehicles is using attitude angles, attitude rates, velocity, and position. 
+For aerospace vehicles, often chosen states are the attitude (Euler angles or quaternion), attitude rates, velocity, and position. 
 The input signal $u$ describes how external sources influence the dynamics (and the measurement). 
 This describes behaviour which is not captured by the state alone, for example actuators acting on the system.
 The output signal $y$ describes how a certain state influences the environment.
@@ -50,7 +50,7 @@ The sensor frames $\mathrm{f}^{S}$ are aboard the rocket, but rotated and transl
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.4\linewidth]{images-finn/model-coordinates-rocket.png}
+    \includegraphics[width=0.45\linewidth]{images-finn/model-coordinates-rocket.png}
     \caption[Diagram of the body-fixed frame $\mathrm{f}^B$]{Diagram of the body-fixed frame $\mathrm{f}^B$, taken from \cite{siouris2004}. (Here a different convention is used to denote the axes, $X_b$ rather than $x^B$). }
     \label{fig:model-frame-rocket}
 \end{figure}
@@ -98,7 +98,7 @@ The Quaternion is defined as
 \end{equation}
 which consists of four variables, often names as the real part $q_w$, and the vector part $q_v$.\footnote{Formally, the quaternion is a four-dimensional complex number, instead of $a+\mathrm{i}b$ it is $q_w + \mathrm{i} q_x + \mathrm{j} q_y + \mathrm{k} q_z$, where all variable are orthogonal and $\mathrm{i}^2 = \mathrm{j}^2 = \mathrm{k}^2 = \mathrm{ijk} = -1$. This will not really be relevant for the mechanics, but explains some weirdness of the calculations.}
 The attitude quaternion is normed to $|q| = q^T q =  1$ to describe rotations.
-This unit constraint has to be enforced in the filter process, e.g. by norming $q$ after integration \cite{sola2017}.
+This unit constraint has to be enforced in the filter process, e.g. by norming $q$ after integration \cite{sola2017}, or by Baumgarte stabilization (implemented is the former).
 
 Euler's rotation theorem states that every rotation sequence (or attitude difference) in 3D space can be expressed as a single rotation with angle $\varphi$ around a single axis $n$ (unit vector) \cite{zipfel2007}.
 The quaternion can be understood as that rotation, with
@@ -133,14 +133,16 @@ Two quaternions $q, r$ are multiplied to quaternion $p$ as \cite{stevens2015}
 with the matrix $\tilde Q$ stemming from the Hamiltonian product \cite{stevens2015}.
 To note: this multiplication is not commutative ($q*r \neq r*q$).
 
-The time derivative of the quaternion attitude, with angular rates $\omega$ described in the body-fixed frame, is \cite{zipfel2007, sola2017, stevens2015}
+The time derivative of the quaternion attitude, with angular rates $\omega$ described in the body-fixed frame, has multiple equal expressions \cite{zipfel2007, sola2017, stevens2015}
 \begin{align}
     \dot q \;
-    &= \; \frac{1}{2} \tilde \Omega \cdot q \;
-    = \; \frac{1}{2} \tilde Q \cdot 
-    \begin{bmatrix}
+    &= \; \frac{1}{2} q * \begin{bmatrix}
         0 \\ \omega
-    \end{bmatrix}
+    \end{bmatrix} \;
+    = \; \frac{1}{2} \tilde Q \cdot \begin{bmatrix}
+        0 \\ \omega
+    \end{bmatrix} \;
+    = \; \frac{1}{2} \tilde \Omega \cdot q \;
     & 
     \tilde \Omega &= \begin{bmatrix}
         0 & -\omega_x & -\omega_y & -\omega_z \\
@@ -159,7 +161,7 @@ Time integration leads to the discrete dynamics of a quaternion attitude, descri
 \end{align}
 where for constant angular velocities $\omega$ in this short time frame $dt$, the incremental attitude quaternion $dq$ is \cite{sola2017}
 \begin{align}
-    dq(t, dt) &= \begin{bmatrix} \cos(\frac{d\varphi}{2}) \\ dn \sin(\frac{d\varphi}{2})
+    dq(t, dt) = dq_k &= \begin{bmatrix} \cos(\frac{d\varphi}{2}) \\ dn \sin(\frac{d\varphi}{2})
     \end{bmatrix}
     & d\varphi &= \lVert \omega(t) \rVert dt 
     & dn &= \frac{\omega(t)}{\lVert \omega(t) \rVert}
@@ -223,6 +225,7 @@ For the rotation sequence yaw $\to$ pitch $\to$ roll (order $z\to y \to x$, rota
     \psi &= \mathrm{atan2}(S_{21}, S_{11}) &
     \theta &= \mathrm{arcsin}(-S_{31}) &
     \phi &= \mathrm{atan2}(S_{23}, S_{33}) 
+    \label{eq:quaternion2euler}
 \end{align}
 
 For initialization, the quaternion is set according to Equation \ref{eq:rotation-theorem}, where $\varphi$ the launch angle, and $n$ indicates the launch orientation (pitch or yaw) \footnote{Initialization with Euler angles is also possible\cite[p. 126]{zipfel2007}, but too much effort to write down here.}.
@@ -236,7 +239,7 @@ Using Newton's second law, the acceleration in the body-fixed frame is \cite{zip
 \end{align}
 which accounts for the derivation in the rotating body-fixed frame with the transport term $- \, \omega \times v$, and the vector of external forces $\mathcal{F}$ ( in the body-fixed frame).
 The gravity vector $g^G = \begin{bmatrix} -g_0 & 0 & 0 \end{bmatrix}^T$ is transformed to the body-fixed frame to account for the gravitational acceleration (magnitude $g_0 \approx 9.81 \frac{\mathrm{m}}{\mathrm{s}^2}$).
-Note: gravity is thus not a part of the force $\mathcal{F}$.
+To note: gravity is thus not a part of the external forces $\mathcal{F}$.
 
 The velocity in the inertial (geographic) frame is \cite{zipfel2007}
 \begin{equation}
@@ -252,16 +255,19 @@ With Euler's law, the angular acceleration is \cite{zipfel2007, schiehlen2017}
 which includes the external torques (or moments) $\mathcal{T}$ (described in the body-fixed frame) and the gyroscopic moment.
 The inertia tensor $J$ is determined from CAD or experimentally. If the coupling inertia moments are very small, they may be neglected to fill the tensor diagonally as $J = \text{diag}\begin{bmatrix} J_x & J_y & J_z \end{bmatrix}$, where in a rocket cruciform typically $ J_x < J_y = J_z$.
 
-\subsection{Measurements}
+\subsection{Sensor measurements}
 \label{sec:model-measurements}
 All sensors are prone to high frequency noise, low frequency biases, and scaling factors, among other disturbances (such as non-orthogonality of the axes, eigendynamics of the test masses).
 Noisy measurements are filtered by the EKF process, but the biases also need to be corrected.
-For the different sensor models, scaling factors $B_i$ are factored in and biases $b_i$ are added. \\
-The Inertial Measurement Units (IMUs) which house all sensors\footnote{Simplified here: an IMU is defined as Gyroscope + Accelerometer, but Magnetometer and Barometer are on the same board/housing.}, are not mounted at the center of gravity of the rocket body, and the sensor frame is not aligned to the body frame.
+For the different sensor models, scaling factors $B_i$ are factored in and biases $b_i$ are added. 
+
+The Inertial Measurement Units (IMUs) which house all sensors\footnote{Simplified here: an IMU is defined as Gyroscope + Accelerometer, but Magnetometer and Barometer are on the same board/housing.}, are not mounted at the center of gravity of the rocket body, and the sensor frame is generally not aligned to the body frame.
 Therefore, a transformation to the body-fixed frame must be formulated to model the vectorized sensor measurements.
 This includes orientation correction with the rotation matrix $S_i$, and for the accelerometers distance to the c.g. $d_i$. \\
 All these corrections are determined during hard calibration ($S_i, \, d_i, \, B_i$ are found in workshop testing, where some corrections are hard-coded), and by the initialization filter on the launch pad ($b_i$, see Section \ref{sec:estimator-initialization}).
 
+About the notation: the true states of the rocket are mostly denoted as lower case (e.g. $\omega$, $\dot v$ $p$), and thus the corresponding measurements are mostly denoted in upper case (e.g. $\Omega$, $A$, $P$).  
+Keep in mind that the measurement and the true value are \textit{not} the same, and noise is not represented in the equations.
 
 
 \subsubsection{Angular velocity - Gyroscope}
@@ -304,7 +310,7 @@ This is mostly determined by Earths magnetic field $M_E^G$ (which is assumed to 
 \textit{Soft iron} disturbances stem from nearby ferromagnetic materials (predominantly Iron, Nickel, Cobalt), which react to the present magnetic field. 
 This causes stretching of the measured field (shown in Figure \ref{fig:meas-mag-dist}) by the matrix $B_{SI}$, which is unity if no soft iron disturbances are present.
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
     \centering
     \begin{subfigure}{0.4\textwidth}
         \resizebox{0.7\textwidth}{!}{
@@ -318,7 +324,7 @@ This causes stretching of the measured field (shown in Figure \ref{fig:meas-mag-
         \caption{Hard and soft iron disturbances}
         \label{fig:meas-mag-dist}
     \end{subfigure}
-    \caption{2D Visualization of the measured magnetic field \cite{vectornav2024}}
+    \caption{2D Visualization of the measured magnetic field \cite{vectornav2024}.}
     \label{fig:meas-mag}
 \end{figure}
 
@@ -330,11 +336,11 @@ where Earths magnetic field vector $M_E^G$ is rotated into the body-fixed and th
 Hard calibration (Section \ref{sec:hard-calibration}) must account for both biases and sensor frame rotation.
 The inverse transformation needed for initialization is 
 \begin{equation}
-    M_E^G = S^T ( B_{SI}^{-1} (S_M M - b_{HI} ) \label{eq:meas-mag}
+    M_E^G = S^T ( B_{SI}^{-1} (S_M M - b_{HI} ) \label{eq:meas-mag-init}
 \end{equation}
 
 \subsubsection{Pressure - Barometer}
-The barometer measures the local air pressure with the sensor offset bias as
+The barometer measures the local air pressure with the sensor bias as
 \begin{equation}
     P = p + b_P
 \end{equation}
@@ -342,8 +348,8 @@ Air temperature $T$ cannot be measured reliably from barometric sensor, and will
 The atmosphere is modelled in Section \ref{sec:model-atmosphere}.
 
 \subsubsection{Canard angle - shaft encoder}
-Somewhere in the gearing between servo actuator and canard surface, there is a rotational encoder on the shaft.
-The encoder measures the canard angle directly, and the resulting encoder signal $\delta_e$ is 
+There is a rotary potentiometer mounted on the canard shaft.
+This encoder measures the canard angle directly, and the resulting sensor signal $\delta_e$ is 
 \begin{align}
     \delta_e = \delta
 \end{align}
@@ -419,13 +425,13 @@ As the local speed of sounds varies with altitude, the Mach number is $\mathrm{M
 The Mach number has influence on the aerodynamic coefficients, and the location of the center of pressure.
 
 \subsubsection{Angle of attack \& sideslip}
-The attitude of the rocket relative to the oncoming airstream is defined with the \textit{angle of attack} $\alpha$ and the \textit{angle of sideslip} $\beta$.
+The incidence of the rocket relative to the oncoming airstream is defined with the \textit{angle of attack} $\alpha$ and the \textit{angle of sideslip} $\beta$.
 As any wind gusts act as disturbances, both $\alpha$ and $\beta$ are defined from the velocity vector of the rocket in the body-fixed frame, as seen in Figure \ref{fig:model_alpha-beta}.
 The angles are therefore
 \begin{align}
-    |v_x| & \geq 0  & |v_x| &\leq 0\nonumber \\
-        \alpha &= \arctan(v_z/v_x) & \alpha &= \pi - \arctan(v_z/v_x) \\
-        \beta &= \arctan(v_y/v_x) &  \beta &= \pi - \arctan(v_y/v_x)
+    |v_x| &> 0 & |v_x| &= 0 & |v_x| & < 0 \nonumber \\
+        \alpha &= \arctan(v_z/v_x)  & \alpha &= \pi/2 & \alpha &= \pi - \arctan(v_z/v_x) \\
+        \beta &= \arctan(v_y/v_x) & \beta &= \pi/2 & \beta &= \pi - \arctan(v_y/v_x) 
 \end{align}
 
 \begin{figure}[ht]
@@ -437,28 +443,28 @@ The angles are therefore
 \end{figure}
 
 
-\subsection{Forces and moments}
-The rocket dynamics have external forces and torques acting on the body, whcih are described here.
-Note that the forces are described here, but the filter uses accelerometer data in the dynamics model making the force computations unnecessary. 
-The model could also be used not as a filter, but e.g. in a flight simulation, where the forces would be used.
-The external torques are still important however, as they couple some states to the angular velocity measurements.
+\subsection{Aerodynamics}
+The rocket dynamics have external forces and torques acting on the body, which are described here.
+Note that the forces are described here, but the filter uses accelerometer data in the dynamics model, making the force computations unnecessary. 
+The model could also be used not as a filter, but as a flight simulation, where explicit force equations would be used.
+The external torques are still important however, as they couple the some unmeasured states to the angular velocity measurements.
 
-\subsubsection{Aerodynamic forces and moments}
+\subsubsection{Forces and moments}
 Most of the external forces and torques acting on the rocket will stem from aerodynamics.
 The effect of rocket body geometry, including fins and nosecone, can be approximated using Barrowman's method \cite{barrowman1967}.
 
-Any aerodynamic force for each component is defined as 
+Any aerodynamic force for each component $^i$ is defined as 
 \begin{align}
-    \mathcal{F}^{\,i} &= \bar p \, C^i_{...} A 
+    \mathcal{F}^{\,i} &= \bar p \, C^i_{...} A^i 
 \end{align}
-where the aerodynamic coefficient (lift $C_L$, normal $C_N$, drag $C_D$, roll $C_l$) and reference area $A$ depend on the geometry of the component, and the lift coefficient encompasses information about the angle of attack. 
+where the aerodynamic coefficient (lift $C_L$, normal $C_N$, drag $C_D$, roll $C_l$) and reference area $A^i$ depend on the geometry of the component, and the lift coefficient encompasses information about the incidence angles. 
 
 The torque produced by the aerodynamic forces is determined by the vector of the aerodynamic forces, acting through the the \textit{center of pressure} and producing a moment around the center of gravity as 
 \begin{align}
     \mathcal{T}^{\, i} &= \mathcal{F}^{\, i} \times d^{\, i}
 \end{align}
 where $d^{\, i}$ is the vector from the center of pressure to the center of gravity (direction matters!).
-Here $^i$ indicates an arbitrary component (it is not an exponent).
+
 
 The total aerodynamic forces and moments are 
 \begin{align}
@@ -466,30 +472,63 @@ The total aerodynamic forces and moments are
     & 
     \mathcal{T}_A &= \sum_i \mathcal{T}^{\,i}
 \end{align}
-with the coefficients listed in Table \ref{tab:aero-coeff}.
+For reference, later used coefficients are listed in Table \ref{tab:aero-coeff}.
+\textit{Derivatives} are often used in aerospace control literature and encompass the force/torque and the corresponding inertia, partially differentiated around a variable $_i$.
 
 \begin{table}[ht]
 \begin{center}
-\begin{tabular}{l l l}
-Symbol & Value & Name \\
+\begin{tabular}{l l}
+Symbol & Name \\
 \hline
-$C^\text{can}_{L_\delta}$ or $C_L$ & & Lift coefficient, canards \\
-$L_\delta$ & & Roll control derivative \\
-$C^\text{fins}_{l_{\omega_x}}$ &  & Roll damping coefficient, fins \\
-$L_{\omega_x}$ & & Roll damping derivative, fins \\
-$C_{N_\alpha}$ & & Normal force coefficient, entire rocket
+$C^\text{can}_{L_\delta}$ (in state notation $C_L$) & Lift coefficient, canards \\
+$L_\delta$ & Roll control derivative \\
+$C^\text{fins}_{l_{\omega_x}}$ &  Roll damping coefficient, fins \\
+$L_{\omega_x}$ & Roll damping derivative, fins \\
+$C_{N_\alpha}$ & Normal force coefficient, entire rocket
 \end{tabular}
 \end{center}
 \caption{Aerodynamic parameters} \label{tab:aero-coeff}
 \end{table}
 
-\subsubsection{Aerodynamics of the canards and roll moments}
+\subsubsection{Airfoil theory and lift coefficient}
+\textit{Most of the in-depth development has been done by Luca Scavone, lead of the flight dynamics subsystem \cite{team-flight-luca}}.
 The coefficient of lift is approximated using thin airfoil theory \cite{stengel2004}.
-The canards have a low aspect ratio of about $0.5 \lesssim A\!\!R \lesssim 1$, and thin airfoil theory thus predicts a lift coefficient for each canard of \cite{stengel2004}
+The canards have a triangular (\textit{delta} $\Delta$) shape, with a high \textit{sweep angle} $\Lambda$. 
+The lift coefficient depends on the Mach number of the rocket, as the flow behaviour starts to change near sonic speed.
+Protruding geometries of the rocket body, such as the canards, have shock waves attached to them if the flow around them is supersonic.
+At higher speeds, these shock waves angle more and more backwards. 
+The characteristic Mach angle is defined as non-zero only for $\mathrm{Ma} \geq 1$, as \cite{stengel2004}
 \begin{equation}
-    C_L^\text{can} = \frac{\pi}{2} A\!\!R \, \delta \approx 1.5 \, \delta
+    \mu = \arccos(\frac{1}{\mathrm{Ma}})
 \end{equation}
-for small angles of attack $\delta < 40^\circ$ of the canard surfaces.
+For a subsonic leading edge $\mu \leq \Lambda$ (i.e. the canard is more acute than the Mach cone), the coefficient of lift is empirically determined \cite{stengel2004} as Equation \ref{eq:model_airfoil-subsonic}.
+When the Mach cone is steeper than the canard leading edge $\mu > \Lambda$, the coefficient of lift follows a simpler law \cite{stengel2004} in Equation \ref{eq:model_airfoil-super}.
+\begin{align}
+    \mu &\leq \Lambda : & C_{L_\delta} &= \frac{2 \pi^2 \cot(\Lambda)}{\pi + \eta (0.38 + 2.26 \eta - 0.86 \eta^2)} \quad \text{with} \quad \eta = \frac{\cot(\Lambda)}{\cot(\mu)} \label{eq:model_airfoil-subsonic} \\
+    \mu &> \Lambda : &C_{L_\delta} &= \frac{4}{\sqrt{\mathrm{Ma}^2-1}} \label{eq:model_airfoil-super}
+\end{align}
+For small deflection $\delta < 10^\circ$ of the canard surfaces, the coefficient of lift is proportional to the deflection angle, so $C_L = C_{L_\delta} \delta$.
+The equations for the coefficient of lift are shown in the Figures \ref{fig:airfoil}.
+Figure \ref{fig:airfoil-angles} shows the coefficient $C_{L_\delta}$ and Mach angle $\mu$ for an exemplary sweep angle of 60°, 
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}{0.49\textwidth}
+        \includegraphics[width=0.9\textwidth]{images-finn/airfoil_angles.png}
+        \caption{Lift coefficient and Mach cone angle vs. Mach number, for 60° sweep angle}
+        \label{fig:airfoil-angles}
+    \end{subfigure}
+    \begin{subfigure}{0.49\textwidth}
+        \includegraphics[width=0.9\textwidth]{images-finn/airfoil_sweeps.png}
+        \caption{Lift coefficients vs. Mach number, for different sweep angles}
+        \label{fig:airfoil-sweeps}
+    \end{subfigure}
+    \caption[Swept delta airfoil theory]{Coefficient of lift for swept delta airfoils}
+    \label{fig:airfoil}
+\end{figure}
+
+
+\subsubsection{Canard forces and roll moments}
 The resulting force of one canard is $\mathcal{F}^\text{can}_1 = \bar p \, C^\text{can}_{L_\delta} \delta A^\text{can}_1$, which is orthogonal to the $x^B$ vector, and acts on the center of pressure of the canard surface.
 
 \begin{figure}[ht]
@@ -508,14 +547,14 @@ The forces and moments produced by the canards are thus
     \mathcal{T}^\text{can} &= \begin{bmatrix} \bar p \, C^\text{can}_{L_\delta} \delta A^\text{can} d^\text{can}_y 
     \\ 0 \\ 0 \end{bmatrix}
 \end{align}
-where $A^\text{can}$ is the total area of all canards and $d^\text{can}_y$ is the distance between the rocket roll axis $x^B$ and the center of pressure of one of the canards.
+where $A^\text{can}$ is the total planform area of all canards and $d^\text{can}_y$ is the distance between the rocket roll axis $x^B$ and the center of pressure of one of the canards (i.e. the moment arm).
 The instantaneous roll acceleration of the canards can be written with the roll control derivative $L_\delta$ as 
 \begin{align}
     \dot \omega_x &= \mathcal{T}^\text{can}_x / J_x = L_\delta \, \delta
     & 
     L_\delta &= \bar p \, C^\text{can}_{L_\delta} A^\text{can} d^\text{can}_y / J_x
 \end{align}
-which simplifies notation of the roll dynamics as shown in Section \ref{sec:model-roll-dynamics}.
+which simplifies notation of the roll dynamics as shown in Section \ref{sec:model_controller}.
 
 The roll forces of the rocket body are dominated by fin effects, namely roll forcing from misalignment, and roll damping from the fin wake of a rolling rocket. 
 The roll forcing is difficult to predict if the fin misalignment is not exactly know, so any forcing will be treated as disturbances acting on the rocket.
@@ -533,7 +572,7 @@ The instantaneous roll acceleration from roll damping of the fins can be written
 \end{align}
 
 
-\subsubsection{Aerodynamic normal forces and moments}
+\subsubsection{Normal forces and moments}
 Barrowman's method can be employed to derive the location of the center of pressure and the normal force coefficient, for each component of the rocket body \cite{barrowman1967, niskanen2009}.
 Accurate parameters are determined by the Flight Dynamics subsystem.
 
@@ -544,8 +583,8 @@ The normal forces and the resulting pitch/yaw torques are
     \mathcal{F}^\text{normal} &= 
     \begin{bmatrix} 
     0 \\ 
-    \bar p \, C_{N_\alpha} \alpha A^\text{ref} \\ 
-    \bar p \, C_{N_\beta} \beta A^\text{ref}
+    \bar p \, C_{N_\alpha} \beta A^\text{ref} \\ 
+    \bar p \, C_{N_\beta} \alpha A^\text{ref}
     \end{bmatrix}
     & 
     \mathcal{T}^\text{normal} &= 
@@ -557,21 +596,55 @@ The normal forces and the resulting pitch/yaw torques are
 \end{align}
 
 
-\subsubsection{Propulsion}
-The forces and moments produced by the engine are determined by the Propulsion subsystem.
-As we cannot predict thrust misalignment, it is assumed zero with any misalignment acting as disturbances, so the moment produces by the engine is zero.
-Any sloshing or pogo-effect is too complex to model here, and will be neglected.
-This leaves an axial propulsion force as some function of the engine performance $F_\text{engine}$, so
-\begin{align}
-    \mathcal{F}_P = \begin{bmatrix}
-        \mathcal{F}_\text{engine}(t, \rho, ...) \\ 0 \\ 0
-    \end{bmatrix}
-\end{align}
+% \subsubsection{Propulsion}
+% The forces and moments produced by the engine are determined by the Propulsion subsystem.
+% As we cannot predict thrust misalignment, it is assumed zero with any misalignment acting as disturbances, so the moment produces by the engine is zero.
+% Any sloshing or pogo-effect is too complex to model here, and will be neglected.
+% This leaves an ``unknown'' axial propulsion force as some function of the engine performance $F_\text{engine}$, so
+% \begin{align}
+%     \mathcal{F}_P = \begin{bmatrix}
+%         \mathcal{F}_\text{engine}(t, \rho, ...) \\ 0 \\ 0
+%     \end{bmatrix}
+% \end{align}
 
-\subsubsection{Rail constraints}
-The rocket is attached to the launch rail for the first few meters of altitude, constraining the rocket to one degree of freedom (translating upwards).
-This effect only acts during the first few fractions of a second, and will therefore be neglected for the flight.
-However, as long as the rocket is (knowingly) on the launch rail, the movement constraints can be used to initialize the state, and to determine sensor biases.
+% \subsubsection{Rail constraints}
+% The rocket is attached to the launch rail for the first few meters of altitude, constraining the rocket to one degree of freedom (translating upwards).
+% This effect only acts during the first few fractions of a second, and will therefore be neglected for the flight model.
+% However, as long as the rocket is (knowingly) on the launch rail, the movement constraints can be used to initialize the state, and to determine sensor biases. 
+
+\subsection{Actuators}
+\textit{The mechanical design of the canard actuating system has been done by Ben Pickens, Co-lead of the controls subsystem \cite{team-controls-ben}}.
+The actuation system, shown in Figure \ref{fig:model-actuator-cad}, rotates two canards in opposite directions by equal amounts, thus providing a roll-only torque on the rocket.
+The actuation is provided by a servo motor, driving the canard shafts via bevel gears.
+It acts as a position control element, which provides a calculated torque to reach the commanded shaft angle. 
+To provide accurate position feedback to the controller / state estimation, rotary potentiometers are mounted on the canard shafts.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.5\linewidth]{images-finn/actuator_cad.png}
+    \caption[Mechanical design of the actuator]{Mechanical design of the canards actuation assembly \cite{team-controls-ben}.}
+    \label{fig:model-actuator-cad}
+\end{figure}
+
+\subsubsection{Actuator dynamics}
+%The drive train is made up of a servo motor, the servo and canard shafts, and the gearing between them.
+The internal control loop of the servo has some higher order dynamics, non-linearity in a maximum angle and limited speeds, and some dead-time before it starts responding.
+A reasonable approximation to use for the controller and state estimation models would be a first or second order linear system, the former is chosen to keep the state vector small (and thus the filter computations shorter).
+
+The first order system with the actual canard angle $\delta$, the commanded servo angle $\delta_u$, and the gear ratio between the servo and the canard $\beta_\delta$, has the form
+\begin{equation}
+    \dot \delta = -\alpha_\delta (\delta - \beta_\delta\delta_u)
+\end{equation}
+The dynamics are dominated by the time constant $\alpha_\delta$, which describes how fast the canard angle responds to a servo command. 
+Solving the ODE results in the step response
+\begin{align}
+    \delta(t) = (1-\mathrm{e}^{-\alpha_\delta t}) \beta_\delta \delta_u
+\end{align}
+Notably, when no non-linearity is present, i.e. as long as the servo speed limit is not reached, the response time does not depend on the commanded angle $\delta_u$.
+
+The first order response is fitted to the measured actuator response by adjusting the time constant.
+The gear ration is assumed to be $\beta_\delta = 1$ from now on, following equations need to adjusted if that shoudl change. 
+
+\textit{Todo. Insert plots here.}
 
 
 \subsection{Estimator model equations}
@@ -605,13 +678,13 @@ The measurements arrive in the measurement vector
     \Omega & M & P & \delta_e
     \end{bmatrix}^T
 \end{equation}
-with measured body rates from the rate gyroscope $\Omega = \begin{bmatrix} \Omega_x & \Omega_y & \Omega_z \end{bmatrix}^T$, the magnetic field measurement $M = \begin{bmatrix} M_x & M_y & M_z \end{bmatrix}^T$ (which can be transformed to attitude \footnote{The inverse transformation is not unique as it is invariant about the field direction, but we can’t use the accelerometer in free flight to find the gravity vector}) from the magnetometer, additionally the static air pressure $P$ is provided by the barometer (the temperature $T$ is not used, as the measurement is unreliable).
+with measured body rates from the rate gyroscope $\Omega = \begin{bmatrix} \Omega_x & \Omega_y & \Omega_z \end{bmatrix}^T$, the magnetic field measurement $M = \begin{bmatrix} M_x & M_y & M_z \end{bmatrix}^T$ (which can be transformed to attitude\footnote{The inverse transformation is not unique as it is invariant about the field direction, but we can’t use the accelerometer in free flight to find the gravity vector.}) from the magnetometer, additionally the static air pressure $P$ is provided by the barometer (the temperature $T$ is not used, as its measurement is unreliable).
 The encoder signal $\delta_e$ also arrives in the measurement vector.
 The accelerometer data $A$ will be provided to the filter in the input vector, as this simplifies calculations.\footnote{This is quite common practice}
-If multiple sensors are used for each measurement, they will be stacked in the vector as $y = [\begin{smallmatrix} \Omega_1 & \Omega_2 & M_1 & M_2 & P_1 & P_2 & T_1 & T_2 \end{smallmatrix}]$.
+%If multiple sensors are used for each measurement, they will be stacked in the vector as $y = [\begin{smallmatrix} \Omega_1 & \Omega_2 & M_1 & M_2 & P_1 & P_2 & T_1 & T_2 \end{smallmatrix}]$.
 
 \subsubsection{Inputs $u$}
-The control input vector is the commanded canard angle to the actuator $\delta_u$ and, as stated in the previous paragraph, the  accelerometer data $A = \begin{bmatrix} A_x & A_y & A_z \end{bmatrix}^T$, which may also be stacked.
+The control input vector is the commanded canard angle to the actuator $\delta_u$ and, as stated in the previous paragraph, the  accelerometer data $A = \begin{bmatrix} A_x & A_y & A_z \end{bmatrix}^T$. %, which may also be stacked.
 
 As the acceleration is not a state, and cannot be directly computed from the other states (aerodynamic modelling is too indirect), it is used in the state prediction step instead of the correction step. 
 The measured acceleration $A$ enters the prediction function as a control input.
@@ -625,7 +698,7 @@ The transformation to the body-fixed body-centered frame from Equation \ref{eq:m
 \end{equation}
 The actual canard angle is represented as the state $\delta$, to account for actuator dynamics.
 The computation from desired canard angle to servo command should be performed in the controller. 
-If multiple IMUs are used, the measurements are stacked in the input vector as $u = [\begin{smallmatrix} \delta_u & A_1 & A_2 & A_3 \end{smallmatrix}]$.
+%If multiple IMUs are used, the measurements are stacked in the input vector as $u = [\begin{smallmatrix} \delta_u & A_1 & A_2 & A_3 \end{smallmatrix}]$.
 
 \subsubsection{Dynamics model}
 \begin{equation}
@@ -637,8 +710,8 @@ predicts the time derivative of the state vector, $\dot{\hat x}$ (Equation \ref{
     \item Rates: \ref{eq:model-rate-deriv}
     \item Velocities: \ref{eq:meas-veldot} for filtering and \ref{eq:model-vel-deriv} for simulation
     \item Position/Altitude: \ref{eq:model-pos-deriv}
-    \item Canard coefficient: 1st order dynamics $\dot C_L = -(1/\tau_c) (C_L - C_{L\text{, theory}})$
-    \item Canard angle: 1st order dynamics $\dot \delta = -(1/\tau_\delta) (\delta - \delta_u)$
+    \item Canard coefficient: 1st order dynamics $\dot C_L = -\alpha_c (C_L - C_{L\text{, theory}})$, airfoil theory Equations \ref{eq:model_airfoil-subsonic} and \ref{eq:model_airfoil-super}
+    \item Canard angle: 1st order dynamics $\dot \delta = -\alpha_\delta (\delta - \delta_u)$
 \end{itemize}
 
 \subsubsection{Measurement model} 
@@ -666,18 +739,25 @@ These equations may be employed around a collection of design points $\{ t_s, x_
 As the model must be controllable, it makes some simplifications compared to Section \ref{sec:estimator}.
 This is because the actuating canards can only produce a roll torque, i.e. a moment about the $x$-axis, but cannot directly influence other states, e.g. pitch and yaw rates.
 This results in the full model from Section \ref{sec:model_estimator} not being controllable, i.e. we cannot use the pole placement method to arbitrarily choose our desired dynamics.
-Additionally, the 
+Additionally, the full uncontrollable model includes uncontrollable modes, which make analysis of the control loop more cumbersome. 
 
-The cross coupling terms are neglected, and the the attitude is reduced from four quaternions to just the  roll angle.
-This roll angle $\phi$ is computed from entries of the rotation matrix as $\phi = \mathrm{atan2}( S_{23}, S_{33} )$.
-The velocity and altitude show up in the dynamic pressure $\bar p$.
-The dynamic pressure and the canard coefficient $C_L$ are the scheduling variables of the controller.
-The concocted state $x_R$ for the roll model is 
+\subsubsection{Simplifications}
+The cross coupling term $\omega \times J \omega$ is neglected, as the rocket is assumed to have an approximately diagonal $J$, and the roll dynamics are much faster than the pitch/yaw dynamics. 
+The attitude kinematics of the quaternion are neglected to assume that the rate of the roll angle is the roll rate, so $\dot \phi = \omega_x$.
+This roll angle $\phi$ is computed from the quaternions in the Estimator; $\phi = \mathrm{atan2}( S_{23}, S_{33} )$ as shown in Equation \ref{eq:quaternion2euler} (expressed here as entries of the rotation matrix).
+
+The altitude and the velocity vector are not directly controllable, so they are removed from the controller model as well. 
+To preserve the aerodynamics information, the velocity and altitude are combined to the dynamic pressure $\bar p$ acting on the rocket. 
+The dynamic pressure and the canard coefficient $C_L$ are not states, but variable parameters of the model matrix $A$.
+
+\subsubsection{State-space representation}
+The simplifications leave three state variables for the controller roll model, being roll angle, roll rate, and the canard deflection angle.
+Thus the state vector $x_R$ of the roll model is 
 \begin{align}
     x_R = \begin{bmatrix} \phi & \omega_x & \delta \end{bmatrix}^T
     \label{eq:controller-model-state}
 \end{align}
-
+As input to the system serves the commanded canard angle $\delta_u$, and all states are available as outputs du to the state estimation.
 The resulting state-space model is then 
 \begin{align}
     \dot x_R &= A x_R + B \delta_u 
@@ -690,11 +770,11 @@ with the matrices
     A &= \begin{bmatrix}
         0 & 1 & 0 \\
         0 & L_{\omega_x} & L_\delta \\
-        0 & 0 & -\frac{1}{\tau}
+        0 & 0 & -\alpha
     \end{bmatrix}
     &
     B &= \begin{bmatrix}
-        0 \\ 0 \\ 1/\tau
+        0 \\ 0 \\ \alpha
     \end{bmatrix}
     &
     C &= \begin{bmatrix} I_3 \end{bmatrix}
@@ -702,7 +782,6 @@ with the matrices
 \end{align}
 where the roll control derivative is $L_\delta (\bar p,  \,  C_L)$, a function of dynamic pressure and the canard coefficient of lift.
 Roll damping is modelled by the roll damping derivative $L_{\omega_x} (\bar p, \, C_{L \omega})$.
-The 1st order actuator dynamics are accounted for with the $\delta$ state, and are characterized by the time constant $\tau$ (the value should be determined by experimental system identification).
-Any gear ratio between servo motor and canards may be expressed as the numerator of the bottom entry of $B$ (here set to 1).
-The matrix $C$ combines the states of the system to an output signal, and can be set arbitrarily for response analysis.
-For the case $C = \begin{bmatrix} I_3 \end{bmatrix}$, the output signal is the entire state vector $y(t) = x(t)$, for the case $C = \begin{bmatrix} 1 & 0 & 0 \end{bmatrix}$, the ouput signal is $y(t) = x_1(t) = \phi$.
+Roll damping originates almost entirely from fixed fins which resist turning - for freely rolling fins (a spin can), the damping derivative should be zero.
+The 1st order actuator dynamics are accounted for with the $\delta$ state, and are characterized by the time constant $\alpha$ (the value should be determined by experimental system identification).
+Any gear ratio between servo motor and canards may be expressed as a factor of the bottom entry of $B$ (here set to 1).

@@ -1,6 +1,6 @@
-\section{Numerical methods}
+\subsection{Numerical methods}
 
-\subsection{Numerical Jacobian computation}
+\subsubsection{Numerical Jacobian computation}
 \label{sec:numerical-jacobians}
 The Jacobian $J_x$ is the matrix of all first-order partial derivatives of a vector-valued function.
 For the prediction and measurement model, the Jacobians of  the functions $f$ and $h$ (\footnote{The following equations are shown for an ``$f$", but are of course the same for $f$ and $h$}) are needed with respect to the state $x$ (where $n = \mathrm{length}(x)$).
@@ -17,7 +17,7 @@ Jacobians may be derived analytically from the function, but this is often cumbe
 Therefore, it is common practice to compute the matrix numerically.
 A frequently used method is using \textit{finite differences}, however this is known to be not very efficient nor accurate, and has issues with numerical instability \cite{martins2021}.
 
-\subsubsection{Complex-step differentiation}
+\textbf{Complex-step differentiation:}
 A more efficient way to calculate Jacobian matrices numerically is to use \textit{complex step differentiation}.
 In this method with step size $\varepsilon$, the $k$-th column of the matrix ($J_{x_k}$) is \cite{martins2003}
 \begin{align}
@@ -36,7 +36,7 @@ Complex-step differentiation also is numerically stable, and has also an $\mathr
 Both finite differences and complex-step scale linearly with the number of variables, but the finite difference method requires two function evaluations per variable, while complex-step requires only one.
 
 
-\subsection{Numerical Integration methods}
+\subsubsection{Numerical Integration methods}
 \label{sec:numerical-integration}
 To get a new discrete state from the continuous-time prediction process of the EKF, the nonlinear differential equations \ref{eq:predict_state} and \ref{eq:predict_cova} have to be solved.
 As the last state estimate is available as an initial value, this can be expressed as the \textit{Initial Value Problem} (IVP)
@@ -44,16 +44,17 @@ As the last state estimate is available as an initial value, this can be express
     \dot x(t) &= f(t, x, u) & x(0) &= x_{n} 
 \end{align}
 which is can be solved by numerical integration. 
-The integration methods need to be explicit, as the filter in the prediction step has only past state information. 
+To minimize computational effort the integration methods should be explicit, as the filter in the prediction step has only past state information. 
 
-\subsubsection{Explicit Runge-Kutta method}
+\textbf{Explicit Runge-Kutta method:}
 The explicit $s$-stage \textit{Runge-Kutta} method is compactly written as \cite{griffiths2010}
 \begin{align}
     x_{n+1} &= x_n + \varepsilon \sum_{i=1}^{s} c_i k_i
     \\
     k_i &= f \left( t_n + a_i \varepsilon \, , \; x_n + \varepsilon \sum_{j=1}^{i-1} b_{ij} k_j \, , \ u \right) 
 \end{align}
-with the time step size $\varepsilon$, and where $a_i$, $b_{ij}$, and $c_i$ are the entries of the vectors $a$ and $c$ and the matrix $B$, displayed in a \textit{Butcher tableau}
+with the time step size $\varepsilon$, which in case of the EKF, is the sampling time (i.e. the time since the last filter iteration).
+The constants $a_i$, $b_{ij}$, and $c_i$ are the entries of the vectors $a$ and $c$ and the matrix $B$, displayed in a \textit{Butcher tableau}
 \begin{equation}
     \begin{array}{c|c}
         a & B \\
@@ -64,6 +65,21 @@ with the time step size $\varepsilon$, and where $a_i$, $b_{ij}$, and $c_i$ are 
 \end{equation}
 These can be very large, as in the \textit{Dormand-Prince} method (RK45, which is the standard solver in Matlab).
 For our cases we will keep the tableaus small.
+
+The simplest, first order ($s=1$) method is explicit Euler, with the butcher tableau \cite{griffiths2010}
+\begin{equation}
+    \begin{array}{c|cc}
+        0 & 0 \;\\
+        \hline 
+        & 1 \;
+        \end{array}
+    \label{eq:appendix_euler_butcher}
+\end{equation}
+which results in the simple formula
+\begin{align}
+    x_{n+1} &= x_n + \varepsilon f \left( t_n, \; x_n, \ u_n \right)
+\end{align}
+Other integration methods can be formulated similarly, for example the discrete update function of the quaternion kinematics\footnote{As unit quaternions are used for attitude description, they have to be either normed after each Euler integration, or the discrete update has to follow their geometric structure, as shown in the Equation above.} in Equation \ref{eq:quaternion-update}.
 
 The second order ($s=2$) butcher tableau of the Heun method \cite{griffiths2010}, which is used for the prediction covariance, is  
 \begin{equation}

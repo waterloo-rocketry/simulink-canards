@@ -1,11 +1,12 @@
 \section{Controller}
-The controller is responsible for driving stabilizing the rocket state, attenuating any disturbances, and driving it to some desired value.
+The controller is responsible for stabilizing the rocket state, attenuating any disturbances, and driving it to some desired value.
 In their configuration the canards can only provide a torque around the roll ($x$) axis of the rocket.
-This imposes some constraints on the controller design, as the whole state is under-actuated.
+This imposes some constraints on the controller design, as the whole state \ref{eq:model-state-vector} is under-actuated.
+The model used for controller design is thus simplified to the state \ref{eq:controller-model-state}, using a linear parameter-varying system\footnote{Technically the ``full'' state is projected unto the controllable subspace.}.
 
-The controller chosen for the canards is linear state feedback, where the feedback gains are computed by the \textit{Linear Quadratic Regulator} (LQR) method \cite{werner2021, werner2021b}.
-The current state is determined by the state estimation algorithm (the Estimator), as seen in Figure \ref{fig:controller-loop}.
-The loop is a two-degree-of-freedom design, where the reference signal is prescaled by a reference gain.
+The controller chosen for the canards is linear state feedback, where the feedback gains $K$ are computed by the \textit{Linear Quadratic Regulator} (LQR) method \cite{werner2021, werner2021b}.
+The current state is determined by the state estimation algorithm (the Estimator is treated in Section \ref{sec:estimator}), as seen in Figure \ref{fig:controller-loop}.
+The loop is a two-degree-of-freedom design, where the reference signal is prescaled by a feedforward (reference) gain $K_{pre}$.
 To account for the non-linearity of the rocket dynamics the gains are selected from a gain schedule, which is a look-up table of gains for different parameters of the linear model from Equations \ref{eq:controller-model-state}, 
 \ref{eq:controller-model-ss}, and \ref{eq:controller-model-matrices}. 
 
@@ -18,53 +19,46 @@ To account for the non-linearity of the rocket dynamics the gains are selected f
 \end{figure}
 
 \subsection{Controller roll model}
-\label{sec:model-roll-dynamics}
-As the model must be linear, time-invariant, and controllable for the LQR synthesis, it makes some simplifications compared to Section \ref{sec:estimator}.
-The cross coupling terms are neglected, and the the attitude is reduced from four quaternions to just the  roll angle.
-This roll angle $\phi$ is computed from entries of the rotation matrix as $\phi = \mathrm{atan2}( S_{23}, S_{33} )$.
-The velocity and altitude show up in the dynamic pressure $\bar p$.
+\label{sec:controller_model}
 The dynamic pressure and the canard coefficient $C_L$ are the scheduling variables of the controller.
-The concocted state $x_R$ for the roll model is 
+The concocted state $x_R$ for the roll model is (Equation \ref{eq:controller-model-state})
 \begin{align}
     x_R = \begin{bmatrix} \phi & \omega_x & \delta \end{bmatrix}^T
-    \label{eq:controller-model-state}
+    \nonumber
 \end{align}
-
-The resulting state-space model is then 
+The state-space model is (Equations \ref{eq:controller-model-ss})
 \begin{align}
     \dot x_R &= A x_R + B \delta_u 
     &
     y_R &= C x_R
-    \label{eq:controller-model-ss}
+    \nonumber
 \end{align}
-with the matrices
+with the matrices (Equations \ref{eq:controller-model-matrices})
 \begin{align}    
     A &= \begin{bmatrix}
         0 & 1 & 0 \\
         0 & L_{\omega_x} & L_\delta \\
-        0 & 0 & -\frac{1}{\tau}
+        0 & 0 & -\alpha
     \end{bmatrix}
     &
     B &= \begin{bmatrix}
-        0 \\ 0 \\ 1/\tau
+        0 \\ 0 \\ \alpha
     \end{bmatrix}
     &
     C &= \begin{bmatrix} I_3 \end{bmatrix}
-    \label{eq:controller-model-matrices}
+    \nonumber
 \end{align}
-where the roll control derivative is $L_\delta (\bar p,  \,  C_L)$, a function of dynamic pressure and the canard coefficient of lift.
-Roll damping is modelled by the roll damping derivative $L_{\omega_x} (\bar p, \, C_{L \omega})$.
-The 1st order actuator dynamics are accounted for with the $\delta$ state, and are characterized by the time constant $\tau$ (the value should be determined by experimental system identification).
-Any gear ratio between servo motor and canards may be expressed as the numerator of the bottom entry of $B$ (here set to 1).
+where the roll control derivative is $L_\delta (\bar p,  \,  C_L)$, and the roll damping derivative is $L_{\omega_x} (\bar p, \, C_{L \omega})$.
 The matrix $C$ combines the states of the system to an output signal, and can be set arbitrarily for response analysis.
 For the case $C = \begin{bmatrix} I_3 \end{bmatrix}$, the output signal is the entire state vector $y(t) = x(t)$, for the case $C = \begin{bmatrix} 1 & 0 & 0 \end{bmatrix}$, the ouput signal is $y(t) = x_1(t) = \phi$.
 
-The (approximate in continuous time) closed loop is 
+The (approximately in continuous time) closed loop is 
 \begin{align}
     \dot x_R &= (A+BK) x_R + B K_{pre} r & y_R &= C x_R
     \label{eq:controller-closedloop}
 \end{align}
 
+\subsubsection{Controllability}
 To determine if pole placement is possible, which is a necessary condition for LQR \cite{werner2021}, the roll model is checked for controllability.
 The controllability matrix is 
 \begin{align}
@@ -105,7 +99,7 @@ This way the implemented controller does not need to compute the gains with the 
 \subsection{Optimal control theory}
 \label{sec:controller-theory}
 \textit{This section is here for completeness, it is not relevant for implementation.}
-The LQR method uses the weighting matrices $Q$ and $R$ to solve the linear quadratic optimization problem \cite{werner2021b} \footnote{I think this came out better than the estimation theory}
+The LQR method uses the weighting matrices $Q$ and $R$ to solve the linear quadratic optimization problem \cite{werner2021b} \footnote{I think this came out better than the estimation theory, please be kind Prof. Werner, Prof. Faulwasser}
 \begin{equation}
     \min V = \int_0^{\infty} (x^T(t) Q x(t) + u^T(t) R u(t)) dt
 \end{equation}
@@ -129,10 +123,9 @@ The control law is still useful for controlling nonlinear and observed systems, 
 
 \subsection{Gain scheduling}
 \label{sec:controller-scheduling}
-As the models from canard angle to roll rate are nonlinear and highly dependent on some slowly-varying states, a gain-scheduling scheme will be implemented. 
-The design points $x_s$ of the schedule are characterized by these slowly-varying states, being as air density, velocity, and aerodynamic coefficients of the canards. 
-The air density and velocity are combined to the dynamic pressure $\bar p$.
-The simplified model is evaluated around these design points using the current state estimate (so $A (\hat x)$), to form the matrix $A$.
+As the models from canard angle to roll rate are nonlinear and highly dependent on some slowly-varying parameters (the \textit{flight conditions}), a gain-scheduling scheme will be implemented. 
+The design points $x_s$ of the schedule are characterized by these slowly-varying flight conditions, being the aerodynamic pressure $\bar p$, and the lift coefficient of the canards $C_L$. 
+The simplified model is evaluated around these design points using the current state estimate $A \rvert_{\hat x}$, to form the matrix $A$.
 As the LQR method produces guaranteed robustness margins \cite{doyle1978, werner2021, werner2021b}, the  interpolation between two close design points should always produce a stable control loop.
 \begin{figure}[ht]
     \centering
@@ -153,11 +146,18 @@ The feedback gain are interpolated over this split.
 \subsection{Response analysis}
 To analyze some aspects of the control loop, the closed-loop responses are analyzed.
 The closed-loop is technically a sampled-data system, with continuous time (the rocket) and discrete time (estimator and controller) dynamics.
-For a high sampling rate (short time periods between control outputs), the continuous-time closed-loop is approximately (from Equation \ref{eq:controller-closedloop}).
+For a high sampling rate (short time periods between control outputs), the discrete-time and the continuous-time closed-loop are approximately equal. 
+The continuous-time dynamics are (from Equation \ref{eq:controller-closedloop})
+$ \dot x_R = (A+BK) x_R + B K_{pre} r$ and $ y_R = C x_R $, with $C = \begin{bmatrix} 1 & 0 & 0 \end{bmatrix}$ for the $r \to \phi$ channel.
+
+The weighting matrices are chosen as 
 \begin{align}
-    \dot x_R &= (A+BK) x_R + B K_{pre} r & y_R &= C x_R \nonumber
+    Q_c &= \begin{bmatrix}
+        10 & & \\ & 1 & \\ & & 10  
+        \end{bmatrix}
+    &
+    R_c &= (1 \cdot 10^{-3})\,  \bar p
 \end{align}
-with $C = \begin{bmatrix} 1 & 0 & 0 \end{bmatrix}$ for the $r \to \phi$ channel.
 
 The closed-loop step response for a collection of parameters (here varying velocities) is shown in Figure \ref{fig:controller-steps}.
 
