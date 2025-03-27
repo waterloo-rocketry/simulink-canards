@@ -1,11 +1,11 @@
 %% Parameters
-aspect = 1; % aspect ratio
+aspect = 1.5; % aspect ratio
 sweep = deg2rad(60); % sweep angle at quarter-chord 
 
 
 %% variables
 Mas = 0:0.01:3;
-sweeps = deg2rad(45:5:80);
+sweeps = deg2rad(50:5:70);
 
 %% Computes
 CL = zeros(length(Mas), 1);
@@ -46,6 +46,10 @@ end
 %% plot
 disp(['Max mach cone angle: ', num2str( rad2deg(acos(1/Mas(end))) ), ' deg' ]);
 
+set(groot, 'defaultAxesTickLabelInterpreter','latex')
+set(groot, 'defaultLegendInterpreter','latex')
+set(groot, 'DefaultTextInterpreter', 'latex')
+
 clf
 figure(1)
 plot(Mas, CL);
@@ -55,15 +59,21 @@ hold on
 yyaxis right
 plot(Mas, rad2deg(cone));
 yline(rad2deg(sweep), 'r--');
-legend("CL", "mach cone","sweep")
+legend("$$C_L$$", "Mach cone angle","Sweep angle")
 ylabel("Angles [deg]")
 hold off
 
 figure(2)
 for j=1:length(sweeps)
-    plot(Mas, CL_sweeps(:,j));
+    name = strcat("Sweep ", num2str(rad2deg(sweeps(:,j))), "$$^\circ$$");
+    plot(Mas, CL_sweeps(:,j), 'DisplayName',name);
     hold on
 end
 xlabel("Mach number")
 ylabel("Coefficient of Lift")
+legend
 hold off
+
+set(groot, 'defaultAxesTickLabelInterpreter','remove')
+set(groot, 'defaultLegendInterpreter','remove')
+set(groot, 'DefaultTextInterpreter', 'remove')

@@ -1,15 +1,15 @@
 %% define dimensions
-V_max = 1000; % max velocity
+V_max = 300; % max velocity
 C_max = 10; % max canard coefficient
-C_min = -10; % min canard coefficient
+C_min = -5; % min canard coefficient
 
 % amount of design point for each dimension
 P_size = 200; % dynamic pressure
 C_size = 30; % coefficient of lift
 
 %% tuning parameters
-Q = diag([10, 0, 10]);
-R = 1e4; % constant R. Can be scaled by dynamic pressure in loop
+Q = diag([10, 2, 2]);
+R = 1e2; % constant R. Can be scaled by dynamic pressure in loop
 N = 0; % if desired cross term can be passed to lqr_tune
 T_sample = 0.005; % sampling time of the loop
 C = [1, 0, 0]; % output channel
@@ -38,9 +38,9 @@ Ks = zeros(m,n,4); % length(x) is 3, plus 1 pre gain
 clear model_roll
 for i=1:m
     for k=1:n
-        [F_roll, B, ~, ~] = model_roll([], Ps(i), Cls(k));
+        [F_roll, B, ~, ~] = model_roll(Ps(i), Cls(k));
 
-        R = (Ps(i)) / 1000; % scale R by dynamic pressure
+        R = (Ps(i)) * 1e-4; % scale R by dynamic pressure
 
         K = -lqrd(F_roll,B,Q,R,N, T_sample);    
         Ks(i,k,1:3) = K;
@@ -49,7 +49,7 @@ for i=1:m
         % [phi, gamma] = ssdata(sys_ol);
         % sys_cl = ss(phi+gamma*K, gamma, C, 0, T_sample);
         sys_cl = ss(F_roll+B*K, B, C, 0, T_sample);
-        K_pre = 1/dcgain(sys_cl);
+        K_pre = 1 / dcgain(sys_cl);
         Ks(i,k,4) = K_pre;
     end
 end    
@@ -63,6 +63,9 @@ save("design/controller/gains.mat", "Ks", "P_mesh", "C_mesh", "info");
 
 %%% embedded .c file
 run('schedule_file_creator.m')
+
+%% Test responses
+run("design-support\test\test_step.m")
 
 %% Plot
 if 0

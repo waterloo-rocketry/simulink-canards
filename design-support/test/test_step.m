@@ -1,29 +1,23 @@
 %% initials
-q = [1; 0; 0; 0]; % orientation
-w = [0.01; 0.01; 0.01]; % rates
-v = [100; 0; 0]; % velocity
-alt = 1000; % altitude
-CL = 1.5; % canard coefficient
-delta = 0.0; % canard deflection 
+CL = 2; % canard coefficient
+alt = 1000; % altitude for dyn pressure
+[~,~, rho, ~] = model_airdata(alt);
 
-x = [q; w; v; alt; CL; delta];
-
-V = linspace(30, 800, 40);
-steptime = 10;
+V = linspace(20, 300, 20);
+P = 0.5 * rho * V.^2;
+steptime = 20;
 T_sample = 0.005; % sampling time of the loop
 
+clear control_scheduler
+clear model_roll
+
 %% test lqr + step
-for i=1:length(V)
-    x(8) = V(i);
-    
-    if 1 % isempty(table)
-        table = load("design/controller/gains.mat", "Ks", "P_mesh", "C_mesh");
-    end
-    Ks = control_scheduler(table, x);
+for i=1:length(P)   
+    Ks = control_scheduler([P(i), CL]);
     K_pre = Ks(4);
     K = Ks(1:3);
 
-    [A, B, C, ~] = model_roll(x);
+    [A, B, C, ~] = model_roll(P(i), CL);
     sys_ol = c2d(ss(A, B, eye(3), 0), T_sample);
     [phi, gamma] = ssdata(sys_ol);
     sys_cl = K_pre*ss(phi+gamma*K, gamma, eye(3), 0, T_sample);
@@ -32,7 +26,7 @@ for i=1:length(V)
 
     if i == 1
         sys_min = sys_cl;
-    elseif i == length(V)
+    elseif i == length(P)
         sys_max = sys_cl;
     end
     % step(sys_cl, steptime);

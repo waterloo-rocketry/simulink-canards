@@ -5,6 +5,7 @@ function [x_init, bias_1, bias_2, bias_3] = pad_filter(IMU_1, IMU_2, IMU_3)
 
     global IMU_select
 
+    % filtered_i is lowpass filtered data of IMU_i
     persistent filtered_1 filtered_2 filtered_3; % remembers from last iteration
 
     %% parameters
@@ -45,13 +46,13 @@ function [x_init, bias_1, bias_2, bias_3] = pad_filter(IMU_1, IMU_2, IMU_3)
     % filtered = filtered + alpha*(measured-filtered);
 
     if IMU_select(1) == 1
-        filtered_1 = filtered_1 + alpha * (IMU_1(1:10) - filtered_1);
+        filtered_1 = alpha * IMU_1(1:10) + (1 - alpha) * filtered_1;
     end
     if IMU_select(2) == 1
-        filtered_2 = filtered_2 + alpha * (IMU_2(1:10) - filtered_2);
+        filtered_2 = alpha * IMU_2(1:10) + (1 - alpha) * filtered_2;
     end
     if IMU_select(3) == 1
-        filtered_3 = filtered_3 + alpha * (IMU_3(1:10) - filtered_3);
+        filtered_3 = alpha * IMU_3(1:10) + (1 - alpha) * filtered_3;
     end
 
 
@@ -106,8 +107,9 @@ function [x_init, bias_1, bias_2, bias_3] = pad_filter(IMU_1, IMU_2, IMU_3)
     x_init = [q; w; v; alt; Cl; delta];
 
     %% Bias determination
-
-    bias_1 = zeros(10, 1); % declare bias vectors
+    
+    % declare bias vectors
+    bias_1 = zeros(10, 1); 
     bias_2 = zeros(10, 1);
     bias_3 = zeros(10, 1);
     
