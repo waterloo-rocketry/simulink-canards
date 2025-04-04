@@ -37,7 +37,7 @@ function [x_new] = model_dynamics(T, x, u)
     torque_canards = Cl *  delta * param.c_canard * p_dyn *[1;0;0];
     torque_aero = p_dyn * ( param.Cn_alpha*[0; sin_alpha; -sin_beta] + param.Cn_omega*[0; w(2); w(3)] ) * param.c_aero;
     torque = torque_canards + torque_aero;
-    torque = [0;0;0];
+    % torque = [0;0;0];
 
     %% time updates
 

@@ -2,6 +2,8 @@
 % run('plant-model\Data\Borealis\borealis.m')
 run('plant-model\Data\testflight\testflight.m')
 
+run('plant-model\Data\Sensors\sensors_processing.m')
+
 %% data pre-processing
 clear estimator_module
 clear control_scheduler

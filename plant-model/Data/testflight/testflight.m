@@ -2,18 +2,18 @@
 or_data = readtable("plant-model\Data\testflight\testflight_cycle_1_1_no_wind.csv");
 or_override_aoa_cna = readtable("plant-model\Data\testflight\testflight_aoa_cna.csv");
 or_override_mach_cna = readtable("plant-model\Data\testflight\testflight_mach_cna.csv");
+
 %% Initial values
 location = [10; 43.47; -80.54]; % launch location on earth. Altitude, Latitude, Longitude
 rail_angle = deg2rad(-5); % negative is pitched downrange
 rail_length = 8.28; % delta-altitude for rail constraints
 time_idle = 5; % wait time on the rail before launch
 
-%% Sensor parameters
-samplingrate = 0.005; % sampling period of the estimator
-Ls1 = [-2.4;0;0]; % mounting location of IMU 1 relative CG
-Ss1 = eye(3); % mounting orientation of IMU 1 relative body frame
-Ls2 = [-2.5;0;0]; % mounting location of IMU 2 relative CG
-Ss2 = eye(3); % mounting orientation of IMU 2 relative body frame
+%% Sensor mounting
+sensor_1_d = [-2.4;0;0]; % mounting location of IMU 1 relative CG
+sensor_1_S = eye(3); % mounting orientation of IMU 1 relative body frame
+sensor_2_d = [-2.5;0;0]; % mounting location of IMU 2 relative CG
+sensor_2_S = eye(3); % mounting orientation of IMU 2 relative body frame
 
 %% Actuator parameters
 act_freq = 58; % natural frequency, approx 1/timeconstant
