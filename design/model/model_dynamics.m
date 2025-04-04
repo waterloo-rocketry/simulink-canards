@@ -20,8 +20,9 @@ function [x_new] = model_dynamics(T, x, u)
 
     %% aerodynamics
     %%% air data
-    [~, ~, rho, ~] = model_airdata(alt);
+    [~, ~, rho, mach_local] = model_airdata(alt);
     p_dyn = rho / 2 * norm(v)^2;
+    mach_num = norm(v) / mach_local;
 
     %%% angle of attack/sideslip
     if abs(v(1)) >= 0.5
@@ -36,7 +37,7 @@ function [x_new] = model_dynamics(T, x, u)
     torque_canards = Cl *  delta * param.c_canard * p_dyn *[1;0;0];
     torque_aero = p_dyn * ( param.Cn_alpha*[0; sin_alpha; -sin_beta] + param.Cn_omega*[0; w(2); w(3)] ) * param.c_aero;
     torque = torque_canards + torque_aero;
-    torque = [0;0;0];
+    % torque = [0;0;0];
 
     %% time updates
 
@@ -58,7 +59,19 @@ function [x_new] = model_dynamics(T, x, u)
 
     % canard coefficients derivative
     %%% returns Cl to expected value slowly, to force convergence in EKF
-    Cl_new = Cl + T * (-1/param.tau_cl_alpha * (Cl - param.Cl_alpha)); 
+    % Cl_new = Cl + T * (-1/param.tau_cl_alpha * (Cl - param.Cl_alpha)); 
+    if mach_num <= 1
+        cone = 0;
+    else
+        cone = acos(1 / mach_num);
+    end
+    if cone > param.canard_sweep
+        Cl_new = 4 / sqrt(mach_num^2 - 1);
+    else
+        m = cot(param.canard_sweep)/cot(cone);
+        a = m*(0.38+2.26*m-0.86*m^2);
+        Cl_new = 2*pi^2*cot(param.canard_sweep) / (pi + a);
+    end
     
     % actuator dynamics
     %%% linear 1st order
