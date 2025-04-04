@@ -1,4 +1,4 @@
-function [output] = post_processor(x)
+function [output] = projector(x)
     % Computes roll state and scheduling variables for controller.
     % Output: vector with (1:3) state, (4:5) flight conditions
 
