@@ -1,4 +1,4 @@
-function [p_static, temperature, rho, mach_local] = model_airdata(alt)
+function [pressure, temperature, density, mach_local] = model_airdata(altitude)
     % computes air data from altitude, according to US standard atmosphere 
     % air data: static pressure, temperature, density, local speed of sound
     % calculations found in Stengel 2004, pp. 30
@@ -11,20 +11,20 @@ function [p_static, temperature, rho, mach_local] = model_airdata(alt)
                       20000, 5474.9, 216.65, -0.001; % stratosphere
                       32000, 868.02, 228.65, -0.0028]; % stratosphere 2
                       % base height, P_base, T_base, lapse rate;
-    air_r0 = 6356766; % mean earth radius
-    g0 = 9.8; % zero height gravity
+    earth_r0 = 6356766; % mean earth radius
+    earth_g0 = 9.8; % zero height gravity
 
     % geopotential altitude
-    alt = air_r0*alt / (air_r0 -alt);
+    altitude = earth_r0*altitude / (earth_r0 -altitude);
     
     % select atmosphere behaviour from table
     layer = air_atmosphere(1,:);
-    if alt > air_atmosphere(2,1)
-        if alt < air_atmosphere(3,1)
+    if altitude > air_atmosphere(2,1)
+        if altitude < air_atmosphere(3,1)
             layer = air_atmosphere(2,:);
-        elseif alt < air_atmosphere(4,1)
+        elseif altitude < air_atmosphere(4,1)
             layer = air_atmosphere(3,:);
-        elseif alt >= air_atmosphere(4,1)
+        elseif altitude >= air_atmosphere(4,1)
             layer = air_atmosphere(4,:);
         end
     end
@@ -34,12 +34,12 @@ function [p_static, temperature, rho, mach_local] = model_airdata(alt)
     T_B = layer(3); % base temperature
     k = layer(4); % temperature lapse rate
     
-    temperature = T_B - k*(alt-b);
+    temperature = T_B - k*(altitude-b);
     if k == 0
-        p_static = P_B * exp(-g0*(alt-b)/(air_R*T_B));
+        pressure = P_B * exp(-earth_g0*(altitude-b)/(air_R*T_B));
     else
-        p_static = P_B * (1 - k/T_B*(alt-b))^(g0/(air_R*k));
+        pressure = P_B * (1 - k/T_B*(altitude-b))^(earth_g0/(air_R*k));
     end
-    rho = p_static / (air_R*temperature);
+    density = pressure / (air_R*temperature);
     mach_local = sqrt(air_gamma*air_R*temperature);
 end

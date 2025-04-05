@@ -1,4 +1,4 @@
-function [altitude] = model_altdata(p_static)
+function [altitude] = model_altdata(pressure)
     % computes altitude data from barometric pressure, according to US standard atmosphere 
     % calculations found in Stengel 2004, pp. 30
 
@@ -10,8 +10,8 @@ function [altitude] = model_altdata(p_static)
                       20000, 5474.9, 216.65, -0.001; % stratosphere
                       32000, 868.02, 228.65, -0.0028]; % stratosphere 2
                       % base height, P_base, T_base, lapse rate;
-    air_r0 = 6356766; % mean earth radius
-    g0 = 9.8; % zero height gravity
+    earth_r0 = 6356766; % mean earth radius
+    earth_g0 = 9.81; % zero height gravity
   
     % select atmosphere behaviour from table
     layer = air_atmosphere(1,:);
@@ -22,5 +22,8 @@ function [altitude] = model_altdata(p_static)
     k_B = layer(4); % temperature lapse rate
     
     % compute altitude with measured pressure, but tabled temperature
-    altitude = T_B/k_B * (1- (p_static/P_B)^(air_R*k_B/g0) );
+    altitude = b + T_B/k_B * (1- (pressure/P_B)^(air_R*k_B/earth_g0) );
+
+    % Geopotential altitude to normal altitude
+    altitude = altitude * earth_r0 / (altitude + earth_r0);
 end
