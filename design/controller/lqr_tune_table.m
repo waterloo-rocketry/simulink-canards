@@ -8,7 +8,7 @@ P_size = 200; % dynamic pressure
 C_size = 30; % coefficient of lift
 
 %% tuning parameters
-Q = diag([10, 2, 2]);
+Q = diag([5, 0, 5]);
 R = 1e2; % constant R. Can be scaled by dynamic pressure in loop
 N = 0; % if desired cross term can be passed to lqr_tune
 T_sample = 0.005; % sampling time of the loop
@@ -17,7 +17,7 @@ C = [1, 0, 0]; % output channel
 %% prep table
 
 % calculate air data
-[~, ~, rho_max, ~] = model_airdata(0);
+[~, rho_max, ~] = model_airdata(0);
 
 P_min = 100;
 P_max = rho_max/2*V_max^2;
@@ -40,7 +40,7 @@ for i=1:m
     for k=1:n
         [F_roll, B, ~, ~] = model_roll(Ps(i), Cls(k));
 
-        R = (Ps(i)) * 1e-4; % scale R by dynamic pressure
+        R = (Ps(i)) * 1e-3; % scale R by dynamic pressure
 
         K = -lqrd(F_roll,B,Q,R,N, T_sample);    
         Ks(i,k,1:3) = K;
