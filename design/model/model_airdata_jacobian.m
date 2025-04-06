@@ -1,4 +1,4 @@
-function [pressure, density, mach_local] = model_airdata(altitude)
+function [pressure_altitude] = model_airdata_jacobian(altitude)
     % computes air data from altitude, according to US standard atmosphere 
     % air data: static pressure, temperature, density, local speed of sound
     % calculations found in Stengel 2004, pp. 30
@@ -12,10 +12,11 @@ function [pressure, density, mach_local] = model_airdata(altitude)
                       32000, 868.02, 228.65, -0.0028]; % stratosphere 2
                       % base height, P_base, T_base, lapse rate;
     earth_r0 = 6356766; % mean earth radius
-    earth_g0 = 9.81; % zero height gravity
+    earth_g0 = 9.8; % zero height gravity
 
     % geopotential altitude
-    altitude = earth_r0*altitude / (earth_r0 -altitude);
+    altitude_ratio = earth_r0 / (earth_r0 - altitude);
+    altitude = altitude_ratio * altitude;
     
     % select atmosphere behaviour from table
     layer = air_atmosphere(1,:);
@@ -34,12 +35,12 @@ function [pressure, density, mach_local] = model_airdata(altitude)
     T_B = layer(3); % base temperature
     k = layer(4); % temperature lapse rate
     
-    temperature = T_B - k*(altitude-b);
+    % temperature = T_B - k*(altitude-b);
     if k == 0
-        pressure = P_B * exp(-earth_g0*(altitude-b)/(air_R*T_B));
+        pressure_altitude = - P_B*earth_g0 / (T_B*air_R) * (altitude_ratio^2) * exp( - earth_g0*(altitude - b) / (T_B*air_R) );
     else
-        pressure = P_B * (1 - k/T_B*(altitude-b))^(earth_g0/(air_R*k));
+        pressure_altitude = - P_B*earth_g0 / (T_B*air_R) * (altitude_ratio^2) * ( 1 - k/T_B*(altitude - b) )^(earth_g0/(air_R*k) - 1);
     end
-    density = pressure / (air_R*temperature);
-    mach_local = sqrt(air_gamma*air_R*temperature);
+    % density = pressure / (air_R*temperature);
+    % mach_local = sqrt(air_gamma*air_R*temperature);
 end
