@@ -41,7 +41,7 @@ c_canard = area_canard*length_canard; % moment arm * area of canard
 canard_sweep = deg2rad(60);
 
 %% Environment
-g = [-9.8; 0; 0]; % gravitational acceleration in the geographic inertial frame
+g = [-9.81; 0; 0]; % gravitational acceleration in the geographic inertial frame
 
 %% save and export
 save("design/model/model_params.mat");
