@@ -1,4 +1,4 @@
-function [x_new, P_new] = ekf_correct(model_measurement, x, P, y, b, R)
+function [x_new, P_new] = ekf_correct(model_measurement, model_jacobian, x, P, y, b, R)
     % Computes EKF correction step.
     % Inputs: estimates x, P; measurement y; sensor bias b;
     % Input parameters: weighting R; 
@@ -13,7 +13,8 @@ function [x_new, P_new] = ekf_correct(model_measurement, x, P, y, b, R)
     innovation = y - y_expected;
 
     %%% compute Jacobian: H = dh/dx
-    H = jacobian(@model_measurement, 0, x, b); 
+    % H = jacobian(@model_measurement, 0, x, b); 
+    H = model_jacobian(0, x, b);
 
     %%% compute Kalman gain (and helper matrices)
     L = H * P * H' + R;

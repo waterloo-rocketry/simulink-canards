@@ -20,7 +20,7 @@ function [output] = projector(x)
 
     %% scheduling variables
     % calculate air data
-    [~, ~, rho, ~] = model_airdata(alt);
+    [~, rho, ~] = model_airdata(alt);
     airspeed = norm(v);
     p_dyn = rho/2*airspeed^2;
 

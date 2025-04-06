@@ -1,4 +1,4 @@
-function [y] = model_meas_imu1(t, x, bias)
+function [y] = model_meas_imu(t, x, bias)
     % Computes measurement prediction using current state and sensor biases
 
     %% decomp
@@ -9,10 +9,6 @@ function [y] = model_meas_imu1(t, x, bias)
     b_W = bias(4:6); M_E = bias(7:9);
 
     %% load parameters
-    persistent param
-    if isempty(param)
-        param = load("model\model_params.mat");
-    end
 
     %% rates
     W = w + b_W; 
@@ -23,11 +19,8 @@ function [y] = model_meas_imu1(t, x, bias)
     % TODO: add iron corrections
 
     %% atmosphere model
-    [P, ~, ~, ~] = model_airdata(alt);
+    [P, ~, ~] = model_airdata(alt);
 
-    %% filtered quaternion
-    Q = q;
-    
     %% measurement prediction
-    y = [W; M; P; Q];
+    y = [W; M; P];
 end
