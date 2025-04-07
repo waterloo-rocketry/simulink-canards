@@ -12,8 +12,8 @@ function [output] = projector(x)
     S = quaternion_rotmatrix(q);
 
     % compute roll angle       
-    phi = atan2(S(2,3), S(3,3)); % double check if this is the correct angle
-    % note: this has singularities at +- 90° (Zipfel p. 127)
+    euler = quaternion_to_euler(q); % note: this has singularities at +- 90° (Zipfel p. 127)
+    phi = euler(1); 
     
     % cat roll state
     output(1:3,:) = [phi; w(1); delta];

@@ -9,7 +9,7 @@ function [euler] = quaternion_to_euler(q)
 
     %%% Euler angles, after Zipfel
     yaw = atan2( 2*(qx*qy + qw*qz), (qw^2+qx^2-qy^2-qz^2) );
-    pitch = asin( -2*(qx*qz - qw*qy) );
+    pitch = asin( - 2*(qx*qz - qw*qy) );
     roll = atan2( 2*(qy*qz + qw*qx), (qw^2-qx^2-qy^2+qz^2) );
 
     euler = [roll; pitch; yaw];
