@@ -20,25 +20,25 @@ fprintf(fid_h, '/**\n');
 fprintf(fid_h, ' * Controller gains \n\n');
 
 fprintf(fid_h, ' * Conversion from flight conditions to natural table coordinates:\n');
-fprintf(fid_h, ' * int x_nat = (int) (x_fc - x_OFFSET) / x_SCALE; \n\n');
+fprintf(fid_h, ' * float x_nat = (x_fc - x_OFFSET) / x_SCALE;\n\n');
 
-fprintf(fid_h, ' * Array creation order: \n');
-fprintf(fid_h, ' * for gain_number = 1:gain_amount \n');
-fprintf(fid_h, ' *      for p = 1:P_size \n');
-fprintf(fid_h, ' *          for c = 1:C_size \n');
-fprintf(fid_h, ' *              Ks(p, c, gain_number)); \n');
+fprintf(fid_h, ' * Array creation order:\n');
+fprintf(fid_h, ' * for gain_number = 1:gain_amount\n');
+fprintf(fid_h, ' *      for p = 1:P_size\n');
+fprintf(fid_h, ' *          for c = 1:C_size\n');
+fprintf(fid_h, ' *              Ks(p, c, gain_number)\n');
 fprintf(fid_h, '*/\n\n');
 
 %%% table information
 fprintf(fid_h, '// Gain table information \n');
-fprintf(fid_h, '#define GAIN_NUM %d;\n\n', gain_amount);
-fprintf(fid_h, '#define GAIN_P_SIZE %d;\n', table.info.P_size);
-fprintf(fid_h, '#define GAIN_C_SIZE %d;\n\n', table.info.C_size);
+fprintf(fid_h, '#define GAIN_NUM %d\n\n', gain_amount);
+fprintf(fid_h, '#define GAIN_P_SIZE %d\n', table.info.P_size);
+fprintf(fid_h, '#define GAIN_C_SIZE %d\n\n', table.info.C_size);
 
-fprintf(fid_h, '#define PRESSURE_DYNAMIC_SCALE %.4E;\n', table.info.P_scale);
-fprintf(fid_h, '#define CANARD_COEFF_SCALE %.4E;\n\n', table.info.C_scale);
-fprintf(fid_h, '#define PRESSURE_DYNAMIC_OFFSET %.4E;\n', table.info.P_offset);
-fprintf(fid_h, '#define CANARD_COEFF_OFFSET %.4E;\n\n', table.info.C_offset);
+fprintf(fid_h, '#define PRESSURE_DYNAMIC_SCALE %.4E\n', table.info.P_scale);
+fprintf(fid_h, '#define CANARD_COEFF_SCALE %.4E\n\n', table.info.C_scale);
+fprintf(fid_h, '#define PRESSURE_DYNAMIC_OFFSET %.4E\n', table.info.P_offset);
+fprintf(fid_h, '#define CANARD_COEFF_OFFSET %.4E\n\n', table.info.C_offset);
 
 %%% array and end
 fprintf(fid_h, 'extern const float gain_table[GAIN_NUM][GAIN_P_SIZE * GAIN_C_SIZE];\n\n');
