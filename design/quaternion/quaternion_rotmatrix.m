@@ -2,7 +2,7 @@ function [S] = quaternion_rotmatrix(q)
     % computes rotation matrix from quaternion
     
     %%% norm quaternions
-    % q = 1/norm(q) * q;
+    q = 1/norm(q) * q;
 
     %%% quaternion definition
     qw = q(1); qv = q(2:4);    
