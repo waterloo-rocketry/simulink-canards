@@ -1,4 +1,4 @@
-function [pressure_altitude] = model_airdata_jacobian(altitude)
+function [pressure_altitude, density_altitude, mach_altitude] = model_airdata_jacobian(altitude)
     % computes air data from altitude, according to US standard atmosphere 
     % air data: static pressure, temperature, density, local speed of sound
     % calculations found in Stengel 2004, pp. 30
@@ -35,12 +35,15 @@ function [pressure_altitude] = model_airdata_jacobian(altitude)
     T_B = layer(3); % base temperature
     k = layer(4); % temperature lapse rate
     
-    % temperature = T_B - k*(altitude-b);
     if k == 0
+        pressure = P_B * exp(-earth_g0*(altitude-b)/(air_R*T_B));
         pressure_altitude = - P_B*earth_g0 / (T_B*air_R) * (altitude_ratio^2) * exp( - earth_g0*(altitude - b) / (T_B*air_R) );
     else
+        pressure = P_B * (1 - k/T_B*(altitude-b))^(earth_g0/(air_R*k));
         pressure_altitude = - P_B*earth_g0 / (T_B*air_R) * (altitude_ratio^2) * ( 1 - k/T_B*(altitude - b) )^(earth_g0/(air_R*k) - 1);
     end
-    % density = pressure / (air_R*temperature);
-    % mach_local = sqrt(air_gamma*air_R*temperature);
+    temperature = T_B - k * (altitude - b);
+    temperature_altitude = - k * altitude_ratio^2;
+    density_altitude = 1/air_R * (pressure_altitude * temperature - pressure * temperature_altitude) / temperature^2;
+    mach_altitude = - 1/2 * temperature_altitude * sqrt(air_gamma*air_R / temperature);
 end
