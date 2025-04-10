@@ -1,4 +1,4 @@
-function [pressure, density, mach] = model_airdata(altitude)
+function [airdata] = model_airdata(altitude)
     % computes air data from altitude, according to US standard atmosphere 
     % air data: static pressure, temperature, density, local speed of sound
     % calculations found in Stengel 2004, pp. 30
@@ -42,4 +42,9 @@ function [pressure, density, mach] = model_airdata(altitude)
     temperature = T_B - k*(altitude-b);
     density = pressure / (air_R*temperature);
     mach = sqrt(air_gamma*air_R*temperature);
+
+    % return values
+    airdata.pressure = pressure;
+    airdata.density = density;
+    airdata.mach = mach;
 end

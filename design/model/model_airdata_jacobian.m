@@ -1,4 +1,4 @@
-function [pressure_altitude, density_altitude, mach_altitude] = model_airdata_jacobian(altitude)
+function [airdata_altitude, airdata] = model_airdata_jacobian(altitude)
     % computes air data from altitude, according to US standard atmosphere 
     % air data: static pressure, temperature, density, local speed of sound
     % calculations found in Stengel 2004, pp. 30
@@ -44,6 +44,16 @@ function [pressure_altitude, density_altitude, mach_altitude] = model_airdata_ja
     end
     temperature = T_B - k * (altitude - b);
     temperature_altitude = - k * altitude_ratio^2;
+    density = pressure / (air_R*temperature);
     density_altitude = 1/air_R * (pressure_altitude * temperature - pressure * temperature_altitude) / temperature^2;
-    mach_altitude = - 1/2 * temperature_altitude * sqrt(air_gamma*air_R / temperature);
+    mach = sqrt(air_gamma*air_R*temperature);
+    mach_altitude = 1/2 * temperature_altitude * sqrt(air_gamma*air_R / temperature);
+
+    % return values
+    airdata.pressure = pressure;
+    airdata_altitude.pressure = pressure_altitude;
+    airdata.density = density;
+    airdata_altitude.density = density_altitude;
+    airdata.mach = mach;
+    airdata_altitude.mach = mach_altitude;
 end
