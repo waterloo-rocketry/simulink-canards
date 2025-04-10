@@ -20,9 +20,9 @@ function [x_new] = model_dynamics(T, x, u)
 
     %% aerodynamics
     %%% air data
-    [~, rho, mach_local] = model_airdata(alt);
-    p_dyn = rho / 2 * norm(v)^2;
-    mach_num = norm(v) / mach_local;
+    airdata = model_airdata(alt);
+    p_dyn = airdata.density / 2 * norm(v)^2;
+    mach_num = norm(v) / airdata.mach;
 
     %%% angle of attack/sideslip
     if abs(v(1)) >= 0.5

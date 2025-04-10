@@ -25,7 +25,8 @@ function [J] = model_meas_imu_jacobian(t, x, bias)
 
     %% atmosphere model
     % [P, ~, ~, ~] = model_airdata(alt);
-    P_alt = model_airdata_jacobian(alt);
+    airdata_alt = model_airdata_jacobian(alt);
+    P_alt = airdata_alt.pressure;
 
     %% measurement prediction
     % y = [W; M; P];

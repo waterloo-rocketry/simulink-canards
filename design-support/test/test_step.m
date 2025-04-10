@@ -1,7 +1,7 @@
 %% initials
 CL = 2; % canard coefficient
 alt = 1000; % altitude for dyn pressure
-[~, rho, ~] = model_airdata(alt);
+rho = model_airdata(alt).density;
 
 V = linspace(20, 300, 20);
 P = 0.5 * rho * V.^2;

@@ -19,7 +19,8 @@ function [y] = model_meas_imu(t, x, bias)
     % TODO: add iron corrections
 
     %% atmosphere model
-    [P, ~, ~] = model_airdata(alt);
+    airdata = model_airdata(alt);
+    P = airdata.pressure;
 
     %% measurement prediction
     y = [W; M; P];
