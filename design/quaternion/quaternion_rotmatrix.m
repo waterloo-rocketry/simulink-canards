@@ -13,8 +13,8 @@ function [S] = quaternion_rotmatrix(q)
               -q(3), q(2), 0];
     
     %%% rotation matrix
-    % S = (eye(3) + 2*q0*q_tilde + 2*q_tilde*q_tilde)'; Schiehlen
     S = (qw^2-qv'*qv)*eye(3) + 2*qv*qv' - 2*qw*q_tilde; % Stevens
+    
     %%% for hardcoding: 
     % [qw^2 + qx^2 - qy^2 - qz^2,         2*qw*qz + 2*qx*qy,         2*qx*qz - 2*qw*qy]
     % [        2*qx*qy - 2*qw*qz, qw^2 - qx^2 + qy^2 - qz^2,         2*qw*qx + 2*qy*qz]
