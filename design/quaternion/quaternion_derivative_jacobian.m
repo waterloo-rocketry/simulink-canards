@@ -1,8 +1,9 @@
-function [qdot_q, qdot_w] = quaternion_derivative_jacobian(q, w)
+function [qdot_q, qdot_w] = quaternion_derivative_jacobian(q_un, w)
     % computes quaternion derivative from quaternion and body rates
 
     % norm quaternions
-    % q = q_un / norm(q_un);
+    q = q_un / norm(q_un);
+    % q = q_un;
 
     % Quaternion product matrix
     Q = [q(1), -q(2), -q(3), -q(4);

@@ -1,6 +1,9 @@
 function [J_q] = quaternion_rotate_jacobian(q, vector)
     % computes rotation matrix from quaternion
     
+    %%% norm quaternions
+    q = 1/norm(q) * q;
+
     %%% quaternion definition
     qw = q(1); qv = q(2:4);    
     
