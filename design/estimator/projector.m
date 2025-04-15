@@ -16,9 +16,8 @@ function [output] = projector(x)
 
     %% scheduling variables
     % calculate air data
-    model_airdata(alt).density;
     airspeed = norm(v);
-    p_dyn = rho/2*airspeed^2;
+    p_dyn = model_airdata(alt).density / 2 * airspeed^2;
     
     % cat flight condition
     output(4:5,:) = [p_dyn; Cl];
