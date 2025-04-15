@@ -4,7 +4,7 @@ function [body, inert] = quaternion_rotate(q, u)
     % inert is vector transform: body -> inertial frame
 
     %%% norm quaternions
-    % q = 1/norm(q) * q;
+    q = 1/norm(q) * q;
 
     %%% quaternion definition
     q0 = q(1); qv = q(2:4);

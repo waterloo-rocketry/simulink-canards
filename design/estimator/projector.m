@@ -16,6 +16,7 @@ function [output] = projector(x)
 
     %% scheduling variables
     % calculate air data
+
     airdata = model_airdata(alt);
     airspeed = norm(v);
     p_dyn = 0.5 * airdata.density * airspeed^2;
