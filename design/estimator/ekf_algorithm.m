@@ -13,7 +13,7 @@ function [x, P] = ekf_algorithm(x, P, b, t, T, IMU_1, IMU_2, cmd, encoder, AHRS)
     
     u.accel = model_acceleration(x, IMU_1, IMU_2);
     u.cmd = cmd;
-    [xhat, Phat] = ekf_predict(@model_dynamics, x, P, u, Q, T);
+    [xhat, Phat] = ekf_predict(@model_dynamics, @model_dynamics_jacobian, x, P, u, Q, T);
     x = xhat; P = Phat;
 
     %% Correction step(s), sequential for each IMU
