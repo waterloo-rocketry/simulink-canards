@@ -1,3 +1,5 @@
+\usepackage{geometry} 
+
 \usepackage[bottom]{footmisc}
 
 \usepackage{parskip}
@@ -27,22 +29,51 @@
 \usepackage{amssymb}
 \usepackage{bm}
 
+\usepackage{etoolbox}% http://ctan.org/pkg/etoolbox
+
+%%%%%%%% Format and style
+
+\raggedbottom
+\clubpenalty=150
+\widowpenalty=150
+\interlinepenalty=100
+\setlength{\parindent}{0pt}
+
+
+\renewcommand{\bibsetup}{\setlength{\bibitemsep}{5pt}} % Adjust spacing between references
+\apptocmd{\bibsetup}{\interlinepenalty=10000}{}{} % Prevent page breaks within references
+
+% Adjust Chapter title spacing
+\makeatletter
+% Shrink space before chapter title
+\patchcmd{\@makechapterhead}{\vspace*{50\p@}}{\vspace*{12pt}}{}{}%
+\patchcmd{\@makeschapterhead}{\vspace*{50\p@}}{\vspace*{12pt}}{}{}%
+% Shrink space after chapter title
+\patchcmd{\@makechapterhead}{\vskip 40\p@}{\vskip 20pt}{}{}%
+\patchcmd{\@makeschapterhead}{\vskip 40\p@}{\vskip 20pt}{}{}%
+% Shrink space between chapter number and title
+\patchcmd{\@makechapterhead}{\vskip 20\p@}{\vskip 10pt}{}{}%
+\patchcmd{\@makeschapterhead}{\vskip 20\p@}{\vskip 10pt}{}{}%
+\makeatother
+
+
 %%%%%%%% Custom commands
-\newcommand\chapterauthor[1]{\authortoc{#1} \printchapterauthor{#1} \authorfoot{#1}}
+\newcommand\chapterauthor[1]{\authortoc{#1} \printchapterauthor{#1}}
+%\newcommand\chapterauthor[1]{\authortoc{#1} \printchapterauthor{#1} \authorfoot{#1}}
 %\WithSuffix\newcommand\chapterauthor*[1]{\printchapterauthor{#1} \authorfoot{#1}}
 
 \makeatletter
 \newcommand{\printchapterauthor}[1]{%
-  {\parindent0pt\vspace*{-30pt}%
+  {\parindent0pt\vspace*{-10pt}%
   \linespread{1.1}\large\bfseries#1%
-  \par\nobreak\vspace*{35pt}}
+  \par\nobreak\vspace*{25pt}}
   \@afterheading% 
 }
 \newcommand{\authortoc}[1]{%
   \addtocontents{toc}{\vskip-9pt}%
   \addtocontents{toc}{%
     \protect\contentsline{chapter}%
-    {\hskip1.4em\protect\normalsize#1}{}{}}
+    {\hskip1.3em\protect\normalsize#1}{}{}}
   \addtocontents{toc}{\vskip5pt}%
 }
 \newcommand{\authorfoot}[1]{%
@@ -51,11 +82,17 @@
 \makeatother
 
 
-%%%%%%%%% Header / Footer
+%%%%%%%%% Counters
 
 \renewcommand{\thechapter}{\Roman{chapter}}
 \renewcommand{\thesection}{\arabic{section}}
 \counterwithout{section}{chapter}
+%\counterwithin{equation}{chapter}
+\counterwithin{equation}{section}
+\counterwithin{figure}{section}
+
+
+%%%%%%%%% Header / Footer
 
 \renewcommand{\chaptermark}[1]{\markboth{\itshape\MakeUppercase{\thechapter.\ #1}}{}}
 \fancyhead[R]{\thepage}
@@ -63,5 +100,6 @@
 \setlength{\headheight}{20pt}
 \setlength{\headsep}{17pt}
 \fancyfoot[C]{\thepage}
+\fancyfoot[R]{}
 \fancyfoot[L]{\itshape \leftmark}
 \renewcommand{\footrulewidth}{0.4pt}

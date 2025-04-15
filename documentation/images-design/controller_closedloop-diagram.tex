@@ -47,7 +47,7 @@
     \draw [-, line width = \lw] (u_line1) -- (u_line2);
     \draw [->, line width = \lw] (u_line2) |- (observer.15);
     \draw [->, line width = \lw] (feedback.west) -| (sum.south);
-    \draw [->, line width = \lw] (observer.south) |- node[above,pos=0.7] {$\hat x(t)$}(scheduler.east);
+    \draw [->, line width = \lw] (observer.south) |- node[above,pos=0.7] {$\hat x_{FC}(t)$}(scheduler.east);
     \draw [->, dashed, line width = \lw] (scheduler.north) -- node {}(feedback.south);
     \draw [->, dashed, line width = \lw] (scheduler.west) -| node {}(prescale.south);
 

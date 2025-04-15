@@ -1,9 +1,10 @@
-\section{Appendix}
+\section{Numerical methods}
 
 \subsection{Numerical Jacobian computation}
+\label{sec:numerical-jacobians}
 The Jacobian $J_x$ is the matrix of all first-order partial derivatives of a vector-valued function.
-For the prediction and measurement model, the Jacobians of  the functions $f$ and $h$ (\footnote{The following equations are shown for an ``$f$", but are of course the same for $f$ and $h$}) are needed with respect to the state $x$ (where $n = \mathrm{length}(x)$).
-The Jacobian of any function with respect to $x$ is defined as \cite{martins2021}
+For the prediction and measurement model, the Jacobians of  the functions $f$ and $h$ \footnote{The equations are shown for an ``$f$'', but are of course the same for $f$ and $h$} are needed with respect to the state $x$ (where $n = \mathrm{length}(x)$).
+The Jacobian of any function with respect to $x$ is defined as% \cite{martins2021}
 \begin{align}
     J_x = \frac{\partial f}{\partial x}
     = \begin{bmatrix}
@@ -12,7 +13,7 @@ The Jacobian of any function with respect to $x$ is defined as \cite{martins2021
         \frac{\partial f_m}{\partial x_1} & \cdots & \frac{\partial f_m}{\partial x_n}
     \end{bmatrix}
 \end{align}
-Jacobians may be derived analytically from the function, but this is often cumbersome and prone to errors.
+Jacobians may be derived analytically from the function, but this is often very cumbersome. % and prone to errors.
 Therefore, it is common practice to compute the matrix numerically.
 A frequently used method is using \textit{finite differences}, however this is known to be not very efficient nor accurate, and has issues with numerical instability \cite{martins2021}.
 
@@ -36,25 +37,31 @@ Both finite differences and complex-step scale linearly with the number of varia
 
 
 \subsection{Numerical Integration methods}
-To get a new discrete state from the continuous-time prediction process of the EKF, the nonlinear differential equations \ref{eq:predict_state} and \ref{eq:predict_cova} have to be solved.
-As the last state estimate is available as an initial value, this can be expressed as the \textit{Initial Value Problem} (IVP)
+\label{sec:numerical-integration}
+To get a new discrete state for the prediction process of the EKF from the continuous-time model, the nonlinear differential equations 
 \begin{align}
     \dot x(t) &= f(t, x, u) & x(0) &= x_{n} 
 \end{align}
-which is can be solved by numerical integration. 
-The integration methods need to be explicit, as the filter in the prediction step has only past state information. 
+have to be solved. 
+As the last state estimate is available as an initial value, this can be expressed as an \textit{Initial Value Problem} (IVP). 
+The IVP can be solved by numerical integration, see Equation \ref{eq:estimator-ivp}
+\begin{align}
+     \hat x_k^- &= \underbrace{\int_{t-dt}^{t} \dot{\hat x}(t,x,u) d\tau}_{f_D(x,u)}
+     &
+     \hat x (t-dt) &= \hat x_{k-1}^+
+\end{align}
+To minimize computational effort the integration methods should be explicit, as the filter in the prediction step has only past state information. 
+An implicit method would require (potentially unstable) root finding methods, which are computationally expensive\footnote{Inverting the Jacobian in Newtons method}.
 
-Step size $\varepsilon$
-
-\subsubsection{Explicit Runge-Kutta}
-
+\subsubsection{Explicit Runge-Kutta method}
 The explicit $s$-stage \textit{Runge-Kutta} method is compactly written as \cite{griffiths2010}
 \begin{align}
-    x_{n+1} &= x_n + \varepsilon_n \sum_{i=1}^{s} c_i k_i
+    x_{n+1} &= x_n + \varepsilon \sum_{i=1}^{s} c_i k_i
     \\
-    k_i &= f \left( t_n + a_i \varepsilon_n \, , \; x_n + \varepsilon_n \sum_{j=1}^{i-1} b_{ij} k_j \, , \ u \right) 
+    k_i &= f \left( t_n + a_i \varepsilon \, , \; x_n + \varepsilon \sum_{j=1}^{i-1} b_{ij} k_j \, , \ u \right) 
 \end{align}
-where $a_i$, $b_{ij}$, and $c_i$ are the entries of the vectors $a$ and $c$ and the matrix $B$, displayed in a \textit{Butcher tableau}
+with the time step size $\varepsilon$, which in case of the EKF is the sampling time (i.e. the time since the last filter iteration).
+The constants $a_i$, $b_{ij}$, and $c_i$ are the entries of the vectors $a$ and $c$ and the matrix $B$, displayed in a \textit{Butcher tableau}
 \begin{equation}
     \begin{array}{c|c}
         a & B \\
@@ -63,10 +70,24 @@ where $a_i$, $b_{ij}$, and $c_i$ are the entries of the vectors $a$ and $c$ and 
         \end{array}
     \label{eq:appendix_general_butcher}
 \end{equation}
-These can be very large, as in the \textit{Dormand-Prince} method (RK45, which the standard solver in Matlab).
+These can be very large, as in the \textit{Dormand-Prince} method (RK45, which is the standard solver in Matlab).
 For our cases we will keep the tableaus small.
-
-The second order ($s=2$) butcher tableau of the Heun method \cite{griffiths2010}, which is used for the prediction covariance, is  
+The simplest, first order ($s=1$) method is explicit Euler, with the butcher tableau \cite{griffiths2010}
+\begin{equation}
+    \begin{array}{c|cc}
+        0 & 0 \;\\
+        \hline 
+        & 1 \;
+        \end{array}
+    \label{eq:appendix_euler_butcher}
+\end{equation}
+which results in the simple formula
+\begin{align}
+    x_{n+1} &= x_n + \varepsilon f \left( t_n, \; x_n, \ u_n \right)
+\end{align}
+Other integration methods can be formulated similarly, for example the discrete update function of the quaternion kinematics\footnote{As unit quaternions are used for attitude description, they have to be either normed after each Euler integration, or the discrete update has to follow their geometric structure, as shown in the Equation above.} in Equation \ref{eq:quaternion-update}.
+The second order ($s=2$) butcher tableau of the Heun method \cite{griffiths2010} is 
+% which is used for the prediction covariance, is  
 \begin{equation}
     \begin{array}{c|cc}
         0 &  &   \\
@@ -75,9 +96,9 @@ The second order ($s=2$) butcher tableau of the Heun method \cite{griffiths2010}
         & \frac{1}{2} & \frac{1}{2} 
         \end{array}
     \label{eq:appendix_heun_butcher}
-\end{equation}
-
-The fourth order ($s=4$) butcher tableau of the classical Runge-Kutta method RK4 \cite{griffiths2010}, which is used for solving the state prediction, is 
+\end{equation} 
+The fourth order ($s=4$) butcher tableau of the classical Runge-Kutta method RK4 \cite{griffiths2010} is 
+%which is used for solving the state prediction, is 
 \begin{equation}
     \begin{array}{c|cccc}
         0 &  &  &  &  \\

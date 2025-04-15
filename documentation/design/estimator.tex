@@ -11,15 +11,16 @@ Each iteration of the filter uses the the priori (old) state estimate and belief
 
 \subsection{EKF algorithm}
 The EKF thus propagates a state estimate $\hat x$ in discrete time steps, along with the belief in form of the covariance matrix $P$.
-The matrix represents the ``uncertaint'' of the state estimate and their correlation, i.e. higher values represent more uncertainty.
+While the state is the mean estimate, the covariance matrix represents the ``uncertainty'' of the state estimate and their correlation, i.e. higher values represent more uncertainty. 
 
 For its algorithm the EKF uses the continuous-time prediction model $f$ and the discrete-time measurement model $h$.
-However, the EKF is running on a microprocessor in discrete time, so the continuous-time dynamics have to be solved to bring it into a discrete-time update. 
+However, the EKF is running on a microprocessor in discrete time, so the continuous-time dynamics have to be solved to form a discrete-time update. 
 Together with the solution of the previous filter iteration, this yields the \textit{Initial Value Problem} (IVP) 
 \begin{align}
-     \hat x_k^- &= \underbrace{\int_{t-T}^{t} \dot{\hat x}(t,x,u) dt}_{f_D(x,u)}
+     \hat x_k^- &= \underbrace{\int_{t-dt}^{t} \dot{\hat x}(t,x,u) d\tau}_{f_D(x,u)}
      &
-     \hat x (t-T) &= \hat x_{k-1}^+
+     \hat x (t-dt) &= \hat x_{k-1}^+
+     \label{eq:estimator-ivp}
 \end{align}
 The discrete solution $\hat x_k^-$ of the IVP is computed by numerical integration (see Section \ref{sec:numerical-integration}), which can be as simple as \textit{explicit Euler}: $x_k = x_{k-1} + T \cdot \dot x$.
 As the IVP is solved in each filter iteration, the integration bounds are the timestamps of the previous and current iteration, with the sampling rate $T$.
@@ -36,6 +37,7 @@ indicate how much the outputs of the functions $f_D$ and $h$ change for small ch
 As the the filter is computed at sufficiently short (see Section \ref{sec:estimator-implementation}) time intervals, the state does not change greatly between each computation step.
 The functions $f_D$ and $h$ can be approximated by linearization, and the covariance is propagated using the resulting Jacobians.
 
+\subsubsection{Filter process}
 One complete iteration of the algorithm of the discrete EKF is \cite{lewis2008, werner2021b, minh2012} \footnote{This is not the cleanest formulation, but hopefully understandable. See \cite[pp. 259]{lewis2008} for more thorough explanations of the algorithm.}
 \begin{align}
     \text{Predict: } \nonumber \\
@@ -49,10 +51,7 @@ One complete iteration of the algorithm of the discrete EKF is \cite{lewis2008, 
     P_{k}^{+} &= \left[ I - K_{k} H(\hat x_{k}^{-}) \right] P_{k}^{-}\left[ I - K_{k} H(\hat x_{k}^{-}) \right]^T +  K_{k} R_e K_{k}^T \label{eq:update_cova}
 \end{align}
 
-
-
 where the measurements are used for the state correction, while the control input is used for prediction.
-
 Here the prediction part consists of the (now integrated) discrete-time dynamics (Equation \ref{eq:predict_state}) and the associated covariance in discrete-time (Equation \ref{eq:predict_cova}).
 
 The correction part computes the filter gain (or Kalman gain) $K_k$ using the covariance of the estimate $P$ and the sensitivity of the measurement model $H$ (Equation \ref{eq:update_gain}).
@@ -63,13 +62,15 @@ The EKF is tuned using the weighting matrices $Q_e$ and $R_e$, which represented
 
 To note: both the prediction and the correction step can be performed multiple times, if (for example) a measurement is missed due to sensor fault, or respectively if multiple sensors are available and the measurements come in sequentially.
 Correcting sequentially can also be useful to avoid inverting large matrices (in Equation \ref{eq:update_gain}).
+As this rocket design uses multiple IMUs (each with their own $y_{IMU}$), the Correction is run multiple time sequentially, to include the encoder and each of the IMUs.
+All sensors have their own measurement model (and bias), Jacobian, and weighting.
 
 \subsubsection{Observability}
 To check if the filter can converge at a given state, the linearized system is examined for observability.
 The observability matrix (with the number of states $n=13$) is 
 \begin{equation}
     \mathcal{O} = \begin{bmatrix}
-        H \\ H F \\ H F^2 \\ \vdots \\ H F^n
+        H \\ H F_D \\ H F_D^2 \\ \vdots \\ H F_D^n
     \end{bmatrix}
 \end{equation}
 which has rank 12 for the given model, i.e. the system is not fully observable. 
@@ -121,7 +122,7 @@ where the gain $K_k$ is computed with the a-priori covariance estimate $P_k^-$
 \begin{align}
     K_{k} &= P_{k}^{-} H_k^T \left[ H_k P_{k}^{-} H_k^T + R_e \right]^{-1} 
 \end{align}
-(since the posteriori covariance $P_k$ is dependent on the current gain, the implicit equation is $K_k = P_k^+ H_k^T R_e^{-1}$).
+(since the posteriori covariance $P_k$ is dependent on the current gain, the implicit equation would be $K_k = P_k^+ H_k^T R_e^{-1}$).
 
 Due to the nonlinear behaviour of the state space functions, both $P$ and $K_k$ must be computed in real time as new measurements become available \cite{lewis2008}.
 It is to note that the Kalman filter generally is only optimal for the mathematical model, not the actual plant (in this case the rocket) itself \cite{lewis2008}.
@@ -151,12 +152,35 @@ where the weighting matrix $Q_e$ has some added, fictitious noise $\sigma$ actin
 Here $B_e = \frac{\partial f}{\partial u}$ is the sensitivity of the input signal - but only for the actual control input, not for the accelerometer measurement (so $B_e$ is all zero, except a single one in the $\delta$ row, $\delta$ column).
 In practice, this means that for higher weights in the $\delta$/$\delta$ field of $Q_e$, the closed-loop robustness margins improve \cite{werner2021}.
 
+
+\subsection{Response analysis}
+The performance of the EKF is evaluated by comparing the true and estimated states in simulation (for the simulation see Chapter \ref{ch:plant}).
+The response for a simulated test flight are shown in Figure \ref{fig:estimator-response}, where the true state $x$ is compared to the estimated state $\hat x$.
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=\textwidth]{images-design/estimator-simulation.png}
+    \caption[Closed-loop estimation responses]{Simulation responses of the closed-loop estimated states for the simulated testflight. Rocket is performing a step roll program at t=10s, t=17s, and t=24s. Outputs: Quaternion attitude $q, \, \hat q$ (Top Left),  Body rates $\omega, \, \hat \omega$ [rad/s] (Bottom Left), Body velocity $v, \, \hat v$ [m/s] (Top Right), Altitude $r_1, \, \hat {alt}$ [m] (Bottom Right).}
+    \label{fig:estimator-response}
+\end{figure}
+Both the body rates and the altitude (bottom row) are estimated very well, which is due to the rate gyroscope measuring the state directly, and the barometer with an accurate atmosphere model having a direct coupling between measurement and state.
+The attitude quaternion (top left) is also estimated quite well due to having both rate integrals and the magnetic field measurements. 
+The gyroscope bias is determined on the launch pad (see Section \ref{sec:estimator-initialization}) which leads to low drift, and the magnetometer measurement further reduces perturbations from the true attitude.
+The estimate is not perfect however, as can be seen in a slight deviation $q_2$ between 25s and 35s.\footnote{This .png makes it hard to see, the original plot has a higher resolution.}
+The velocity estimate (to right) shows by far the largest deviation from the true values.
+There is no measurement available for the velocity, so this estimate relies largely on accelerometer and gyroscope data.
+While tuning, a strong coupling between velocity and attitude was noticed. 
+As the rocket is essentially in free fall the entire flight, the accelerometer cannot measure the gravity vector, and any gravitational acceleration is modelled with the rocket attitude, see Equation \ref{eq:meas-veldot}.
+Also, as the rocket is oriented vertical, the forward velocity is the change in altitude ($v_x \approx \dot {alt}$), so there is a strong coupling of forward velocity to the barometer data / its estimated altitude.
+The velocity deviations become larger near apogee, where the rocket slows down and pitches over, before speeding up again.
+
+\emph{Todo: insert responses of $\hat C_L$, $\hat \delta$}
+
 \subsection{Implementation notes}
 \label{sec:estimator-implementation}
 
-The resulting state is passed to the control algorithm.
-
-Computation time is an important factor in implementing the state estimation, as the discrete EKF process should be performed at $\omega_s \succapprox 50 \cdot \omega_c$ \cite{werner2021}, with $\omega_s = 200Hz$ to avoid the rocket crossover region, which is in frequencies around $ \omega_c \approx 4Hz$.
+\subsubsection{Computation frequency}
+Computation time is an important factor in implementing the state estimation, as the discrete EKF process should be performed at $\omega_s \succapprox (20 \dots 30) \cdot \omega_c$ \cite{werner2021} to avoid the rocket crossover region, which is in frequencies around $ \omega_c \approx 5\mathrm{Hz}$.
+The process frequency is chosen as $\omega_s = 200\mathrm{Hz}$ to leave some margin for error.
 
 \subsubsection{Numerics}
 The Jacobians $F$ and $H$ are computed numerically. 
@@ -169,11 +193,11 @@ The methods are picked as a trade-off between accuracy and computational effort.
 
 \subsubsection{Quaternions}
 To ensure valid attitude quaternion operations, the norm of the quaternion has to be 1.
-To ensure this unit norm, the quaternion is normalized after every operation changing its values, as
-\begin{align}
-    q &= q/\mathrm{norm}(q) & \text{or} & & x(1:4) &= x(1:4)/\mathrm{norm}(x(1:4))
-\end{align}
-in the prediction model and after the correction step $\hat x_{k}^{+} = \hat x_{k}^{-} + K_{k} \left[ y_{k} - h(\hat x_{k}^{-}) \right]$, respectively.
+To ensure this unit norm, the quaternion is normalized after every operation changing its values, as $q = q/\mathrm{norm}(q)$ in the prediction model and after the correction step $\hat x_{k}^{+} = \hat x_{k}^{-} + K_{k} \left[ y_{k} - h(\hat x_{k}^{-}) \right]$, respectively.
+
+\subsubsection{Projection}
+As the controller expects not the full state $x$, but the roll state $x_R$ and the flight condition $x_{FC}$, some post-processing has to be performed.
+This includes transforming the quaternion attitude to the roll angle, and computing the dynamic pressure from velocity and air data.
 
 \subsection{Pad filter}
 \label{sec:estimator-initialization}
@@ -182,7 +206,7 @@ While the rocket is stationary on the launch rail, the Pad filter runs in the Es
 Shortly before liftoff, the Pad filter hands over the latest state estimate ($\bar x_0$) and the determined sensor biases to the EKF.
 To get accurate values for the sensor biases, the Pad filter runs a lowpass filter with all the current sensor data $z_k$ and the already filtered data $s_k$ (start with $s_0 = \bm 0$)
 \begin{align}
-    s_{k+1} = s_k + \alpha (z_k - s_k)
+    s_{k+1} = \alpha z_k + (1-  \alpha) s_k
 \end{align}
 This should take place over a long time frame (longer than a minute) to attenuate any noise effects, or movement through plumbing or wind.
 The gain $\alpha$ is chosen according to the allowable/expected time frame of initialization, a lower $\alpha$ results in a smoother, but slower converging signal ($\alpha$ is the time constant of this exponential discrete-time filter, the resulting shape is $e^{\alpha \, dt}$ with sampling time $dt$).

@@ -2,7 +2,7 @@
 The controller is responsible for stabilizing the rocket state, attenuating any disturbances, and driving it to some desired value.
 In their configuration the canards can only provide a torque around the roll ($x$) axis of the rocket.
 This imposes some constraints on the controller design, as the whole state \ref{eq:model-state-vector} is under-actuated.
-The model used for controller design is thus simplified to the state \ref{eq:controller-model-state}, using a linear parameter-varying system\footnote{Technically the ``full'' state is projected unto the controllable subspace.}.
+The model used for controller design is thus simplified to the state \ref{eq:controller-model-state}, using a linear parameter-varying system.
 
 The controller chosen for the canards is linear state feedback, where the feedback gains $K$ are computed by the \textit{Linear Quadratic Regulator} (LQR) method \cite{werner2021, werner2021b}.
 The current state is determined by the state estimation algorithm (the Estimator is treated in Section \ref{sec:estimator}), as seen in Figure \ref{fig:controller-loop}.
@@ -13,7 +13,7 @@ To account for the non-linearity of the rocket dynamics the gains are selected f
 \begin{figure}[ht]
     \centering
     \resizebox{0.8\textwidth}{!}{
-    \input{images-finn/controller_closedloop-diagram}}
+    \input{images-design/controller_closedloop-diagram}}
     \caption[Block diagram of the control loop]{Block diagram of the control loop. 2-DOF estimator-based state feedback \cite{werner2021} with gain scheduling.}
     \label{fig:controller-loop}
 \end{figure}
@@ -21,21 +21,23 @@ To account for the non-linearity of the rocket dynamics the gains are selected f
 \subsection{Controller roll model}
 \label{sec:controller_model}
 The dynamic pressure and the canard coefficient $C_L$ are the scheduling variables of the controller.
-The concocted state $x_R$ for the roll model is (Equation \ref{eq:controller-model-state})
+The concocted state $x_R$ for the roll model (Equation \ref{eq:controller-model-state}) and the flight condition (Equation \ref{eq:controller-model-fc}) are
 \begin{align}
-    x_R = \begin{bmatrix} \phi & \omega_x & \delta \end{bmatrix}^T
+    x_R &= \begin{bmatrix} \phi & \omega_x & \delta \end{bmatrix}^T 
+    & 
+    x_{FC} &= \begin{bmatrix} \bar p & C_L \end{bmatrix}
     \nonumber
 \end{align}
 The state-space model is (Equations \ref{eq:controller-model-ss})
 \begin{align}
-    \dot x_R &= A x_R + B \delta_u 
+    \dot x_R &= A \: x_R + B \delta_u 
     &
     y_R &= C x_R
     \nonumber
 \end{align}
 with the matrices (Equations \ref{eq:controller-model-matrices})
 \begin{align}    
-    A &= \begin{bmatrix}
+    A(x_{FC}) &= \begin{bmatrix}
         0 & 1 & 0 \\
         0 & L_{\omega_x} & L_\delta \\
         0 & 0 & -\alpha
@@ -48,7 +50,7 @@ with the matrices (Equations \ref{eq:controller-model-matrices})
     C &= \begin{bmatrix} I_3 \end{bmatrix}
     \nonumber
 \end{align}
-where the roll control derivative is $L_\delta (\bar p,  \,  C_L)$, and the roll damping derivative is $L_{\omega_x} (\bar p, \, C_{L \omega})$.
+where the roll control derivative is $L_\delta (\bar p,  \,  C_L)$, and the roll damping derivative is $L_{\omega_x} (\bar p, \, C_{L \omega_x})$.
 The matrix $C$ combines the states of the system to an output signal, and can be set arbitrarily for response analysis.
 For the case $C = \begin{bmatrix} I_3 \end{bmatrix}$, the output signal is the entire state vector $y(t) = x(t)$, for the case $C = \begin{bmatrix} 1 & 0 & 0 \end{bmatrix}$, the ouput signal is $y(t) = x_1(t) = \phi$.
 
@@ -69,30 +71,30 @@ The controllability matrix is
 which has full rank for all $L_\delta \neq 0$, i.e. there exists a feasible feedback gain for every flight condition, except for zero velocity ($\lVert v \rVert = 0$) or a zero coefficient of lift ($C_L = 0$).
 
 \subsection{Control law and tuning}
-To compute the desired canard angle $u = \delta_u$, the the current rocket state as determined by the state estimation is used.
-The control law is a state feedback, combined with a feedforward part for the reference as
+To compute the desired canard angle $u = \delta_u$, the the current rocket roll state as determined by the state estimation is used.
+The control law is a state feedback, combined with a feedforward part for the reference signal $r$ as
 \begin{align}
     u(t) &= K \hat x_R(t) + K_{pre} r(t)
 \end{align}
 where the gains $K = \begin{bmatrix} K_\phi & K_{\omega_X} & K_\delta \end{bmatrix}$ are determined by performing the LQR method around a linear model
 \begin{align}
-    K(\hat x) &= -\texttt{lqr}(A(\hat x),B,Q_{c},R_{c}) 
+    K(\hat x_{FC}) &= -\texttt{lqr}(A(\hat x_{FC}),B,Q_{c},R_{c}) 
 \end{align}
 with Matlab's \texttt{lqr} function. 
-For the discrete controller, the function \texttt{lqrd}($A, B, Q, R, dt$) is be used to directly account for discrete dynamics with sampling time $dt$, but using a continuous-time system (A,B). 
+For the discrete controller, the function \texttt{lqrd}($A, B, Q, R, dt$) is used to directly account for discrete dynamics with sampling time $dt$, but using a continuous-time system (A,B). 
 To note: for fast sampling times (much higher sampling frequency than the bandwidth of the model), the feedback gains of \texttt{lqr} and \texttt{lqrd} become approximately equal.
 The method is tuned by adjusting the weighting matrices $Q_c$ and $R_c$.
 As shown in section \ref{sec:controller-theory}, the matrix $Q_c$ contains the weights for penalizing the state error, while the matrix $R_c$ weighs the expended control effort.
 
 The scalar reference gain $K_{pre}$ is computed for a steady state gain of 1, as
 \begin{align}
-    K_{pre} (\hat x) &=  \frac{-1}{C \left[ A(\hat x) + B K(\hat x) \right]^{-1} B}
+    K_{pre} (\hat x_{FC}) &=  \frac{-1}{C \left[ A(\hat x_{FC}) + B K(\hat x_{FC}) \right]^{-1} B}
 \end{align}
 where $C$ depends on the variable to be tracked. 
 With $C = \begin{bmatrix} 1 & 0 & 0 \end{bmatrix}$, the channel $r \to \phi$ is selected, which results the roll angle tracking the reference.
 The channel $r \to \omega_x$ could also be selected via $C = \begin{bmatrix} 0 & 1 & 0 \end{bmatrix}$, this would result in tracking of the roll rate.
 
-The gains $K$ and $K_{pre}$ can be precomputed for each combination of parameters (some slowly varying states) of $A(\hat x)$.
+The gains $K$ and $K_{pre}$ can be precomputed for each combination of parameters $A(\hat x_{FC})$.
 As gain scheduling is used to account for slowly-varying parameters, the gains are be computed for each design point $x_s$, and combined to a look-up table (see Section \ref{sec:controller-scheduling}).
 This way the implemented controller does not need to compute the gains with the LQR method, but can just select the gains from the gain scheduling table. 
 
@@ -124,23 +126,23 @@ The control law is still useful for controlling nonlinear and observed systems, 
 \subsection{Gain scheduling}
 \label{sec:controller-scheduling}
 As the models from canard angle to roll rate are nonlinear and highly dependent on some slowly-varying parameters (the \textit{flight conditions}), a gain-scheduling scheme will be implemented. 
-The design points $x_s$ of the schedule are characterized by these slowly-varying flight conditions, being the aerodynamic pressure $\bar p$, and the lift coefficient of the canards $C_L$. 
-The simplified model is evaluated around these design points using the current state estimate $A \rvert_{\hat x}$, to form the matrix $A$.
+The design points $x_s$ of the schedule are characterized by these slowly-varying flight conditions $x_{FC} = \begin{bmatrix} \bar p & C_L \end{bmatrix}$, being the aerodynamic pressure $\bar p$, and the lift coefficient of the canards $C_L$. 
+The simplified model is evaluated around these design points using the current state estimate $A(\hat x_{FC})$, to form the matrix $A$.
 As the LQR method produces guaranteed robustness margins \cite{doyle1978, werner2021, werner2021b}, the  interpolation between two close design points should always produce a stable control loop.
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.95\textwidth]{images-finn/controller_scheduling-surfaces.png}
+    \includegraphics[width=0.95\textwidth]{images-design/controller_scheduling-surfaces.png}
     \caption[Scheduling surfaces along dynamic pressure and canard coefficient]{Scheduling surfaces along dynamic pressure $\bar p$ and canard coefficient of lift $C_L$. Feedback gains $K_\phi, K_p, K_\delta$ and reference gain $K_\textit{pre}$.}
     \label{fig:controller-surfaces}
 \end{figure}
 
 A large variety of design points are chosen, both along the nominal flight profile, but also encompassing a larger flight envelope to accommodate off-nominal trajectories.
-Design points for the condition $L_\delta$ are omitted from the tuning process.
+Design points for the condition $L_\delta = 0$ are omitted from the tuning process, as the system is not controllable there.
 The control gains for all design points are computed beforehand and stored in a look-up table.
 In flight, the control algorithms interpolate the gains from the look-up table according to the current state estimate. 
 The pre-computed feedback gains for the roll model are shown in Figure \ref{fig:controller-surfaces}, plotted over the scheduling variables $\bar p$ and $C_L$.
 To note is the discontinuity at $\bar p = 0$ and especially at $C_L = 0$, where no feasible design points exist. 
-The feedback gain are interpolated over this split.
+The feedback gains are interpolated over this split.
 
 
 \subsection{Response analysis}
@@ -163,7 +165,7 @@ The closed-loop step response for a collection of parameters (here varying veloc
 
 \begin{figure}[ht!]
     \centering
-    \includegraphics[width=0.8\textwidth]{images-finn/controller_steps.png}
+    \includegraphics[width=0.8\textwidth]{images-design/controller_steps.png}
     \caption[Closed-loop step responses]{Step responses of the closed-loop system for velocities between $30\mathrm{m/s}$ (green) and $800\mathrm{m/s}$ (red), $l=1000\mathrm{m}$, $C_L = 1.5$. Outputs: 1:$\phi$, 2:$\omega_x$, 3:$\delta$.}
     \label{fig:controller-steps}
 \end{figure}
@@ -172,7 +174,7 @@ The Bode plots of the closed-loop for a collection of parameters (here varying v
 
 \begin{figure}[ht!]
     \centering
-    \includegraphics[width=0.8\textwidth]{images-finn/controller_bodes.png}
+    \includegraphics[width=0.8\textwidth]{images-design/controller_bodes.png}
     \caption[Closed-loop frequency response]{Frequency response of the closed-loop system for velocities between $30\mathrm{m/s}$ (green) and $800\mathrm{m/s}$ (red), $l=1000\mathrm{m}$, $C_L = 1.5$.
     The response is cut off above the sampling frequency of the processor.}
     \label{fig:controller-bodes}

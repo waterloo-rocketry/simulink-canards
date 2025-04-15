@@ -1,23 +1,17 @@
 %%%%%%%%% Preamble
 \documentclass[a4paper, 12pt]{report} 
-\usepackage[top=2.4cm, left=2.4cm,right=2.4cm,bottom=2.4cm]{geometry}
 
-%%%%%%%%% Custom style with all the packages
+%%%% Custom style with all the packages
 \usepackage{techreport}
 
-%%%%%%%%% Settings
-\usepackage[english]{babel}
-\raggedbottom
-\clubpenalty=150
-\widowpenalty=150
-\interlinepenalty=100
+%%%% Settings
+\geometry{top=2.4cm, left=2.4cm, right=2.4cm, bottom=2.4cm} 
 
-\setlength{\parindent}{0pt}
+\usepackage[english]{babel}
 
 \addbibresource{refs-finn.bib}
 \addbibresource{refs-joe.bib}
 \addbibresource{refs-team.bib}
-\usepackage{csquotes}
 
 \hypersetup{
     hidelinks,
@@ -25,68 +19,93 @@
     pdfauthor = {F. Breuer, J. Dolina}
 }
 
+
 %%%%%%%%% Document
 %%%% Title
 \begin{document}
 \pagenumbering{roman}
 
+
 \title{
-{\Large Waterloo Rocketry 2025 - Aurora} \\[0.3em]
-{\Large Controls subsystem
-%\\ Estimation, Control, and Simulation
-} \\[1em]
-\Huge \bfseries
+\includegraphics[scale=1.4]{images/colour_standard.png}
+\\[1em] \Huge \bfseries
 {Roll Control Design and Simulation of a Canard-controlled Sounding Rocket}
+\\[1em] \Large \mdseries 
+{Waterloo Rocketry 2025 -- Aurora}
 }
 \author{
-Finn Breuer \footnote{Hamburg University of Technology, \href{mailto:finn.breuer@tuhh.de}{finn.breuer@tuhh.de},  \href{mailto:fjbreuer@uwaterloo.ca}{fjbreuer@uwaterloo.ca}} 
+Finn Breuer \footnote{ Hamburg University of Technology, \quad \itshape \href{mailto:finn.breuer@tuhh.de}{finn.breuer@tuhh.de},  \href{mailto:fjbreuer@uwaterloo.ca}{fjbreuer@uwaterloo.ca}} 
 \and 
-Joe Dolina \footnote{University of Waterloo, \href{mailto:j2dolina@uwaterloo.ca}{j2dolina@uwaterloo.ca}}
+Joe Dolina \footnote{ University of Waterloo, \quad \itshape \href{mailto:j2dolina@uwaterloo.ca}{j2dolina@uwaterloo.ca}}
 }
 \maketitle 
 
 %%%% Content
-
 \tableofcontents
-\addtocounter{page}{1}
-
-\newpage
-\pagenumbering{arabic}
-%\setcounter{page}{1}
-\pagestyle{fancy}
+\listoffigures
 
 %%%% Common parts
-\chapter*{Introduction}
+\newpage
+\pagenumbering{arabic}
+\pagestyle{fancy}
+
+\chapter*{Introduction \markboth{INTRODUCTION}{}}
 \addcontentsline{toc}{chapter}{Introduction}
+\label{ch:intro}
 \input{introduction}
 
+\clearpage
 
 %%%% Design part
-\chapter[Estimator \& Controller]{State Estimator and Controller Design}
+\chapter[Controller \& Estimator]{Controller and State Estimator Design}
+\label{ch:design}
 \chapterauthor{Finn Breuer}
 
-\input{model}
-\newpage
-\input{controller}
-\newpage
-\input{estimator}
-\input{numerics}
-%\input{implementation}
-\newpage
-\input{symbols-finn}
+\input{design/model}
+\clearpage
+\input{design/controller}
+\clearpage
+\input{design/estimator}
+
+\clearpage
 
 %%%% Simulation part
 \chapter[Flight Simulation]{Rocket Flight Simulation}
+\label{ch:plant}
 \chapterauthor{Joe Dolina}
 
-\input{plant}
-\newpage
-\input{simulation-results}
+\input{plant/plant}
+\clearpage
+\input{plant/plant-results}
 
-\newpage
+\clearpage
+
+%%%% Results from full Sim, HIL?, Testing, Flights
+\chapter[Results]{Simulation and Flight Results}
+\label{ch:results}
+%\chapterauthor{Finn Breuer and Joe Dolina}
+\input{results}
+
+\clearpage
 
 %%%% References
 \fancyfoot[R]{}
 \printbibliography[heading=bibintoc, title={References}]
+
+%%%% Appendix
+\appendix
+\counterwithin{section}{chapter}
+
+\chapter{Design appendix}
+\label{ch:appendix}
+
+%\input{design/symbols-finn}
+%\clearpage
+%\input{design/implementation}
+%\clearpage
+\input{design/numerics}
+%\clearpage
+\input{design/jacobians}
+
 
 \end{document}
