@@ -18,27 +18,12 @@ function [x_new] = model_dynamics(T, x, u)
     %%% attitude transformation, inertial to body frame
     S = quaternion_rotmatrix(q);
 
-    %% aerodynamics
-    %%% air data
-    [~, rho, mach_local] = model_airdata(alt);
-    p_dyn = rho / 2 * norm(v)^2;
-    mach_num = norm(v) / mach_local;
+    %% airdata 
+    airdata = model_airdata(alt);
 
-    %%% angle of attack/sideslip
-    if abs(v(1)) >= 0.5
-        sin_alpha = v(3)/v(1) / sqrt( v(3)^2/v(1)^2 + 1 );
-        sin_beta = v(2)/v(1) / sqrt( v(2)^2/v(1)^2 + 1 );
-    else
-        sin_alpha = sign(v(3)); 
-        sin_beta = sign(v(2));
-    end
-
-    %%% torques
-    torque_canards = Cl *  delta * param.c_canard * p_dyn *[1;0;0];
-    torque_aero = p_dyn * ( param.Cn_alpha*[0; sin_alpha; -sin_beta] + param.Cn_omega*[0; w(2); w(3)] ) * param.c_aero;
-    torque = torque_canards + torque_aero;
-    % torque = [0;0;0];
-
+    %% forces and torques
+    torque = aerodynamics(w, v, airdata, Cl, delta, param);
+    
     %% time updates
 
     % quaternion update
@@ -59,24 +44,55 @@ function [x_new] = model_dynamics(T, x, u)
 
     % canard coefficients derivative
     %%% returns Cl to expected value slowly, to force convergence in EKF
-    % Cl_new = Cl + T * (-1/param.tau_cl_alpha * (Cl - param.Cl_alpha)); 
+    Cl_theory = airfoil(norm(v), airdata.mach, param);
+    Cl_new = Cl + T * (1/param.tau_cl_alpha * (Cl_theory - Cl)); 
+    
+    
+    % actuator dynamics
+    %%% linear 1st order
+    delta_new = delta + T * (1/param.tau * (delta_u - delta));
+    
+    %% concoct state derivative vector
+    x_new = [q_new; w_new; v_new; alt_new; Cl_new; delta_new];
+end
+
+
+%% aerodynamics
+function [torque] = aerodynamics(w, v, airdata, Cl, delta, param)
+    %%% air data
+    p_dyn = airdata.density / 2 * norm(v)^2;
+
+    %%% angle of attack/sideslip
+    if abs(v(1)) >= 0.5
+        sin_alpha = v(3)/v(1) / sqrt( v(3)^2/v(1)^2 + 1 );
+        sin_beta = v(2)/v(1) / sqrt( v(2)^2/v(1)^2 + 1 );
+    else
+        sin_alpha = sign(v(3)); 
+        sin_beta = sign(v(2));
+    end
+
+    %%% torques
+    torque_canards = Cl *  delta * param.c_canard * p_dyn *[1;0;0];
+    torque_aero = p_dyn * ( param.Cn_alpha*[0; sin_alpha; -sin_beta]; 
+            %+ param.Cn_omega*[0; w(2); w(3)] ) * param.c_aero; % commented
+            % out because timeline
+    torque = torque_canards + torque_aero;
+    % torque = [0;0;0]; 
+end
+
+function [Cl_theory] = airfoil(airspeed, sonic_speed, param)
+    mach_num = airspeed / sonic_speed;
+
     if mach_num <= 1
         cone = 0;
     else
         cone = acos(1 / mach_num);
     end
     if cone > param.canard_sweep
-        Cl_new = 4 / sqrt(mach_num^2 - 1);
+        Cl_theory = 4 / sqrt(mach_num^2 - 1);
     else
         m = cot(param.canard_sweep)/cot(cone);
         a = m*(0.38+2.26*m-0.86*m^2);
-        Cl_new = 2*pi^2*cot(param.canard_sweep) / (pi + a);
+        Cl_theory = 2*pi^2*cot(param.canard_sweep) / (pi + a);
     end
-    
-    % actuator dynamics
-    %%% linear 1st order
-    delta_new = delta + T * (-1/param.tau * (delta - delta_u));
-    
-    %% concoct state derivative vector
-    x_new = [q_new; w_new; v_new; alt_new; Cl_new; delta_new];
 end

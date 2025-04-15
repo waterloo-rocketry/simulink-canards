@@ -17,7 +17,7 @@ C = [1, 0, 0]; % output channel
 %% prep table
 
 % calculate air data
-[~, rho_max, ~] = model_airdata(0);
+rho_max= model_airdata(0).density;
 
 P_min = 100;
 P_max = rho_max/2*V_max^2;

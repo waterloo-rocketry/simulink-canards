@@ -37,15 +37,16 @@ function [J] = air_jacobian(altitude)
     % T_B = layer(3); % base temperature
     % k = layer(4); % temperature lapse rate
     % 
-    temperature = T_B - k*(altitude-b);
     % if k == 0
         pressure_pause = P_B * exp(-earth_g0*(altitude-b)/(air_R*T_B));
     % else
         pressure_else = P_B * (1 - k/T_B*(altitude-b))^(earth_g0/(air_R*k));
     % end
-    J = [pressure_pause; pressure_else];
+    % J = [pressure_pause; pressure_else];
+    temperature = T_B - k*(altitude-b);
     % density = pressure / (air_R*temperature);
+    mach_alt = - 1/2 * k * sqrt(air_gamma*air_R / temperature);
     % mach_local = sqrt(air_gamma*air_R*temperature);
-
-
+    
+    J = mach_alt;
 end
