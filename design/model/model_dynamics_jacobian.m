@@ -23,9 +23,10 @@ function [J_x] = model_dynamics_jacobian(dt, x, u)
     % sub-Jacobians have identity on the main diagonal
     
     %% quaternion attitude rows (q, 1:4)
-    [qdot_q, qdot_w] = quaternion_derivative_jacobian(q,w);
-    q_q = eye(4) + dt * qdot_q;
-    q_w = dt * qdot_w;
+    [q_q, q_w] = quaternion_update_jacobian(q, w, dt);
+    % [qdot_q, qdot_w] = quaternion_derivative_jacobian(q,w);
+    % q_q = eye(4) + dt * qdot_q;
+    % q_w = dt * qdot_w;
 
     J_x(1:4,1:4) = q_q; % column q (attitude)
     J_x(1:4, 5:7) = q_w; % column w (rates)
