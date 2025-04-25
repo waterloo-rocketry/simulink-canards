@@ -2,7 +2,7 @@ function [u] = controller_module(timestamp, roll_state, flight_cond)
     % Top-level controller module. Calls controller algorithm. Sets reference signal.
     
     %% settings
-    time_start = 5; % pad delay time
+    time_start = 3; % pad delay time
     u_max = deg2rad(10); % cap output to this angle
 
     %% Reference signal
@@ -11,12 +11,12 @@ function [u] = controller_module(timestamp, roll_state, flight_cond)
     
     t = timestamp - time_start;
     r = 0;
-    if t>5
-        if t<12
+    if t>2
+        if t<8
             r = 1;
-        elseif t<19
+        elseif t<14
             r = -1;
-        elseif t>26
+        elseif t>22
             r = 0;
         end
     end
