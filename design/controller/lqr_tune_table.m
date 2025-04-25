@@ -9,7 +9,7 @@ C_size = 30; % coefficient of lift
 
 %% tuning parameters
 Q = diag([5, 0, 5]);
-R = 1e2; % constant R. Can be scaled by dynamic pressure in loop
+R = 1e-1; % constant R. Can be scaled by dynamic pressure in loop
 N = 0; % if desired cross term can be passed to lqr_tune
 T_sample = 0.005; % sampling time of the loop
 C = [1, 0, 0]; % output channel
@@ -40,15 +40,16 @@ for i=1:m
     for k=1:n
         [F_roll, B, ~, ~] = model_roll(Ps(i), Cls(k));
 
-        R = (Ps(i)) * 1e-3; % scale R by dynamic pressure
+        R_scaled = (Ps(i)) * R; % scale R by dynamic pressure
 
-        K = -lqrd(F_roll,B,Q,R,N, T_sample);    
+        K = -lqrd(F_roll,B,Q,R_scaled,N, T_sample);    
         Ks(i,k,1:3) = K;
 
         % sys_ol = c2d(ss(F_roll, B, eye(3), 0), T_sample);
         % [phi, gamma] = ssdata(sys_ol);
         % sys_cl = ss(phi+gamma*K, gamma, C, 0, T_sample);
-        sys_cl = ss(F_roll+B*K, B, C, 0, T_sample);
+        % sys_cl = ss(F_roll+B*K, B, C, 0, T_sample);
+        sys_cl = ss(F_roll+B*K, B, C, 0);
         K_pre = 1 / dcgain(sys_cl);
         Ks(i,k,4) = K_pre;
     end
