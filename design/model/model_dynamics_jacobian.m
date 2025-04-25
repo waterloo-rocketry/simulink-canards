@@ -83,7 +83,7 @@ function [J_x] = model_dynamics_jacobian(dt, x, u)
 
 
     %% canard angle row (delta, 13)
-    delta_delta = 1 - dt * 1/param.tau; % column delta % replace *1/tau with *alpha
+    delta_delta = 1 - dt * 1/param.tau_est; % column delta % replace *1/tau with *alpha
     J_x(13,13) = delta_delta; % column delta
 
 end

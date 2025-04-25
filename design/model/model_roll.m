@@ -13,7 +13,7 @@ function [A,B,C,sys_roll] = model_roll(dynamicpressure, canardcoeff)
 
     A = [0, 1, 0; % roll angle is integral of roll rate
          0, 0, L_delta; 
-         0, 0, -1/param.tau]; % 1st order actuator dynamics
+         0, 0, -1/param.tau_ctr]; % 1st order actuator dynamics
 
     B = [0; 0; 1]; % adjust scaling for servo to canard angle ratio
 

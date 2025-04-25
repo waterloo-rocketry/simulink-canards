@@ -49,7 +49,7 @@ function [x_new] = model_dynamics(dt, x, u)
     
     % actuator dynamics
     %%% linear 1st order
-    delta_new = delta + dt * (1/param.tau * (delta_u - delta));
+    delta_new = delta + dt * (1/param.tau_est * (delta_u - delta));
     
     %% concoct state derivative vector
     x_new = [q_new; w_new; v_new; alt_new; Cl_new; delta_new];
