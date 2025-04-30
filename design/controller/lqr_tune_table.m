@@ -41,15 +41,10 @@ for i=1:m
         [F_roll, B, ~, ~] = model_roll(Ps(i), Cls(k));
 
         R_scaled = Ps(i) * abs(Cls(k)) * R; % scale R by roll control derivative
-        % R_scaled = ( Ps(i) ) * R;
 
         K = -lqrd(F_roll,B,Q,R_scaled,N, T_sample);    
         Ks(i,k,1:2) = K;
 
-        % sys_ol = c2d(ss(F_roll, B, eye(3), 0), T_sample);
-        % [phi, gamma] = ssdata(sys_ol);
-        % sys_cl = ss(phi+gamma*K, gamma, C, 0, T_sample);
-        % sys_cl = ss(F_roll+B*K, B, C, 0, T_sample);
         sys_cl = ss(F_roll+B*K, B, C, 0);
         K_pre = 1 / dcgain(sys_cl);
         Ks(i,k,3) = K_pre;
@@ -67,10 +62,10 @@ save("design/controller/gains.mat", "Ks", "P_mesh", "C_mesh", "info");
 run('schedule_file_creator.m')
 
 %% Test responses
-% run("design-support\test\test_step.m")
+run("design-support\test\test_step.m")
 
 %% Plot
-if 1
+if 0
     samplep = 1e5; samplec = 1.5;
     for i=1:3
         K(i) = interp2(P_mesh, C_mesh, Ks(:,:,i), samplec, samplep, 'linear');
