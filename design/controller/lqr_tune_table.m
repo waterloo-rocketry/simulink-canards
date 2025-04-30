@@ -9,7 +9,7 @@ C_size = 30; % coefficient of lift
 
 %% tuning parameters
 Q = diag([5, 2]);
-R = 1e-1; % constant R. Can be scaled by dynamic pressure in loop
+R = 5e-3; % constant R. Can be scaled by dynamic pressure in loop
 N = 0; % if desired cross term can be passed to lqr_tune
 T_sample = 0.01; % sampling time of the loop
 C = [1, 0]; % output channel
@@ -19,7 +19,7 @@ C = [1, 0]; % output channel
 % calculate air data
 rho_max= model_airdata(0).density;
 
-P_min = 50;
+P_min = 20;
 P_max = rho_max/2*V_max^2;
 
 % Dimensions are (dynamic pressure, coefficent of lift)

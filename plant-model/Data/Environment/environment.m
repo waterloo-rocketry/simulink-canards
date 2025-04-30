@@ -1,6 +1,6 @@
 %% Winds
 %%% enable
-wind_dist_enable = 1; % no disturbances is = 0
+wind_dist_enable = 0; % no disturbances is = 0
 
 %%% Constant wind
 wind_const_direction = deg2rad(45);
