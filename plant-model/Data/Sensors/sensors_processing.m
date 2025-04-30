@@ -7,7 +7,7 @@
 % input the noise value as (noise density)^2, or (RMS)^2/bandwidth = (RMS)^2*samplingrate.
 
 %% Processor values
-samplingrate = 0.005; % sampling period of the estimator
+samplingrate = 0.01; % sampling period of the estimator
 
 %% IMU 1 values (Movella MTi630)
 
