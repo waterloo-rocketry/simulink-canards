@@ -118,7 +118,7 @@ function [x_init, bias_1, bias_2] = pad_filter(IMU_1, IMU_2)
     end
 
     %%% barometer
-    pressure = model_airdata(elevation).pressure; % what the pressure should be at this elevation
+    pressure = model_airdata(param.elevation).pressure; % what the pressure should be at this elevation
     if IMU_select(1) == 1
         bias_1(10) = filtered_1(10) - pressure;
     end
