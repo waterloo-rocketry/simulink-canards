@@ -1,5 +1,8 @@
 clear
 
+%% Launch site
+elevation = 250; % m above sea level
+
 %% Rocket body
 m = 26; %mass in kg
 Jx = 0.2; % inertia roll

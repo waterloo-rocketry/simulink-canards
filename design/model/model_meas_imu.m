@@ -6,7 +6,7 @@ function [y] = model_meas_imu(t, x, bias)
     q = x(1:4); w = x(5:7); v = x(8:10); alt = x(11); Cl = x(12); delta = x(13);
 
     % decompose bias matrix: [b_A(3,i); b_W(3, i); M_E(3, i); b_P(1, i)]
-    b_W = bias(4:6); M_E = bias(7:9);
+    b_W = bias(4:6); M_E = bias(7:9); b_P = bias(10);
 
     %% load parameters
 
@@ -20,7 +20,7 @@ function [y] = model_meas_imu(t, x, bias)
 
     %% atmosphere model
     airdata = model_airdata(alt);
-    P = airdata.pressure;
+    P = airdata.pressure + b_P;
 
     %% measurement prediction
     y = [W; M; P];

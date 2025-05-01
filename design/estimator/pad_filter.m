@@ -79,7 +79,7 @@ function [x_init, bias_1, bias_2] = pad_filter(IMU_1, IMU_2)
     p = p / norm(IMU_select, 1); % divide by number of alive IMUs
 
     %%% current altitude
-    alt = model_altdata(p);
+    alt = param.elevation;
     
     %%% set constant initials
     w = [0; 0; 0]; % stationary on rail
@@ -118,10 +118,12 @@ function [x_init, bias_1, bias_2] = pad_filter(IMU_1, IMU_2)
     end
 
     %%% barometer
-    % barometer bias not yet implemented, leave out for now.
-    % testing will show if we do pressure -> altitude, or if bias
-    % correction is needed when pressure varies wildly. Could be 
-    % (expected altitude on location) - (pressure -> altitude) -> (expected pressure)
-    % (barometer bias) = (pressure) - (expected pressure)
+    pressure = model_airdata(elevation).pressure; % what the pressure should be at this elevation
+    if IMU_select(1) == 1
+        bias_1(10) = filtered_1(10) - pressure;
+    end
+    if IMU_select(2) == 1
+        bias_2(10) = filtered_2(10) - pressure;
+    end
 
 end
