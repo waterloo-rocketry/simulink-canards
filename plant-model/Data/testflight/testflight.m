@@ -4,7 +4,7 @@ or_override_aoa_cna = readtable("plant-model\Data\testflight\testflight_aoa_cna.
 or_override_mach_cna = readtable("plant-model\Data\testflight\testflight_mach_cna.csv");
 
 %% Initial values
-location = [10; 43.47; -80.54]; % launch location on earth. Altitude, Latitude, Longitude
+location = [245; 43.47; -80.54]; % launch location on earth. Altitude, Latitude, Longitude
 rail_angle = deg2rad(-5); % negative is pitched downrange
 rail_length = 8.28; % delta-altitude for rail constraints
 time_idle = 5; % wait time on the rail before launch
@@ -29,7 +29,7 @@ Lr = 0.203; % reference length [m]
 Ar = pi * (Lr^2) / 4; % reference area [m^2]
 
 % center of pressure location, for Cn_alpha override
-x_cp_tot = -2.1; % [m]
+x_cp_tot = -0.3; % [m]
 
 % TEMP Cnalfa overrides - testflight
 CNa_nosecone = 2;
