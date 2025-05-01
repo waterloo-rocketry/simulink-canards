@@ -11,15 +11,15 @@ function [u] = controller_module(timestamp, roll_state, flight_cond)
     
     t = timestamp - time_start;
     r = 0;
-    % if t>2
-    %     if t<8
-    %         r = 0.5;
-    %     elseif t<14
-    %         r = -0.5;
-    %     elseif t>22
-    %         r = 0;
-    %     end
-    % end
+    if t>2
+        if t<8
+            r = 0.5;
+        elseif t<14
+            r = -0.5;
+        elseif t>22
+            r = 0;
+        end
+    end
 
     %% controller algorithm
     % Computes control output. Uses gain schedule table and simplified roll model
