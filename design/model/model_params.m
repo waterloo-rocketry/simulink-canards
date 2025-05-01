@@ -15,12 +15,12 @@ length_cp = -0.3; % center of pressure
 area_reference = pi*(0.203/2)^2; % cross section of body tube
 c_aero = area_reference * (length_cp-length_cg);
 Cn_alpha = 12; % pitch forcing coefficent 
-Cn_alpha = 80; % different ref area?
+Cn_alpha = 20; % different ref area?
 Cn_omega = 0; % pitch damping coefficent 
 
 
 %% Actuator
-tau_est = 0.08; % time constant of first order actuator dynamics, in estimation
+tau_est = 0.02; % time constant of first order actuator dynamics, in estimation
 tau_ctr = 0.04; % time constant of first order actuator dynamics, for controller tuning
 
 
