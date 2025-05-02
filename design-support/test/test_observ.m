@@ -4,7 +4,7 @@ w = 2*rand(3,1); % rates
 v = [200; 1; 5]; % velocity
 alt = 2000; % altitude
 CL = 1.5; % canard coefficient
-delta = 0.1; % canard deflection 
+delta = 0.0; % canard deflection 
 
 x = [q; w; v; alt; CL; delta];
 
@@ -21,8 +21,10 @@ F_num = jacobian(@model_dynamics, dt, x, u);
 F_an = model_dynamics_jacobian(dt, x, u);
 % H_num = jacobian(@model_meas_imu, t, x, bias);
 H_an = model_meas_imu_jacobian(t, x, bias);
+% H_an(8,:) = 0; H_an(8,8) = 1
+H_an(9,:) = 0; H_an(9,12) = 1
 
-F_diff = F_an - F_num
+F_diff = F_an - F_num;
 % H_diff = H_an - H_num
 
 %% check observability, controllability

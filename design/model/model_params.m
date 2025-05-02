@@ -20,7 +20,7 @@ Cn_omega = 0; % pitch damping coefficent
 
 
 %% Actuator
-tau_est = 0.02; % time constant of first order actuator dynamics, in estimation
+tau_est = 0.07; % time constant of first order actuator dynamics, in estimation
 tau_ctr = 0.04; % time constant of first order actuator dynamics, for controller tuning
 
 
