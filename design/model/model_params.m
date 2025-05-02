@@ -31,7 +31,7 @@ length_canard = 0.203/2+0.0254; % lever arm of canard to x-axis
 c_canard = area_canard*length_canard; % moment arm * area of canard
 
 %%% airfoil theory
-tau_cl_alpha = 5; % time constant to converge Cl back to theoretical value in filter
+tau_cl_alpha = 2; % time constant to converge Cl back to theoretical value in filter
 canard_sweep = deg2rad(54.5);
 canard_sweep_cot = cot(canard_sweep);
 Cl_alpha = 2*pi*canard_sweep_cot; % estimated coefficient of lift, const with Ma

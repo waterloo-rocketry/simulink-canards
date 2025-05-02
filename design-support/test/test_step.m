@@ -45,3 +45,6 @@ bode(sys_array(1,1))
 hold on
 bode(sys_min(1,1), 'g', sys_max(1,1), 'r')
 hold off
+
+% [margin1, margin2] = margin(sys_array(1,1))
+% [margin] = margin(sys_min(1,1), 'g', sys_max(1,1), 'r')

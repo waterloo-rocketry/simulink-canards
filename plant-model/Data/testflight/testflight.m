@@ -19,7 +19,7 @@ sensor_2_S = eye(3); % mounting orientation of IMU 2 relative body frame
 act_freq = 70; % natural frequency, approx 1/timeconstant
 act_deadtime = 0.02; % delay in servo internal control loop
 act_damping = 0.9; % damping ratio
-act_backlash = 0.1; % play in deg
+act_backlash = 0.5; % play in deg
 act_anglelimit = 12; % max deflection in deg
 act_ratelimit = 600; % max rate in deg/s
 
@@ -54,7 +54,7 @@ span = 0.178; %[m] height?
 sweep = 0.0508; % [m]
 pos_aletas = -l0 + 5.08/100; % postion of fins measured from nosecone [m]
 N_fins = 4; % Number of fins
-cant_angle_rad = deg2rad(0.0); % fin cant angle [rad]
+cant_angle_rad = deg2rad(0); % fin cant angle [rad]
 
 %Tail parameters
 rt = 0.152 / 2; % tail radius [m]

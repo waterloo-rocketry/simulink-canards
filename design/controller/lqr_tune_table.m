@@ -8,8 +8,8 @@ P_size = 200; % dynamic pressure
 C_size = 30; % coefficient of lift
 
 %% tuning parameters
-Q = diag([5, 1]);
-R = 5e-2; % constant R. Can be scaled by dynamic pressure in loop
+Q = diag([8, 1]);
+R = 1e-1; % constant R. Can be scaled by dynamic pressure in loop
 N = 0; % if desired cross term can be passed to lqr_tune
 T_sample = 0.005; % sampling time of the loop
 C = [1, 0]; % output channel

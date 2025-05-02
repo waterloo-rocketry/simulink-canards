@@ -4,6 +4,7 @@ function [u] = controller_module(timestamp, roll_state, flight_cond)
     %% settings
     time_start = 5; % pad delay time
     u_max = deg2rad(10); % cap output to this angle
+    backlash = deg2rad(0); % backlash offset
 
     %% Reference signal
     % Generates reference signal for roll program
@@ -36,6 +37,13 @@ function [u] = controller_module(timestamp, roll_state, flight_cond)
     %%% Feedback law
     % two degree of freedom, full state feedback + feedforward
     u = K*roll_state + K_pre*r; 
+
+    %%% backlash offset
+    if u > 0
+        u = u + backlash;
+    elseif u < 0
+        u = u - backlash;
+    end
 
     %%% limit output to allowable angle
     u = min(max(u, -u_max), u_max);
