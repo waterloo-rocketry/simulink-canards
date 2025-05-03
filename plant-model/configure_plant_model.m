@@ -2,6 +2,10 @@
 % run('plant-model\Data\Borealis\borealis.m')
 run('plant-model\Data\testflight\testflight.m')
 
+%%% environment
+run('plant-model\Data\Environment\environment.m')
+
+%%% sensors
 run('plant-model\Data\Sensors\sensors_processing.m')
 
 %% data pre-processing

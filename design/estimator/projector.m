@@ -2,7 +2,7 @@ function [output] = projector(x)
     % Computes roll state and scheduling variables for controller.
     % Output: vector with (1:3) state, (4:5) flight conditions
 
-    output = zeros(5,1);
+    output = zeros(4,1);
     
     %% Roll state
     % decompose state vector: [q(4); w(3); v(3); alt; Cl; delta]
@@ -12,7 +12,7 @@ function [output] = projector(x)
     phi = quaternion_to_roll(q); % note: this has singularities at +- 90° (Zipfel p. 127)
     
     % cat roll state
-    output(1:3,:) = [phi; w(1); delta];
+    output(1:2,:) = [phi; w(1)];
 
     %% scheduling variables
     % calculate air data
@@ -22,6 +22,6 @@ function [output] = projector(x)
     p_dyn = 0.5 * airdata.density * airspeed^2;
     
     % cat flight condition
-    output(4:5,:) = [p_dyn; Cl];
+    output(3:4,:) = [p_dyn; Cl];
 end
 

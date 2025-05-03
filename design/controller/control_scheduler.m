@@ -4,6 +4,7 @@ function [K] = control_scheduler(flight_cond)
     % output: K = [phi, p, delta, pre]
 
     dynamicpressure = flight_cond(1); canardcoeff = flight_cond(2);
+    canardcoeff = 0.5; % temporary overwrite
 
     persistent table; 
 
@@ -17,8 +18,8 @@ function [K] = control_scheduler(flight_cond)
     C_mesh = table.C_mesh;
 
     %% Interpolate table
-    K = zeros(1,4);
-    for i=1:4
+    K = zeros(1,3);
+    for i=1:3
         %%% bilinear interpolation between design points, output 0 if state outside of table
         K(i) = interp2(P_mesh, C_mesh, Ks(:,:,i), canardcoeff, dynamicpressure, 'linear', 0); 
     end

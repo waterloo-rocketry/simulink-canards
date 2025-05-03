@@ -15,15 +15,15 @@
 */
 
 // Gain table information 
-#define GAIN_NUM 4
+#define GAIN_NUM 3
 
 #define GAIN_P_SIZE 200
 #define GAIN_C_SIZE 30
 
-#define PRESSURE_DYNAMIC_SCALE 2.7512E+02
+#define PRESSURE_DYNAMIC_SCALE 2.7552E+02
 #define CANARD_COEFF_SCALE 5.0000E-01
 
-#define PRESSURE_DYNAMIC_OFFSET 1.0000E+02
+#define PRESSURE_DYNAMIC_OFFSET 2.0000E+01
 #define CANARD_COEFF_OFFSET -5.0000E+00
 
 extern const float gain_table[GAIN_NUM][GAIN_P_SIZE * GAIN_C_SIZE];
