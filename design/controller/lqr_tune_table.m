@@ -54,15 +54,15 @@ end
 
 %% save and export
 %%% matlab .mat file
-info.P_size = P_size; info.P_scale = (P_max-P_min)/P_size ; info.P_offset = P_min; 
-info.C_size = C_size; info.C_scale = (C_max-C_min)/C_size; info.C_offset = C_min; 
+info.P_size = P_size; info.P_scale = (P_max-P_min)/(P_size-1) ; info.P_offset = P_min; 
+info.C_size = C_size; info.C_scale = (C_max-C_min)/(C_size-1); info.C_offset = C_min; 
 save("design/controller/gains.mat", "Ks", "P_mesh", "C_mesh", "info");
 
 %%% embedded .c file
 run('schedule_file_creator.m')
 
 %% Test responses
-run("design-support\test\test_step.m")
+% run("design-support\test\test_step.m")
 
 %% Plot
 if 0
