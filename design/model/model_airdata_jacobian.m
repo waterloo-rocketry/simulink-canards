@@ -12,7 +12,7 @@ function [airdata_altitude, airdata] = model_airdata_jacobian(altitude)
                       32000, 868.02, 228.65, -0.0028]; % stratosphere 2
                       % base height, P_base, T_base, lapse rate;
     earth_r0 = 6356766; % mean earth radius
-    earth_g0 = 9.8; % zero height gravity
+    earth_g0 = 9.81; % zero height gravity
 
     % geopotential altitude
     altitude_ratio = earth_r0 / (earth_r0 - altitude);

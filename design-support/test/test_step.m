@@ -14,13 +14,13 @@ clear model_roll
 %% test lqr + step
 for i=1:length(P)   
     Ks = control_scheduler([P(i), CL]);
-    K_pre = Ks(4);
-    K = Ks(1:3);
+    K_pre = Ks(3);
+    K = Ks(1:2);
 
     [A, B, C, ~] = model_roll(P(i), CL);
-    sys_ol = c2d(ss(A, B, eye(3), 0), T_sample);
+    sys_ol = c2d(ss(A, B, eye(2), 0), T_sample);
     [phi, gamma] = ssdata(sys_ol);
-    sys_cl = K_pre*ss(phi+gamma*K, gamma, eye(3), 0, T_sample);
+    sys_cl = K_pre*ss(phi+gamma*K, gamma, eye(2), 0, T_sample);
 
     sys_array(:,:,1,i) = sys_cl;
 
@@ -45,3 +45,6 @@ bode(sys_array(1,1))
 hold on
 bode(sys_min(1,1), 'g', sys_max(1,1), 'r')
 hold off
+
+% [margin1, margin2] = margin(sys_array(1,1))
+% [margin] = margin(sys_min(1,1), 'g', sys_max(1,1), 'r')
