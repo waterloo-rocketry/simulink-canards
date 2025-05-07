@@ -10,10 +10,14 @@ rail_length = 8.28; % delta-altitude for rail constraints
 time_idle = 5; % wait time on the rail before launch
 
 %% Sensor mounting
-sensor_1_d = [-2.4;0;0]; % mounting location of IMU 1 relative CG
-sensor_1_S = eye(3); % mounting orientation of IMU 1 relative body frame
-sensor_2_d = [-2.5;0;0]; % mounting location of IMU 2 relative CG
-sensor_2_S = eye(3); % mounting orientation of IMU 2 relative body frame
+sensor_1_d = [0.127; 0.074; -0.027]; % mounting location of IMU 1 relative CG
+sensor_1_S = [0, 1, 0;
+              0, 0, 1;
+              1, 0, 0]; % mounting orientation of IMU 1 relative body frame
+sensor_2_d = [0.127; 0.065; 0.047]; % mounting location of IMU 2 relative CG
+sensor_2_S = [0, -1, 0;
+              0, 0, 1;
+              -1, 0, 0]; % mounting orientation of IMU 2 relative body frame
 
 %% Actuator parameters
 act_freq = 70; % natural frequency, approx 1/timeconstant
