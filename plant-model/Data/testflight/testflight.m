@@ -5,7 +5,8 @@ or_override_mach_cna = readtable("plant-model\Data\testflight\testflight_mach_cn
 
 %% Initial values
 location = [250; 43.47; -80.54]; % launch location on earth. Altitude, Latitude, Longitude
-rail_angle = deg2rad(-5); % negative is pitched downrange
+rail_angle_pitch = deg2rad(-3); % Rail pitch angle. Negative is pitched downrange
+rail_angle_yaw = deg2rad(2); % Rail yaw angle. Negative is yawed downrange
 rail_length = 8.28; % delta-altitude for rail constraints
 time_idle = 5; % wait time on the rail before launch
 
@@ -58,7 +59,7 @@ span = 0.178; %[m] height?
 sweep = 0.0508; % [m]
 pos_aletas = -l0 + 5.08/100; % postion of fins measured from nosecone [m]
 N_fins = 4; % Number of fins
-cant_angle_rad = deg2rad(0); % fin cant angle [rad]
+cant_angle_rad = deg2rad(0.175); % fin cant angle [rad]
 
 %Tail parameters
 rt = 0.152 / 2; % tail radius [m]
