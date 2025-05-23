@@ -11,6 +11,7 @@ run('plant-model\Data\Sensors\sensors_processing.m')
 %% data pre-processing
 clear estimator_module
 clear control_scheduler
+clear alti_module
 
 run('plant-model\scripts\data_preparation.m')
 

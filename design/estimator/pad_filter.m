@@ -68,16 +68,6 @@ function [x_init, bias_1, bias_2] = pad_filter(IMU_1, IMU_2)
          cos(psi/2) * sin(theta/2);
          sin(psi/2) * cos(theta/2)];
 
-    %%% compute altitude
-    p = 0; % barometric pressure p
-    if IMU_select(1) == 1 % only add alive IMUs to average
-        p = p + filtered_1(10);
-    end
-    if IMU_select(2) == 1
-        p = p + filtered_2(10);
-    end
-    p = p / norm(IMU_select, 1); % divide by number of alive IMUs
-
     %%% current altitude
     alt = param.elevation;
     
