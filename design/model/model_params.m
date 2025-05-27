@@ -44,12 +44,16 @@ g = [-9.81; 0; 0]; % gravitational acceleration in the geographic inertial frame
 
 
 %% Sensors
-S1 = eye(3); % IMU 1, rotation transform from sensor frame to body frame
-S2 = eye(3); % IMU 2, rotation transform from sensor frame to body frame
+S1 = [0, 0, 1;
+     1, 0, 0;
+     0, 1, 0]; % IMU 1, rotation transform from sensor frame to body frame
+S2 = [0, 0, -1;
+     -1, 0, 0;
+      0, 1, 0]; % IMU 2, rotation transform from sensor frame to body frame
 S_k = cat(3, S1, S2);
 
-d1 = [0; 0; 0]; % center of sensor frame
-d2 = [0; 0; 0]; % center of sensor frame
+d1 = [-0.127; -0.074; 0.027]; % center of sensor frame
+d2 = [-0.127; -0.065; -0.047]; % center of sensor frame
 
 B1 = eye(3); % Soft iron compensation
 B2 = eye(3); % Soft iron compensation

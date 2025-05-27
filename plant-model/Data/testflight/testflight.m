@@ -4,16 +4,21 @@ or_override_aoa_cna = readtable("plant-model\Data\testflight\testflight_aoa_cna.
 or_override_mach_cna = readtable("plant-model\Data\testflight\testflight_mach_cna.csv");
 
 %% Initial values
-location = [245; 43.47; -80.54]; % launch location on earth. Altitude, Latitude, Longitude
-rail_angle = deg2rad(-5); % negative is pitched downrange
+location = [250; 43.47; -80.54]; % launch location on earth. Altitude, Latitude, Longitude
+rail_angle_pitch = deg2rad(-3); % Rail pitch angle. Negative is pitched downrange
+rail_angle_yaw = deg2rad(2); % Rail yaw angle. Negative is yawed downrange
 rail_length = 8.28; % delta-altitude for rail constraints
 time_idle = 5; % wait time on the rail before launch
 
 %% Sensor mounting
-sensor_1_d = [-2.4;0;0]; % mounting location of IMU 1 relative CG
-sensor_1_S = eye(3); % mounting orientation of IMU 1 relative body frame
-sensor_2_d = [-2.5;0;0]; % mounting location of IMU 2 relative CG
-sensor_2_S = eye(3); % mounting orientation of IMU 2 relative body frame
+sensor_1_d = [0.127; 0.074; -0.027]; % mounting location of IMU 1 relative CG
+sensor_1_S = [0, 1, 0;
+              0, 0, 1;
+              1, 0, 0]; % mounting orientation of IMU 1 relative body frame
+sensor_2_d = [0.127; 0.065; 0.047]; % mounting location of IMU 2 relative CG
+sensor_2_S = [0, -1, 0;
+              0, 0, 1;
+              -1, 0, 0]; % mounting orientation of IMU 2 relative body frame
 
 %% Actuator parameters
 act_freq = 70; % natural frequency, approx 1/timeconstant
@@ -54,7 +59,7 @@ span = 0.178; %[m] height?
 sweep = 0.0508; % [m]
 pos_aletas = -l0 + 5.08/100; % postion of fins measured from nosecone [m]
 N_fins = 4; % Number of fins
-cant_angle_rad = deg2rad(0); % fin cant angle [rad]
+cant_angle_rad = deg2rad(0.175); % fin cant angle [rad]
 
 %Tail parameters
 rt = 0.152 / 2; % tail radius [m]
