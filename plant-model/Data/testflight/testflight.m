@@ -75,4 +75,4 @@ canard_chord_root = 4 * 0.0254; % root chord
 canard_chord_tip = 1 / 1000; % tip chord 
 canard_height = 2.5 * 0.0254; % root to tip length
 canard_delta_max = deg2rad(12); % Canard maximum angle of attack
-canard_pos_x_cp = -(558.29 + 40)/1000; %TODO: add thiscanard_pos_x_roottip = -(558.29 + 40)/1000; %TODO: add thiscanard_pos_x_roottip = -(558.29 + 40)/1000; %TODO: add this
+canard_pos_x_cp = -(558.29 + 40)/1000; %TODO: add thiscanard_pos_x_roottip = -(558.29 + 40)/1000; %TODO: add thiscanard_pos_x_roottip = -(558.29 + 40)/1000; %TODO: add thiscanard_pos_x_roottip = -(558.29 + 40)/1000; %TODO: add this
