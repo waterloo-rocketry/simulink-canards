@@ -30,34 +30,34 @@ act_ratelimit = 600; % max rate in deg/s
 
 %% Aerodynamics Reference Geometry
 %Reference parameters   
-Lr = 0.203; % reference length [m]
-Ar = pi * (Lr^2) / 4; % reference area [m^2]
+rocket_diameter = 0.203; % reference length [m]
+rocket_area_frontal = pi * rocket_diameter^2 / 4; % reference area [m^2]
 
 % center of pressure location, for Cn_alpha override
-x_cp_tot = -0.3; % [m]
+rocket_dist_cp = -0.3; % [m]
 
 % TEMP Cnalfa overrides - testflight
-CNa_nosecone = 2;
+nosecone_CNa = 2;
 CNa_body = 3;
 CNa_fins = 7.225;
 CNa_tail = 0;
 CNa_canard = 2;
 
 %Nosecone parameters
-logiva = 1.02; % nosecone length [m]
-r0 = 0.203 / 2; % nosecone radius [m]
+nosecone_length = 1.02; % nosecone length [m]
+nosecone_radius = rocket_diameter / 2; % nosecone radius [m]
 
 %Body parameters
-l0 = 2.72; % rocket length [m]
-lTubo = l0 - logiva; % fuselage length only [m]
-Rs = 20 / 10^6; % RMC(?) roughness 20 um smooth paint
+rocket_length = 2.72; % rocket length [m]
+body_length = rocket_length - nosecone_length; % fuselage length only [m]
+rocket_surface_roughness = 20 / 10^6; % RMC(?) roughness 20 um smooth paint
 
 %Fin parameters
-Cr = 0.254; %[m] root chord?
-Ct = 0.152; %[m] tip chord?
-span = 0.178; %[m] height?
-sweep = 0.0508; % [m]
-pos_aletas = -l0 + 5.08/100; % postion of fins measured from nosecone [m]
+fin_chord_root = 0.254; %[m] root chord?
+fin_chord_tip = 0.152; %[m] tip chord?
+fin_height = 0.178; %[m] height?
+fin_sweep = 0.0508; % [m]
+pos_aletas = -rocket_length + 5.08/100; % postion of fins measured from nosecone [m]
 N_fins = 4; % Number of fins
 cant_angle_rad = deg2rad(0.175); % fin cant angle [rad]
 
@@ -65,7 +65,7 @@ cant_angle_rad = deg2rad(0.175); % fin cant angle [rad]
 rt = 0.152 / 2; % tail radius [m]
 h = 0; % tail length [m]
 r2 = 0.14 / 2; % smallest tail radius(?) [m]
-pos_tail = -l0 + h; % tail position measured from nosecone
+pos_tail = -rocket_length + h; % tail position measured from nosecone
 
 % Canards parameters 
 N_canard = 2;
