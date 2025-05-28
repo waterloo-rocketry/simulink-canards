@@ -57,7 +57,6 @@ fin_chord_root = 0.254; %[m] root chord?
 fin_chord_tip = 0.152; %[m] tip chord?
 fin_height = 0.178; %[m] height?
 fin_sweep = 0.0508; % [m]
-fin_pos_x_cp = -rocket_length + 5.08/100; % postion of fins measured from nosecone [m]
 fin_pos_x_roottip = -rocket_length + 5.08/100; % postion of fins measured from nosecone [m]
 fin_number = 4; % Number of fins
 fin_cant_angle_rad = deg2rad(0.175); % fin cant angle [rad]
@@ -66,7 +65,6 @@ fin_cant_angle_rad = deg2rad(0.175); % fin cant angle [rad]
 tail_radius_outer = rocket_diameter / 2; % tail radius [m]
 tail_length = 0; % tail length [m]
 tail_radius_smallest = 0.14 / 2; % smallest tail radius(?) [m]
-tail_pos = -rocket_length + tail_length; % tail position measured from nosecone
 tail_pos_x_roottip = -rocket_length + tail_length; % tail position measured from nosecone
 
 % Canards parameters 
@@ -75,4 +73,4 @@ canard_chord_root = 4 * 0.0254; % root chord
 canard_chord_tip = 1 / 1000; % tip chord 
 canard_height = 2.5 * 0.0254; % root to tip length
 canard_delta_max = deg2rad(12); % Canard maximum angle of attack
-canard_pos_x_cp = -(558.29 + 40)/1000; %TODO: add thiscanard_pos_x_roottip = -(558.29 + 40)/1000; %TODO: add thiscanard_pos_x_roottip = -(558.29 + 40)/1000; %TODO: add thiscanard_pos_x_roottip = -(558.29 + 40)/1000; %TODO: add this
+canard_pos_x_roottip = -(558.29 + 40)/1000; %TODO: add this
