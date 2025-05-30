@@ -1,7 +1,7 @@
 %% OR Simulation Output Data
 or_data = readtable("plant-model\Data\Aurora\aurora_cycle_2.csv");
-or_override_aoa_cna = readtable("plant-model\Data\Aurora\aurora_aoa_cna.csv");
-or_override_mach_cna = readtable("plant-model\Data\Aurora\aurora_mach_cna.csv");
+or_override_aoa_cna = readtable("plant-model\Data\Aurora\aurora_cycle_2_cna_aoa.csv");
+or_override_mach_cna = readtable("plant-model\Data\Aurora\aurora_cycle_2_cna_mach.csv");
 
 %% Initial values
 location = [250; 43.47; -80.54]; % launch location on earth. Altitude, Latitude, Longitude
