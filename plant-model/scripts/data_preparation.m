@@ -76,14 +76,14 @@ CNa_data_mach = or_override_mach_cna.Var2; % CN_alpha
 %% Aero
 % Nose
 %nosecone_CNa = 2 * pi * (nosecone_radius^2) / rocket_area_frontal;
-nosecone_pos_x = 0 - nosecone_length / 2; % Nosecone center of pressure
+nosecone_pos_x_cp = 0 - nosecone_length / 2; % Nosecone center of pressure
 
 % Body
 % body_CNa = 2 * 1.1 * body_length * rocket_diameter / rocket_area_frontal; %derivative of eq. 3.26 wrt alpha (making the substitution sin^2(a) = a^2)
-body_pos_x = 0 - nosecone_length - body_length/2; % Fuselage center of pressure
+body_pos_x_cp = 0 - nosecone_length - body_length/2; % Fuselage center of pressure
 
 % Fins REPLACE WITH AEROSURFACE
-%[fin_pos_x_cp, Cnfdelta, CndNi, CNa_fins, rocket_area_frontal, gamac, yparcial, Y, Lf] = fins(fin_chord_root, fin_chord_tip, fin_height, fin_sweep, fin_pos_x_roottip, tail_radius_outer, fin_number, rocket_area_frontal, rocket_diameter, nosecone_radius);
+[fin_pos_x_cp, Cnfdelta, CndNi, CNa_fins, rocket_area_frontal, gamac, yparcial, Y, Lf] = fins(fin_chord_root, fin_chord_tip, fin_height, fin_sweep, fin_pos_x_roottip, tail_radius_outer, fin_number, rocket_area_frontal, rocket_diameter, nosecone_radius);
 
 % Tail
 tail_radius_ratio = tail_radius_outer / tail_radius_smallest;
@@ -91,4 +91,4 @@ tail_radius_ratio = tail_radius_outer / tail_radius_smallest;
 tail_pos_x_cp = tail_pos_x_roottip - (tail_height/3) * (1 + ( (1 - tail_radius_ratio) / (1 - tail_radius_ratio^2) ) );
 
 % Canards REPLACE WITH AEROSURFACE
-%[x_pos_canard,Cnalfat_canard,Cnfdelta_canard, CndNi_canard, AR_canard, Af_canard, gamac_canard, yparcial_canard, Y_canard, Lf_canard] = canards(fin_chord_root,fin_chord_tip, fin_height, Cr_canard, Ct_canard, span_canard, pos_canard, N_canard, rocket_area_frontal, rocket_diameter, nosecone_radius);
+[x_pos_canard,Cnalfat_canard,Cnfdelta_canard, CndNi_canard, AR_canard, Af_canard, gamac_canard, yparcial_canard, Y_canard, Lf_canard] = canards(fin_chord_root,fin_chord_tip, fin_height, Cr_canard, Ct_canard, span_canard, pos_canard, N_canard, rocket_area_frontal, rocket_diameter, nosecone_radius);

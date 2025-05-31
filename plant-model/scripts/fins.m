@@ -15,6 +15,6 @@ c3 = ((Cr + 3*Ct)/12) * (fin_height^3);
 fin_pos_x_cp = pos_aletas - (sweep / 3) * ( (Cr + 2 * Ct) / (Cr + Ct) ) + (1/6) * (Cr + Ct - Cr * Ct / (Cr + Ct)); % Fins center of pressure
 Cnfdelta = fin_number * fin_pos_r_chord_mean / fin_height; % roll forcing moment coefficient derivative, multiple by delta and Cnalfa1
 CndNi= (fin_number * (c1 + c2 + c3))/(Ar * (Lr)) ; %roll damping moment coefficient derivative (partial, uses real time numbers during simulation)
-fin_Cna = ((4 * fin_number * (fin_height / Lr) ^ 2) / (1 + sqrt(1 + (2 * fin_leading_edge / (Cr + Ct)) ^ 2))) * (1 + rt / (fin_height + rt));
-fin_CNa = fin_CNa * (1 + r0/(fin_height + r0)); %interference factor
+fin_Cna_0 = ((4 * fin_number * (fin_height / Lr) ^ 2) / (1 + sqrt(1 + (2 * fin_leading_edge / (Cr + Ct)) ^ 2))) * (1 + rt / (fin_height + rt));
+fin_CNa = fin_Cna_0 * (1 + r0/(fin_height + r0)); %interference factor
 end
