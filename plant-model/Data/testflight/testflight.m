@@ -7,7 +7,7 @@ or_override_mach_cna = readtable("plant-model\Data\testflight\testflight_mach_cn
 location = [250; 43.47; -80.54]; % launch location on earth. Altitude, Latitude, Longitude
 rail_angle_pitch = deg2rad(-3); % Rail pitch angle. Negative is pitched downrange
 rail_angle_yaw = deg2rad(2); % Rail yaw angle. Negative is yawed downrange
-rail_length = 8.28; % delta-altitude for rail constraints
+rail_length = 8.28; % [m]
 time_idle = 5; % wait time on the rail before launch
 
 %% Sensor mounting

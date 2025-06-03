@@ -66,11 +66,11 @@ CD_data = lookup_table(:, 2); % Cd
 
 %% Cn_alpha tables
 
-CNa_input_aoa = deg2rad(or_override_aoa_cna.Var1); % angle of attack
-CNa_data_aoa = or_override_aoa_cna.Var2; % CN_alpha
+CNa_input_aoa = deg2rad(or_override_aoa_cna{:,1}); % angle of attack
+CNa_data_aoa = or_override_aoa_cna{:,2}; % CN_alpha
 
-CNa_input_mach = or_override_mach_cna.Var1; % Mach number
-CNa_data_mach = or_override_mach_cna.Var2; % CN_alpha
+CNa_input_mach = or_override_mach_cna{:,1}; % Mach number
+CNa_data_mach = or_override_mach_cna{:,2}; % CN_alpha
 
 
 %% Aero
