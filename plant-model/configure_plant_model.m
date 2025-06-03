@@ -1,6 +1,7 @@
 %% Choose rocket
 % run('plant-model\Data\Borealis\borealis.m')
-run('plant-model\Data\testflight\testflight.m')
+% run('plant-model\Data\testflight\testflight.m')
+ run('plant-model\Data\Aurora\aurora.m')
 
 %%% environment
 run('plant-model\Data\Environment\environment.m')

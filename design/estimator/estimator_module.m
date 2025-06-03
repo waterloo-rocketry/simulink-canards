@@ -4,10 +4,10 @@ function [xhat, Phat, controller_input, bias_1, bias_2] = estimator_module(times
     % IMU = struct of IMUi = [accel; omega; mag; baro] 
     
     persistent x P t b flight_phase; % remembers x, P, t from last iteration
-    global IMU_select 
+    % global IMU_select 
     
     %% settings
-    IMU_select = [1; 1]; % select IMUs, 1 is on, 0 is off
+    % IMU_select = [1; 1]; % select IMUs, 1 is on, 0 is off
     idle_time = 3; % wait time to handover
 
     %% initialize at beginning
