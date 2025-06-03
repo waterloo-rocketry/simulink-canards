@@ -1,20 +1,20 @@
-function [x_pos_canard,Cnalfat_canard,Cnfdelta_canard, CndNi_canard, AR_canard, Af_canard, gamac_canard, yparcial_canard, Y_canard, Lf_canard] = canards(Cr,Ct, span, Cr_canard, Ct_canard, span_canard, pos_canard, N_canard, Ar, Lr, r0)
+function [canard_pos_x_cp, canard_Cnalphat, canard_Cnfdelta, canard_CndNi, canard_aspectratio, canard_area, canard_midchord_angle, canard_dist_chord_mean, canard_pos_r_chord_mean, canard_leading_edge] = canards(canard_chord_root,canard_chord_tip, canard_height, canard_pos_x_roottip, canard_number, rocket_area_frontal, rocket_diameter, nosecone_radius)
 rt = 0.152 / 2; % tail radius [m]
-c1_canard = ((Cr+Ct) /  2) * (rt^2) * span;
-c2_canard = ((Cr + 2*Ct)/3) * rt * (span^2);
-c3_canard = ((Cr + 3*Ct)/12) * (span^3);
-sweep_canard = (Cr_canard - Ct_canard); % calculating que sweep_canard distance
-Af_canard = (Cr_canard + Ct_canard) * span_canard / 2; % fin area
-AR_canard = 2 * (span_canard^2) / Af_canard; % Fin Aspect Ratio
-gamac_canard = atan( (Cr_canard - Ct_canard) / (2 * span_canard) ); % mid chord angle
-yparcial_canard = (Cr_canard + 2 * Ct_canard) / (Cr_canard + Ct_canard); %mean aerodynamic chord distance
-Y_canard = rt + (span_canard/3) * yparcial_canard; %mean aerodynamic chord distance with the radius added
-Lf_canard = sqrt((Cr_canard / 2 - Ct_canard / 2) ^ 2 + span_canard ^ 2); % Pre calculus. No Physical meaning
+c1_canard = ((canard_chord_root+canard_chord_tip) /  2) * (rt^2) * canard_height;
+c2_canard = ((canard_chord_root + 2*canard_chord_tip)/3) * rt * (canard_height^2);
+c3_canard = ((canard_chord_root + 3*canard_chord_tip)/12) * (canard_height^3);
+sweep_canard = (canard_chord_root - canard_chord_tip); % calculating que sweep_canard distance
+canard_area = (canard_chord_root + canard_chord_tip) * canard_height / 2; % fin area
+canard_aspectratio = 2 * (canard_height^2) / canard_area; % Fin Aspect Ratio
+canard_midchord_angle = atan( (canard_chord_root - canard_chord_tip) / (2 * canard_height) ); % mid chord angle
+canard_dist_chord_mean = (canard_chord_root + 2 * canard_chord_tip) / (canard_chord_root + canard_chord_tip); %mean aerodynamic chord distance
+canard_pos_r_chord_mean = rt + (canard_height/3) * canard_dist_chord_mean; %mean aerodynamic chord distance with the radius added
+canard_leading_edge = sqrt((canard_chord_root / 2 - canard_chord_tip / 2) ^ 2 + canard_height ^ 2); % Pre calculus. No Physical meaning
 
-x_pos_canard = pos_canard - (sweep_canard / 3) * ( (Cr_canard + 2 * Ct_canard) / (Cr_canard + Ct_canard) ) + (1/6) * (Cr_canard + Ct_canard - Cr_canard * Ct_canard / (Cr_canard + Ct_canard)); % Fin's center of pressure
-Cnalfat_canard = ((4 * N_canard * (span_canard / Lr) ^ 2) / (1 + sqrt(1 + (2 * Lf_canard / (Cr_canard + Ct_canard)) ^ 2))) * (1 + rt / (span_canard + rt));
-Cnalfat_canard = Cnalfat_canard * (1 + r0/(span_canard + r0)); %interference factor
+canard_pos_x_cp = canard_pos_x_roottip - (sweep_canard / 3) * ( (canard_chord_root + 2 * canard_chord_tip) / (canard_chord_root + canard_chord_tip) ) + (1/6) * (canard_chord_root + canard_chord_tip - canard_chord_root * canard_chord_tip / (canard_chord_root + canard_chord_tip)); % Fin's center of pressure
+canard_Cnalphat = ((4 * canard_number * (canard_height / rocket_diameter) ^ 2) / (1 + sqrt(1 + (2 * canard_leading_edge / (canard_chord_root + canard_chord_tip)) ^ 2))) * (1 + rt / (canard_height + rt));
+canard_Cnalphat = canard_Cnalphat * (1 + nosecone_radius/(canard_height + nosecone_radius)); %interference factor
 
-Cnfdelta_canard = N_canard * Y_canard / span_canard; % roll forcing moment coefficient derivative, multiple by delta and Cnalfa1
-CndNi_canard= (N_canard * (c1_canard + c2_canard + c3_canard))/(Ar * (Lr)) ; %roll damping moment coefficient derivative (partial, uses real time numbers during simulation)
+canard_Cnfdelta = canard_number * canard_pos_r_chord_mean / canard_height; % roll forcing moment coefficient derivative, multiple by delta and Cnalfa1
+canard_CndNi= (canard_number * (c1_canard + c2_canard + c3_canard))/(rocket_area_frontal * (rocket_diameter)) ; %roll damping moment coefficient derivative (partial, uses real time numbers during simulation)
 end
