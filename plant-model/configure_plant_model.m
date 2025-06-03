@@ -16,6 +16,7 @@ run('plant-model\scripts\data_preparation.m')
 
 %%% reference computations (used to check internal computation against OR net values only)
 % Total normal force derivative
-Cnalfa_ref = (CNa_nosecone + CNa_fins + CNa_tail + CNa_body + CNa_canard); 
-% total CoP as weighted average of component CPs
-x_ref = (x_pos_nosecone * CNa_nosecone + x_pos_fins * CNa_fins + x_pos_tail * CNa_tail + CNa_body * x_pos_bodytube) / Cnalfa_ref; 
+Cnalfa_ref = (nosecone_CNa + fin_CNa + tail_CNa + body_CNa + canard_CNa); 
+% total CoP as weighted average of component CPs - do i need to multiply
+% by fin_number?
+x_ref = (nosecone_pos_x_cp * nosecone_CNa + fin_pos_x_cp * fin_CNa + tail_pos_x_cp * tail_CNa + body_CNa * body_pos_x_cp) / Cnalfa_ref; 
