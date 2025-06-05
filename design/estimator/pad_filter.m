@@ -19,14 +19,14 @@ function [x_init, bias_1, bias_2] = pad_filter(IMU_1, IMU_2)
 
     if isempty(filtered_1)
         if IMU_select(1) == 1 % if IMU_i alive
-            filtered_1 = IMU_1(1:10);
+            filtered_1 = IMU_1;
         else
             filtered_1 = zeros(10,1);
         end
     end
     if isempty(filtered_2)
         if IMU_select(2) == 1 % if IMU_i alive
-            filtered_2 = IMU_2(1:10);
+            filtered_2 = IMU_2;
         else
             filtered_2 = zeros(10,1);
         end
@@ -39,10 +39,10 @@ function [x_init, bias_1, bias_2] = pad_filter(IMU_1, IMU_2)
     % filtered = filtered + alpha*(measured-filtered);
 
     if IMU_select(1) == 1
-        filtered_1 = alpha * IMU_1(1:10) + (1 - alpha) * filtered_1;
+        filtered_1 = alpha * IMU_1 + (1 - alpha) * filtered_1;
     end
     if IMU_select(2) == 1
-        filtered_2 = alpha * IMU_2(1:10) + (1 - alpha) * filtered_2;
+        filtered_2 = alpha * IMU_2 + (1 - alpha) * filtered_2;
     end
 
 
@@ -59,8 +59,8 @@ function [x_init, bias_1, bias_2] = pad_filter(IMU_1, IMU_2)
     a = a / norm(IMU_select, 1); % divide by number of alive IMUs
 
     %%% gravity vector in body-fixed frame
-    psi = atan(-a(2) / a(1)); % rail yaw angle
-    theta = atan(a(3) / a(1)); % rail pitch angle
+    psi = atan2(-a(2), a(1)); % rail yaw angle
+    theta = atan2(a(3), a(1)); % rail pitch angle
 
     %%% compute launch attitude quaternion
     q = [cos(psi/2) * cos(theta/2); 
@@ -68,17 +68,7 @@ function [x_init, bias_1, bias_2] = pad_filter(IMU_1, IMU_2)
          cos(psi/2) * sin(theta/2);
          sin(psi/2) * cos(theta/2)];
 
-    %%% compute altitude
-    p = 0; % barometric pressure p
-    if IMU_select(1) == 1 % only add alive IMUs to average
-        p = p + filtered_1(10);
-    end
-    if IMU_select(2) == 1
-        p = p + filtered_2(10);
-    end
-    p = p / norm(IMU_select, 1); % divide by number of alive IMUs
-
-    %%% current altitude
+    %%% launch altitude
     alt = param.elevation;
     
     %%% set constant initials
@@ -98,6 +88,12 @@ function [x_init, bias_1, bias_2] = pad_filter(IMU_1, IMU_2)
     
     %%% accelerometer
     % did not add accelerometer bias determination yet, leave out for now
+    if IMU_select(1) == 1
+        bias_1(1:3) = filtered_1(1:3);
+    end
+    if IMU_select(2) == 1
+        bias_2(1:3) = filtered_2(1:3);
+    end
 
     %%% gyroscope
     if IMU_select(1) == 1

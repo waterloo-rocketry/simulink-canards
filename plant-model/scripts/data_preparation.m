@@ -66,21 +66,21 @@ CD_data = lookup_table(:, 2); % Cd
 
 %% Cn_alpha tables
 
-CNa_input_aoa = deg2rad(or_override_aoa_cna.Var1); % angle of attack
-CNa_data_aoa = or_override_aoa_cna.Var2; % CN_alpha
+CNa_input_aoa = deg2rad(or_override_aoa_cna{:,1}); % angle of attack
+CNa_data_aoa = or_override_aoa_cna{:,2}; % CN_alpha
 
-CNa_input_mach = or_override_mach_cna.Var1; % Mach number
-CNa_data_mach = or_override_mach_cna.Var2; % CN_alpha
+CNa_input_mach = or_override_mach_cna{:,1}; % Mach number
+CNa_data_mach = or_override_mach_cna{:,2}; % CN_alpha
 
 
 %% Aero
 % Nose
 %nosecone_CNa = 2 * pi * (nosecone_radius^2) / rocket_area_frontal;
-nosecone_pos_x = 0 - nosecone_length / 2; % Nosecone center of pressure
+nosecone_pos_x_cp = 0 - nosecone_length / 2; % Nosecone center of pressure
 
 % Body
 % body_CNa = 2 * 1.1 * body_length * rocket_diameter / rocket_area_frontal; %derivative of eq. 3.26 wrt alpha (making the substitution sin^2(a) = a^2)
-body_pos_x = 0 - nosecone_length - body_length/2; % Fuselage center of pressure
+body_pos_x_cp = 0 - nosecone_length - body_length/2; % Fuselage center of pressure
 
 % Fins REPLACE WITH AEROSURFACE
 [fin_pos_x_cp, fin_Cnfdelta, fin_CndNi, fin_CNa, fin_aspectratio, fin_area, fin_midchord_angle, fin_dist_chord_mean, fin_pos_r_chord_mean, fin_leading_edge] = fins(fin_chord_root, fin_chord_tip, fin_height, fin_sweep, fin_pos_x_roottip, fin_number, rocket_area_frontal, rocket_diameter);

@@ -1,4 +1,4 @@
-function [] = aerosurface(chord_root, chord_tip, height, sweep, number, rocket_diameter)
+function [] = aerosurface(chord_root, chord_tip, height, fin_sweep, number, rocket_diameter)
     % calculates coefficients and other parameters for aerosurfaces, such
     % as fins or canards. The aerosurface must be trapezoidal (for triangle: short tip chord)
     %Output names: fin_ or canard_ [pos_x_cp, CNf_delta, CNdNi, CNa,
@@ -11,7 +11,7 @@ function [] = aerosurface(chord_root, chord_tip, height, sweep, number, rocket_d
     % preliminaries
     area_planform = height * (chord_root + chord_tip) / 2;
     aspect_ratio = 2*height^2 / area_planform;
-    pos_x_tip = height * tan(sweep); % x postion of fin tip at leading edge 
+    pos_x_tip = height * tan(fin_sweep); % x postion of fin tip at leading edge 
 
     % center of pressure
     chord_aerodynamic_mean = 2/3 * (chord_root + chord_tip - (chord_root*chord_tip)/(chord_root+chord_tip));
