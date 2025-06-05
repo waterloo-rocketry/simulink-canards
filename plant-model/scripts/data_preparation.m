@@ -83,12 +83,12 @@ nosecone_pos_x = 0 - nosecone_length / 2; % Nosecone center of pressure
 body_pos_x = 0 - nosecone_length - body_length/2; % Fuselage center of pressure
 
 % Fins REPLACE WITH AEROSURFACE
-%[fin_pos_x_cp, Cnfdelta, CndNi, CNa_fins, rocket_area_frontal, gamac, yparcial, Y, Lf] = fins(fin_chord_root, fin_chord_tip, fin_height, fin_sweep, fin_pos_x_roottip, tail_radius_outer, fin_number, rocket_area_frontal, rocket_diameter, nosecone_radius);
+[fin_pos_x_cp, fin_Cnfdelta, fin_CndNi, fin_CNa, fin_aspectratio, fin_area, fin_midchord_angle, fin_dist_chord_mean, fin_pos_r_chord_mean, fin_leading_edge] = fins(fin_chord_root, fin_chord_tip, fin_height, fin_sweep, fin_pos_x_roottip, fin_number, rocket_area_frontal, rocket_diameter);
 
 % Tail
 tail_radius_ratio = tail_radius_outer / tail_radius_smallest;
 % tail_CNa= -2 * (1 - ((tail_radius_ratio)^(-2)));
-tail_pos_x_cp = tail_pos_x_roottip - (tail_height/3) * (1 + ( (1 - tail_radius_ratio) / (1 - tail_radius_ratio^2) ) );
+tail_pos_x_cp = tail_pos_x_roottip - (tail_length/3) * (1 + ( (1 - tail_radius_ratio) / (1 - tail_radius_ratio^2) ) );
 
 % Canards REPLACE WITH AEROSURFACE
-%[x_pos_canard,Cnalfat_canard,Cnfdelta_canard, CndNi_canard, AR_canard, Af_canard, gamac_canard, yparcial_canard, Y_canard, Lf_canard] = canards(fin_chord_root,fin_chord_tip, fin_height, Cr_canard, Ct_canard, span_canard, pos_canard, N_canard, rocket_area_frontal, rocket_diameter, nosecone_radius);
+[canard_pos_x, canard_Cnalfat, canard_Cnfdelta, canard_CndNi, canard_aspectratio, canard_area, canard_midchord_angle, canard_dist_chord_mean, canrd_pos_r_mean, canard_leading_edge] = canards(canard_chord_root, canard_chord_tip, canard_height, canard_pos_x_roottip, canard_number, rocket_area_frontal, rocket_diameter);

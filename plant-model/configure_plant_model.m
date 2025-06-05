@@ -4,6 +4,8 @@ run('plant-model\Data\testflight\testflight.m')
 
 %%% environment
 run('plant-model\Data\Environment\environment.m')
+% enable wind disturbances
+wind_dist_enable = 1; % no disturbances is = 0
 
 %%% sensors
 run('plant-model\Data\Sensors\sensors_processing.m')
@@ -16,6 +18,6 @@ run('plant-model\scripts\data_preparation.m')
 
 %%% reference computations (used to check internal computation against OR net values only)
 % Total normal force derivative
-Cnalfa_ref = (CNa_nosecone + CNa_fins + CNa_tail + CNa_body + CNa_canard); 
+% Cnalfa_ref = (CNa_nosecone + CNa_fins + CNa_tail + CNa_body + CNa_canard); 
 % total CoP as weighted average of component CPs
-x_ref = (x_pos_nosecone * CNa_nosecone + x_pos_fins * CNa_fins + x_pos_tail * CNa_tail + CNa_body * x_pos_bodytube) / Cnalfa_ref; 
+% x_ref = (x_pos_nosecone * CNa_nosecone + x_pos_fins * CNa_fins + x_pos_tail * CNa_tail + CNa_body * x_pos_bodytube) / Cnalfa_ref; 
