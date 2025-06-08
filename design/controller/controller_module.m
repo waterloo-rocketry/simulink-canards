@@ -12,12 +12,14 @@ function [u] = controller_module(timestamp, roll_state, flight_cond)
     
     t = timestamp - time_start;
     r = 0;
-    if t>2
-        if t<8
+    if t>10
+        if t<15
             r = 0.5;
-        elseif t<14
+        elseif t<22
             r = -0.5;
-        elseif t>22
+        elseif t<28
+            r = 0.5;
+        elseif t>36
             r = 0;
         end
     end

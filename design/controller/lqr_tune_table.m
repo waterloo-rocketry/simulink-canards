@@ -1,5 +1,5 @@
 %% define dimensions
-V_max = 300; % max velocity
+V_max = 1000; % max velocity
 C_max = 10; % max canard coefficient
 C_min = -5; % min canard coefficient
 

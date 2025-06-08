@@ -5,13 +5,13 @@ elevation = 250; % m above sea level
 
 %% Rocket body
 m = 26; %mass in kg
-Jx = 0.2; % inertia roll
-Jy = 10.1; % inertia pitch, yaw
+Jx = 0.45; % inertia roll
+Jy = 50; % inertia pitch, yaw
 J = diag([Jx, Jy, Jy]);
 Jinv = inv(J);
 
 length_cg = 0; % center of gravity
-length_cp = -0.3; % center of pressure
+length_cp = -0.6; % center of pressure
 area_reference = pi*(0.203/2)^2; % cross section of body tube
 c_aero = area_reference * (length_cp-length_cg);
 Cn_alpha = 12; % pitch forcing coefficent 
@@ -26,13 +26,13 @@ tau_ctr = 0.04; % time constant of first order actuator dynamics, for controller
 
 %% Canards
 %%% aerodynamics
-area_canard = 2 * 0.102 * 6.35; % total canard area 
+area_canard = 2 * 0.076 * 0.038; % total canard area 
 length_canard = 0.203/2+0.0254; % lever arm of canard to x-axis 
 c_canard = area_canard*length_canard; % moment arm * area of canard
 
 %%% airfoil theory
 tau_cl_alpha = 2; % time constant to converge Cl back to theoretical value in filter
-canard_sweep = deg2rad(54.5);
+canard_sweep = deg2rad(61);
 canard_sweep_cot = cot(canard_sweep);
 Cl_alpha = 2*pi*canard_sweep_cot; % estimated coefficient of lift, const with Ma
 canard_mach_supercrit = 1/cos(canard_sweep);

@@ -4,7 +4,7 @@ function [K] = control_scheduler(flight_cond)
     % output: K = [phi, p, delta, pre]
 
     dynamicpressure = flight_cond(1); canardcoeff = flight_cond(2);
-    canardcoeff = 0.5; % temporary overwrite
+    canardcoeff = 4; % temporary overwrite
 
     persistent table; 
 
