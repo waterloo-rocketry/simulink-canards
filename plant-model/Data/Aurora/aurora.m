@@ -32,9 +32,10 @@ act_ratelimit = 600; % max rate in deg/s
 %Reference parameters   
 rocket_diameter = 0.203; % reference length [m]
 rocket_area_frontal = pi * rocket_diameter^2 / 4; % reference area [m^2]
+rocket_length = 5.16; % rocket length [m]
 
 % center of pressure location, for Cn_alpha override
-rocket_pos_cp = -0.73; % [m]
+rocket_pos_cp = -0.82; % [m]
 
 % TEMP Cnalfa overrides - testflight
 nosecone_CNa = 2;
@@ -48,18 +49,8 @@ nosecone_length = 1.02; % nosecone length [m]
 nosecone_radius = rocket_diameter / 2; % nosecone radius [m]
 
 %Body parameters
-rocket_length = 4.34; % rocket length [m]
 body_length = rocket_length - nosecone_length; % fuselage length only [m]
 body_surface_roughness = 20 / 10^6; % RMC(?) roughness 20 um smooth paint
-
-%Fin parameters
-fin_chord_root = 0.356; %[m] root chord?
-fin_chord_tip = 0.178; %[m] tip chord?
-fin_height = 0.216; %[m] height?
-fin_sweep = 0.178; % [m]
-fin_pos_x_roottip = -rocket_length + 0.054 + 0.391 - 0.013; % postion of fins measured from nosecone [m]
-fin_number = 4; % Number of fins
-fin_cant_angle_rad = deg2rad(0); % fin cant angle [rad]
 
 %Tail parameters
 tail_radius_outer = 0.203 / 2; % tail radius [m]
@@ -67,10 +58,20 @@ tail_length = 0.054; % tail length [m]
 tail_radius_smallest = 0.19 / 2; % smallest tail radius(?) [m]
 tail_pos_x_roottip = -rocket_length + tail_length; % tail position measured from nosecone
 
+%Fin parameters
+fin_chord_root = 0.406; %[m] root chord?
+fin_chord_tip = 0.0762; %[m] tip chord?
+fin_height = 0.216; %[m] height?
+fin_sweep = 0.33; % [m]
+fin_pos_x_roottip = -rocket_length + tail_length + 0.441 - 0.0172; % postion of fins measured from nosecone [m]
+fin_number = 4; % Number of fins
+fin_cant_angle_rad = deg2rad(0); % fin cant angle [rad]
+
 % Canards parameters 
 canard_number = 2;
-canard_chord_root = 3 * 0.0254; % root chord
-canard_chord_tip = 1 / 1000; % tip chord 
-canard_height = 1.5 * 0.0254; % root to tip length
+canard_chord_root = 0.102; % root chord
+canard_chord_tip = 0.001; % tip chord 
+canard_height = 0.0508; % root to tip length
+% canard_sweep_angle = ... % unused right now
 canard_delta_max = deg2rad(12); % Canard maximum angle of attack
 canard_pos_x_roottip = -(558.29 + 40)/1000; %TODO: add this
