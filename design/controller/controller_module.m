@@ -30,11 +30,11 @@ function [u] = controller_module(timestamp, roll_state, flight_cond)
     % Outputs: control input u
 
     %%% Gain scheduling
-    Ks = zeros(1,3);
+    Ks = zeros(1,4);
     % get gain from schedule
     Ks = control_scheduler(flight_cond);
-    K = Ks(1:2);
-    K_pre = Ks(3);
+    K = Ks(1:3);
+    K_pre = Ks(4);
     
     %%% Feedback law
     % two degree of freedom, full state feedback + feedforward

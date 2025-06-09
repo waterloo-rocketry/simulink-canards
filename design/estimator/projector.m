@@ -20,8 +20,11 @@ function [output] = projector(x)
     airdata = model_airdata(alt);
     airspeed = norm(v);
     p_dyn = 0.5 * airdata.density * airspeed^2;
-    
-    % cat flight condition
+
+    %% temporaray overwrites
+    Cl = = 4;
+
+    %% cat flight condition
     output(3:4,:) = [p_dyn; Cl];
 end
 

@@ -11,12 +11,13 @@ function [A,B,C,sys_roll] = model_roll(dynamicpressure, canardcoeff)
     %%% x_roll = [phi; w; delta]
     L_delta = canardcoeff * param.c_canard * dynamicpressure / param.J(1);
 
-    A = [0, 1; % roll angle is integral of roll rate
-         0, 0];
+    A = [0, 1, 0; % roll angle is integral of roll rate
+         0, 0, L_delta;
+         0, 0, -1/param.tau_ctr];
 
-    B = [0; L_delta]; % adjust scaling for servo to canard angle ratio
+    B = [0; 0; 1/param.tau_ctr]; % adjust scaling for servo to canard angle ratio
 
-    C = eye(2); % assume all states are known from estimation
+    C = eye(3); % assume all states are known from estimation
 
     sys_roll = ss(A,B,C,0);
 end
