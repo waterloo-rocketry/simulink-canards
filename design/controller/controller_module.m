@@ -1,4 +1,4 @@
-function [u] = controller_module(timestamp, roll_state, flight_cond)
+function [u] = controller_module(timestamp, input)
     % Top-level controller module. Calls controller algorithm. Sets reference signal.
     
     %% settings
@@ -28,6 +28,9 @@ function [u] = controller_module(timestamp, roll_state, flight_cond)
     % Computes control output. Uses gain schedule table and simplified roll model
     % Inputs: roll state input(1:3), flight conditions input(4:5), reference signal r
     % Outputs: control input u
+
+    roll_state = input(1:3); 
+    flight_cond = input(4:5);
 
     %%% Gain scheduling
     Ks = zeros(1,4);
