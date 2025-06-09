@@ -95,17 +95,17 @@ if 0
     zlabel("K_{\omega_x}")
     zlim([-3,3])
     
-    % % figure(3)
-    % subplot(2,2,3)
-    % [P_plot,C_plot] = meshgrid(Cls,Ps);
-    % surfl(P_plot,C_plot,Ks(:,:,3), 'FaceAlpha',0.5)
-    % hold on
-    % scatter3(samplec, samplep ,K(3), 20, "k", "o", "filled")
-    % hold off
-    % xlabel("Coefficient")
-    % ylabel("Dynamic pressure")
-    % zlabel("K_\delta")
-    % zlim([-4,0])
+    % figure(3)
+    subplot(2,2,3)
+    [P_plot,C_plot] = meshgrid(Cls,Ps);
+    surfl(P_plot,C_plot,Ks(:,:,3), 'FaceAlpha',0.5)
+    hold on
+    scatter3(samplec, samplep ,K(3), 20, "k", "o", "filled")
+    hold off
+    xlabel("Coefficient")
+    ylabel("Dynamic pressure")
+    zlabel("K_\delta")
+    zlim([-4,0])
     
     % figure(4)
     subplot(2,2,4)

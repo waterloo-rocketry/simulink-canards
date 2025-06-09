@@ -18,7 +18,7 @@ function [K] = control_scheduler(flight_cond)
 
     %% Interpolate table
     K = zeros(1,4);
-    for i=1:3
+    for i=1:4
         %%% bilinear interpolation between design points, output 0 if state outside of table
         K(i) = interp2(P_mesh, C_mesh, Ks(:,:,i), canardcoeff, dynamicpressure, 'linear', 0); 
     end

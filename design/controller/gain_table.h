@@ -15,7 +15,7 @@
 */
 
 // Gain table information 
-#define GAIN_NUM 3
+#define GAIN_NUM 4
 
 #define GAIN_P_SIZE 200
 #define GAIN_C_SIZE 30
