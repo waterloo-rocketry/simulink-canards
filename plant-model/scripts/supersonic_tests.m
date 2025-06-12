@@ -1,21 +1,26 @@
 mach = 0:0.02:3;
-incidence = deg2rad(0:5:20);
+incidence = deg2rad(0:3:10);
+
+height = 0.1;
+midchord_angle = deg2rad(50);
+area_planform = 0.01;
 
 cp = zeros(length(mach), length(incidence));
 
 for i = 1:length(incidence)
     for m = 1:length(mach)
-        cp(m, i) =  pressure_coeff_supersonic(mach(m), incidence(i));
+        % cp(m, i) =  pressure_coeff_supersonic(mach(m), incidence(i));
+        cp(m, i) =  aerosurface_online(mach(m), incidence(i), height, midchord_angle, area_planform);
     end
 end
 
+% figure(2)
 plot(mach, cp(:, 1))
 hold on
 plot(mach, cp(:, 2))
 plot(mach, cp(:, 3))
 plot(mach, cp(:, 4))
-plot(mach, cp(:, 5))
-hold off
+% hold off
 
 function [cp] = pressure_coeff_supersonic(mach, incidence)
     beta = max(sqrt(abs(1-mach.^2)), 0.5);
