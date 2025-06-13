@@ -7,6 +7,7 @@ or_override_mach_cna = readtable("plant-model\Data\Aurora\aurora_cycle_2_cna_mac
 location = [250; 43.47; -80.54]; % launch location on earth. Altitude, Latitude, Longitude
 rail_angle_pitch = deg2rad(-5); % Rail pitch angle. Negative is pitched downrange
 rail_angle_yaw = deg2rad(0); % Rail yaw angle. Negative is yawed downrange
+rail_angle_roll = deg2rad(0); % Rocket clocking angle. 
 rail_length = 11.28; % [m]
 time_idle = 5; % wait time on the rail before launch
 
