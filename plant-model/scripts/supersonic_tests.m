@@ -3,14 +3,14 @@ incidence = deg2rad(0:3:10);
 
 height = 0.1;
 midchord_angle = deg2rad(50);
-area_planform = 0.01;
+aspect_ratio = 1.5;
 
 cp = zeros(length(mach), length(incidence));
 
 for i = 1:length(incidence)
     for m = 1:length(mach)
         % cp(m, i) =  pressure_coeff_supersonic(mach(m), incidence(i));
-        cp(m, i) =  aerosurface_online(mach(m), incidence(i), height, midchord_angle, area_planform);
+        cp(m, i) =  aerosurface_online(mach(m), incidence(i), aspect_ratio, midchord_angle);
     end
 end
 
