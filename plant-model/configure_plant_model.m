@@ -1,13 +1,13 @@
 clear
 %% Choose rocket
 % run('plant-model\Data\Borealis\borealis.m')
-run('plant-model\Data\testflight\testflight.m')
-% run('plant-model\Data\Aurora\aurora.m')
+% run('plant-model\Data\testflight\testflight.m')
+run('plant-model\Data\Aurora\aurora.m')
 
 %%% environment
 run('plant-model\Data\Environment\environment.m')
 % enable wind disturbances
-wind_dist_enable = 0; % no disturbances is = 0
+wind_dist_enable = 1; % no disturbances is = 0
 
 %%% sensors
 run('plant-model\Data\Sensors\sensors_processing.m')
