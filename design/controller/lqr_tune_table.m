@@ -1,6 +1,6 @@
 %% define dimensions
-V_max = 1000; % max velocity
-C_max = 10; % max canard coefficient
+V_max = 900; % max velocity
+C_max = 8; % max canard coefficient
 C_min = -5; % min canard coefficient
 
 % amount of design point for each dimension
@@ -9,9 +9,9 @@ C_size = 30; % coefficient of lift
 
 %% tuning parameters
 Q = diag([8, 0, 3]);
-R = 1e-2; % constant R. Can be scaled by dynamic pressure in loop
+R = 2e-2; % constant R. Can be scaled by dynamic pressure in loop
 N = 0; % if desired cross term can be passed to lqr_tune
-T_sample = 0.005; % sampling time of the loop
+T_sample = 0.01; % sampling time of the loop
 C = [1, 0, 0]; % output channel
 
 %% prep table
