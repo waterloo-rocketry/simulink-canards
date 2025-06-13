@@ -15,12 +15,12 @@
 */
 
 // Gain table information 
-#define GAIN_NUM 3
+#define GAIN_NUM 4
 
 #define GAIN_P_SIZE 200
 #define GAIN_C_SIZE 30
 
-#define PRESSURE_DYNAMIC_SCALE 2.7690E+02
+#define PRESSURE_DYNAMIC_SCALE 3.0777E+03
 #define CANARD_COEFF_SCALE 5.1724E-01
 
 #define PRESSURE_DYNAMIC_OFFSET 2.0000E+01

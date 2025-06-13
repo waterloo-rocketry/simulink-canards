@@ -1,5 +1,5 @@
 %% define dimensions
-V_max = 300; % max velocity
+V_max = 1000; % max velocity
 C_max = 10; % max canard coefficient
 C_min = -5; % min canard coefficient
 
@@ -8,11 +8,11 @@ P_size = 200; % dynamic pressure
 C_size = 30; % coefficient of lift
 
 %% tuning parameters
-Q = diag([8, 1]);
-R = 1e-1; % constant R. Can be scaled by dynamic pressure in loop
+Q = diag([8, 0, 3]);
+R = 1e-2; % constant R. Can be scaled by dynamic pressure in loop
 N = 0; % if desired cross term can be passed to lqr_tune
 T_sample = 0.005; % sampling time of the loop
-C = [1, 0]; % output channel
+C = [1, 0, 0]; % output channel
 
 %% prep table
 
@@ -32,7 +32,7 @@ Cls(Cls==0)=[];
 
 m = length(Ps);
 n = length(Cls);
-Ks = zeros(m,n,3); % length(x) is 3, plus 1 pre gain
+Ks = zeros(m,n,4); % length(x) is 3, plus 1 pre gain
 
 %% fill table
 clear model_roll
@@ -40,14 +40,14 @@ for i=1:m
     for k=1:n
         [F_roll, B, ~, ~] = model_roll(Ps(i), Cls(k));
 
-        R_scaled = sqrt( abs( Ps(i) * Cls(k) ) ) * R; % scale R by roll control derivative
+        R_scaled = abs( Ps(i) ) * R; % scale R by roll control derivative
 
         K = -lqrd(F_roll,B,Q,R_scaled,N, T_sample);    
-        Ks(i,k,1:2) = K;
+        Ks(i,k,1:3) = K;
 
         sys_cl = ss(F_roll+B*K, B, C, 0);
         K_pre = 1 / dcgain(sys_cl);
-        Ks(i,k,3) = K_pre;
+        Ks(i,k,4) = K_pre;
     end
 end    
 
@@ -95,17 +95,17 @@ if 0
     zlabel("K_{\omega_x}")
     zlim([-3,3])
     
-    % % figure(3)
-    % subplot(2,2,3)
-    % [P_plot,C_plot] = meshgrid(Cls,Ps);
-    % surfl(P_plot,C_plot,Ks(:,:,3), 'FaceAlpha',0.5)
-    % hold on
-    % scatter3(samplec, samplep ,K(3), 20, "k", "o", "filled")
-    % hold off
-    % xlabel("Coefficient")
-    % ylabel("Dynamic pressure")
-    % zlabel("K_\delta")
-    % zlim([-4,0])
+    % figure(3)
+    subplot(2,2,3)
+    [P_plot,C_plot] = meshgrid(Cls,Ps);
+    surfl(P_plot,C_plot,Ks(:,:,3), 'FaceAlpha',0.5)
+    hold on
+    scatter3(samplec, samplep ,K(3), 20, "k", "o", "filled")
+    hold off
+    xlabel("Coefficient")
+    ylabel("Dynamic pressure")
+    zlabel("K_\delta")
+    zlim([-4,0])
     
     % figure(4)
     subplot(2,2,4)
