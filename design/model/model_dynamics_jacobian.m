@@ -36,7 +36,7 @@ function [J_x] = model_dynamics_jacobian(dt, x, u)
     % be put in one function
     [torque_v, torque_cl, torque_delta] = aerodynamics_jacobian(v, airdata, Cl, delta, param);
 
-    w_w = eye(3) + dt * param.Jinv * (- param.J*tilde(w)); % torque_w = 0 for now
+    w_w = eye(3) + dt * param.Jinv * (- param.J*tilde(w)); % torque_w = 0 for now. Or is this +tilde(J*w) ??
     w_v = dt * param.Jinv * torque_v;
     w_cl = dt * param.Jinv * torque_cl;
     w_delta = dt * param.Jinv * torque_delta;
@@ -50,8 +50,8 @@ function [J_x] = model_dynamics_jacobian(dt, x, u)
     %% velocity rows (v, 8:10)
     % v_q = dt * quaternion_rotate_jacobian(quaternion_inv(q), param.g);
     v_q = dt * quaternion_rotate_jacobian(q, param.g);
-    v_w = - dt * tilde(v);
-    v_v = eye(3) + dt * tilde(w);
+    v_w = dt * tilde(v);
+    v_v = eye(3) - dt * tilde(w);
 
     J_x(8:10,1:4) = v_q; % column q
     J_x(8:10,5:7) = v_w; % column w
