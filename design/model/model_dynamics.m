@@ -37,7 +37,7 @@ function [x_new] = model_dynamics(dt, x, u)
     % velocity update 
     %%% acceleration specific force    
     v_new = v + dt * (a - cross(w,v) + S*param.g);
-    % v_new(2:3) = [0;0];
+    % v_new(2:3) = [0;0]; % stupid hack to force velocity convergence
 
     % altitude update
     v_earth = (S')*v;

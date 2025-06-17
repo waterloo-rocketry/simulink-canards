@@ -9,7 +9,7 @@ function [x, P] = ekf_algorithm(x, P, b, t, T, IMU_1, IMU_2, cmd, encoder, AHRS)
     %% Prediction step
     %%% Q is a square 13 matrix, tuning for prediction E(noise)
     %%% x = [   q(4),           w(3),           v(3),      alt(1), Cl(1), delta(1)]
-    Q = diag([ones(1,4)*1e-9, ones(1,3)*1e0, ones(1,3)*1e-3, 1e-2,  40, 0.5]);
+    Q = diag([ones(1,4)*1e-9, ones(1,3)*1e0, ones(1,3)*1e-2, 1e-2,  40, 0.5]);
     
     u.accel = model_acceleration(x, IMU_1, IMU_2);
     u.cmd = cmd;
