@@ -1,4 +1,4 @@
-function [u] = controller_module(timestamp, input)
+function [u, r] = controller_module(timestamp, input)
     % Top-level controller module. Calls controller algorithm. Sets reference signal.
     
     %% settings
