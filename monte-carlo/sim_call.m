@@ -12,6 +12,9 @@ load("monte-carlo/sim_recent.mat", "sdt", "sdt_vars");
 
 
 %% Plots
+
+plot_animation(sdt_vars);
+
 % figure(1)
 % plot(sdt.rocket.Time, sdt.rocket.q)
 % hold on
