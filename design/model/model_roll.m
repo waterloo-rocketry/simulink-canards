@@ -10,9 +10,11 @@ function [A,B,C,sys_roll] = model_roll(dynamicpressure, canardcoeff)
     % simplified linear roll model
     %%% x_roll = [phi; w; delta]
     L_delta = canardcoeff * param.c_canard * dynamicpressure / param.J(1);
+    L_omega = - L_delta / sqrt(dynamicpressure) * param.length_canard;
+    L_omega = 0;
 
     A = [0, 1, 0; % roll angle is integral of roll rate
-         0, 0, L_delta;
+         0, L_omega, L_delta;
          0, 0, -1/param.tau_ctr];
 
     B = [0; 0; 1/param.tau_ctr]; % adjust scaling for servo to canard angle ratio
