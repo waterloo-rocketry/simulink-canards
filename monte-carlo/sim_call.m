@@ -8,12 +8,12 @@ simout = sim("plant-model\CC_Flight_Simulation");
 
 %% Save 
 % save("monte-carlo/sim_recent.mat", "sdt", "sdt_vars");
-load("monte-carlo/sim_recent.mat", "sdt", "sdt_vars");
+% load("monte-carlo/sim_recent.mat", "sdt", "sdt_vars");
 
 
 %% Plots
 
-plot_animation(sdt_vars);
+% plot_animation(sdt_vars);
 
 % figure(1)
 % plot(sdt.rocket.Time, sdt.rocket.q)
@@ -41,7 +41,7 @@ sgtitle("Estimation Error")
 
 figure(3)
 stairs(sdt.control.Time, rad2deg(sdt.control.Variables))
-legend("Roll angle", "Reference", "Roll control error")
+legend("Reference", "Roll angle", "Roll control error")
 
 figure(4)
 plots_1 = plot_est_dashboard(sdt.est, "\_est", 'on');
