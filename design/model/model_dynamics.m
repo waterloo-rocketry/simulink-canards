@@ -37,6 +37,7 @@ function [x_new] = model_dynamics(dt, x, u)
     % velocity update 
     %%% acceleration specific force    
     v_new = v + dt * (a - cross(w,v) + S*param.g);
+    % v_new(2:3) = [0;0]; % stupid hack to force velocity convergence
 
     % altitude update
     v_earth = (S')*v;
@@ -62,9 +63,9 @@ function [torque] = aerodynamics(w, v, airdata, Cl, delta, param)
     p_dyn = airdata.density / 2 * norm(v)^2;
 
     %%% angle of attack/sideslip
-    if v(1) >= 0.5
-        sin_alpha = v(3)/v(1);
-        sin_beta =  - v(2)/v(1);
+    if 1 %v(1) >= 0.5
+        sin_alpha = sin(atan2(v(3),v(1)));
+        sin_beta =  - sin(atan2(v(2),v(1)));
     else
         sin_alpha = pi/2; 
         sin_beta = -pi/2;
