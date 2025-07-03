@@ -1,0 +1,3 @@
+[submodule "documentation"]
+	path = documentation
+	url = https://github.com/FinnBreu/WR-Controller-and-Estimator-Design.git
