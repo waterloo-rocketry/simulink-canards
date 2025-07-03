@@ -66,29 +66,32 @@ CD_data = lookup_table(:, 2); % Cd
 
 %% Cn_alpha tables
 
-CNa_input_aoa = deg2rad(or_override_aoa_cna.Var1); % angle of attack
-CNa_data_aoa = or_override_aoa_cna.Var2; % CN_alpha
+CNa_input_aoa = deg2rad(or_override_aoa_cna{:,1}); % angle of attack
+CNa_data_aoa = or_override_aoa_cna{:,2}; % CN_alpha
 
-CNa_input_mach = or_override_mach_cna.Var1; % Mach number
-CNa_data_mach = or_override_mach_cna.Var2; % CN_alpha
+CNa_input_mach = or_override_mach_cna{:,1}; % Mach number
+CNa_data_mach = or_override_mach_cna{:,2}; % CN_alpha
 
 
 %% Aero
 % Nose
-% CNa_nosecone = 2 * pi * (r0^2) / Ar;
-x_pos_nosecone = -(logiva - logiva/2); % Nosecone center of pressure
+%nosecone_CNa = 2 * pi * (nosecone_radius^2) / rocket_area_frontal;
+nosecone_pos_x_cp = 0 - nosecone_length / 2; % Nosecone center of pressure
 
 % Body
-% CNa_body = 2 * 1.1 * lTubo * Lr / Ar; %derivative of eq. 3.26 wrt alpha (making the substitution sin^2(a) = a^2)
-x_pos_bodytube = 0 - logiva - lTubo/2; % Fuselage center of pressure
+% body_CNa = 2 * 1.1 * body_length * rocket_diameter / rocket_area_frontal; %derivative of eq. 3.26 wrt alpha (making the substitution sin^2(a) = a^2)
+body_pos_x_cp = 0 - nosecone_length - body_length/2; % Fuselage center of pressure
 
-% Fins
-[x_pos_fins, Cnfdelta, CndNi, CNa_fins, AR, Af, gamac, yparcial, Y, Lf] = fins(Cr, Ct, span, sweep, pos_aletas, rt, N_fins, Ar, Lr, r0);
+% Fins 
+% [fin_pos_x_cp, fin_Cnfdelta, fin_CndNi, fin_CNa, fin_aspectratio, fin_area, fin_midchord_angle, fin_dist_chord_mean, fin_pos_r_chord_mean, fin_leading_edge] = fins(fin_chord_root, fin_chord_tip, fin_height, fin_sweep, fin_pos_x_roottip, fin_number, rocket_area_frontal, rocket_diameter);
+[fin_pos_x_cp, fin_pos_r_mean, fin_area, fin_aspectratio, fin_midchord_angle, fin_factor, fin_pos_x_cp_mach2] = aerosurface(fin_chord_root, fin_chord_tip, fin_height, fin_sweep_angle, fin_pos_x_roottip, fin_number, rocket_diameter);
+
 
 % Tail
-% CNa_tail= -2 * (1 - ((r2 / rt)^2));
-r=rt/r2;
-x_pos_tail = pos_tail - (h/3) * (1 + ( (1 - r) / (1 - r^2) ) );
+tail_radius_ratio = tail_radius_outer / tail_radius_smallest;
+% tail_CNa= -2 * (1 - ((tail_radius_ratio)^(-2)));
+tail_pos_x_cp = tail_pos_x_roottip - (tail_length/3) * (1 + ( (1 - tail_radius_ratio) / (1 - tail_radius_ratio^2) ) );
 
-% Canards
-[x_pos_canard,Cnalfat_canard,Cnfdelta_canard, CndNi_canard, AR_canard, Af_canard, gamac_canard, yparcial_canard, Y_canard, Lf_canard] = canards(Cr,Ct, span, Cr_canard, Ct_canard, span_canard, pos_canard, N_canard, Ar, Lr, r0);
+% Canards 
+% [canard_pos_x, canard_Cnalfat, canard_Cnfdelta, canard_CndNi, canard_aspectratio, canard_area, canard_midchord_angle, canard_dist_chord_mean, canard_pos_r_mean, canard_leading_edge] = canards(canard_chord_root, canard_chord_tip, canard_height, canard_pos_x_roottip, canard_number, rocket_area_frontal, rocket_diameter);
+[canard_pos_x, canard_pos_r_mean, canard_area, canard_aspectratio, canard_midchord_angle, canard_factor, canard_pos_x_cp_mach2] = aerosurface(canard_chord_root, canard_chord_tip, canard_height, canard_sweep_angle, canard_pos_x_roottip, canard_number, rocket_diameter);
