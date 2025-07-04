@@ -30,4 +30,5 @@ codegen/
 # Octave session info
 octave-workspace
 
-*.mat
+# Large files
+*.mp4
