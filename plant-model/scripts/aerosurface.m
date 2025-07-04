@@ -3,8 +3,8 @@ function [pos_x_cp_subsonic, pos_r_chord_mean, area_planform, aspect_ratio, midc
     % as fins or canards. The aerosurface must be trapezoidal (for triangle: short tip chord)
 
     % variables
-    mach = 2; % calculate supersonic parameters for Ma = 2. This hould be done online in the future
-    beta = min(sqrt(mach^2-1), 0.3);
+    mach = 2.5; % calculate supersonic parameters for Ma = 2. This hould be done online in the future
+    beta = sqrt(mach^2-1);
 
     % preliminaries
     area_planform = height * (chord_root + chord_tip) / 2;
@@ -14,13 +14,13 @@ function [pos_x_cp_subsonic, pos_r_chord_mean, area_planform, aspect_ratio, midc
 
     % center of pressure axial
     chord_aerodynamic_mean = 2/3 * (chord_root + chord_tip - (chord_root*chord_tip)/(chord_root+chord_tip));
-    pos_x_cp_subsonic = pos_x + pos_x_tip/3 * (chord_root+2*chord_tip)/(chord_root+chord_tip) + 1/6 * (chord_root^2+chord_tip^2+chord_root*chord_tip) / (chord_root+chord_tip);
-    pos_x_cp_mach2 = pos_x + chord_aerodynamic_mean * (aspect_ratio*beta - 0.67) / (2*aspect_ratio*beta-1);
+    pos_x_cp_subsonic = pos_x - pos_x_tip/3 * (chord_root+2*chord_tip)/(chord_root+chord_tip) - 1/4 * chord_aerodynamic_mean;
+    pos_x_cp_mach2 = pos_x - chord_aerodynamic_mean * (aspect_ratio*beta - 0.67) / (2*aspect_ratio*beta-1);
     % todo online: interpolation for variable Mach numbers
 
     % center of pressure radial
     height_aerodynamic_mean = height / 3 * (chord_root + 2*chord_tip) / (chord_root + chord_tip); %mean aerodynamic chord distance, radially from root
-    pos_r_chord_mean = rocket_diameter + (height/3) * height_aerodynamic_mean; %mean aerodynamic chord distance with the radius added
+    pos_r_chord_mean = rocket_diameter + height_aerodynamic_mean; %mean aerodynamic chord distance with the radius added
 
     % body interference factor
     K_body = 1 + rocket_diameter / (height + rocket_diameter); 
