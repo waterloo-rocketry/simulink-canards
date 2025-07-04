@@ -20,7 +20,7 @@ function [plots] = plot_est_dashboard(dataset, varargin)
         stairs(plots.q, dataset.Time, dataset.q(:,i), 'DisplayName', names(i));
         hold(plots.q, 'on')
     end
-    legend(plots.q, 'show', 'FontSize', 7)
+    %legend(plots.q, 'show', 'FontSize', 7)
     ylabel(plots.q, "Quaternion")
 
     names = append(["wx","wy","wz"],name);
@@ -28,7 +28,7 @@ function [plots] = plot_est_dashboard(dataset, varargin)
         stairs(plots.w, dataset.Time, dataset.w(:,i), 'DisplayName', names(i))
         hold(plots.w, 'on')
     end
-    legend(plots.w, 'show')
+    %legend(plots.w, 'show')
     ylabel(plots.w, "Angular Rates [rad/s]")
 
     names = append(["vx","vy","vz"],name);
@@ -36,7 +36,7 @@ function [plots] = plot_est_dashboard(dataset, varargin)
         stairs(plots.v, dataset.Time, dataset.v(:,i), 'DisplayName', names(i))
         hold(plots.v, 'on')
     end
-    legend(plots.v, 'show')
+    %legend(plots.v, 'show')
     ylabel(plots.v, "Velocity [m/s]")
 
     names = append("alt",name);
@@ -44,7 +44,7 @@ function [plots] = plot_est_dashboard(dataset, varargin)
         stairs(plots.alt, dataset.Time, dataset.alt(:,i), 'DisplayName', names(i))
         hold(plots.alt, 'on')
     end
-    legend(plots.alt, 'show')
+    %legend(plots.alt, 'show')
     ylabel(plots.alt, "Altitude [m]")
 
     names = append("CL",name);
@@ -52,7 +52,7 @@ function [plots] = plot_est_dashboard(dataset, varargin)
         stairs(plots.cl, dataset.Time, dataset.cl(:,i), 'DisplayName', names(i))
         hold(plots.cl, 'on')
     end
-    legend(plots.cl, 'show')
+    %legend(plots.cl, 'show')
     ylabel(plots.cl, "Canard Coefficient")
 
     names = append("delta",name);
@@ -60,7 +60,7 @@ function [plots] = plot_est_dashboard(dataset, varargin)
         stairs(plots.delta, dataset.Time, dataset.delta(:,i), 'DisplayName', names(i))
         hold(plots.delta, 'on')
     end
-    legend(plots.delta, 'show')
+    %legend(plots.delta, 'show')
     ylabel(plots.delta, "Canard Angle [rad]")
 
     if  nargin == 3 || nargin == 4

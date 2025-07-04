@@ -21,7 +21,7 @@
 
 # Documentation
 Most up to date internal documentation is [here](https://www.overleaf.com/project/67239de67b73b702d3233692). \
-A backup is on the `documentation` [branch](https://github.com/waterloo-rocketry/simulink-canards/tree/documentation).
+A backup is on the `documentation` [branch](https://github.com/FinnBreu/WR-Controller-and-Estimator-Design/tree/main).
 
 ## Summary
 

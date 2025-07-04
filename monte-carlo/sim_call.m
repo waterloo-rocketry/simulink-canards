@@ -1,13 +1,19 @@
 %% Run Sim
 
-configure_plant_model
-simout = sim("plant-model\CC_Flight_Simulation");
+model_name = "plant-model/CC_Flight_Simulation";
+model_handle = load_system(model_name);
+model_workspace = get_param(model_handle, 'ModelWorkspace');
+model_workspace.clear;
+model_workspace.evalin('run(''configure_plant_model'')');
+save_system(model_name);
+
+simout = sim(model_name);
 
 %% Post processing
 [sdt, sdt_vars] = sim_postprocessor(simout);
 
 %% Save 
-% save("monte-carlo/sim_recent.mat", "sdt", "sdt_vars");
+save("monte-carlo/sim_recent.mat", "sdt", "sdt_vars");
 % load("monte-carlo/sim_recent.mat", "sdt", "sdt_vars");
 
 
@@ -42,6 +48,7 @@ sgtitle("Estimation Error")
 figure(3)
 stairs(sdt.control.Time, rad2deg(sdt.control.Variables))
 legend("Reference", "Roll angle", "Roll control error")
+ylabel("Angle [deg]")
 
 figure(4)
 plots_1 = plot_est_dashboard(sdt.est, "\_est", 'on');
