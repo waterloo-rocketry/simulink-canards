@@ -41,7 +41,7 @@ R = diag([1e-6, 1e-6, 1e-6, 2e-3, 2e-3, 2e-3, 2e1]);
 
 % imu select
 global IMU_select;
-IMU_select = [1 0];
+IMU_select = [1 1];
 
 % IMU array
 IMU_1 = [2.711216972515416;
@@ -99,7 +99,7 @@ b.bias_2 = [0.128014399720173;
 
 disp("IMU_1 select")
 % === CALL CORRECTION ===
-[x, P] = ekf_algorithm(x, P, b, dt, dt, IMU_1, IMU_2, u.cmd, encoder, 0);
+[x, P] = ekf_algorithm(x, P, b, 0, dt, IMU_1, IMU_2, u.cmd, encoder, 0);
 
 % === PRINT C-STYLE OUTPUTS ===
 
