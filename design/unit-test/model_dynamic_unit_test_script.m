@@ -16,7 +16,7 @@ dt = 0.32;
 
 
 % === CALL PREDICTION ===
-[x_new] = model_dynamics(dt, x, u);
+[x_out] = model_dynamics(dt, x, u);
 
 % === PRINT C-STYLE OUTPUTS ===
 
