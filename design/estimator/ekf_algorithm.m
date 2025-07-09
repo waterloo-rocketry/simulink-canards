@@ -1,4 +1,4 @@
-function [x, P] = ekf_algorithm(x, P, b, t, T, IMU_1, IMU_2, cmd, encoder, AHRS)
+function [x, P] = ekf_algorithm(x, P, b, t, T, IMU_1, IMU_2, cmd, encoder)
     % Computes EKF iteration. Uses model_f for prediction and model_h for correction.
     % Inputs: estimates x, P; control u; measurement y; sensor bias b; timecode t
     % Input parameters: weighting Q, R; time difference to last compute T; 
