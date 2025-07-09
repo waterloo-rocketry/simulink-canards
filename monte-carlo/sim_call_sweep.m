@@ -63,3 +63,6 @@ for k = 1:number_simulations
     filename = sprintf("monte-carlo/batch/sim_%d.mat", k);
     save(filename, "sdt", "sdt_vars");
 end
+
+test = 1;
+save("monte-carlo/testwrite", "test");
