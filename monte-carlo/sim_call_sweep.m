@@ -54,7 +54,7 @@ end
 % save_system(model_name,[],'OverwriteIfChangedOnDisk',true);
 simout = parsim(simin, 'ShowProgress', 'on')
 close_system(model_name, 0);
-delete(gcp('nocreate'));
+% delete(gcp('nocreate'));
 
 %% Post processing
 
