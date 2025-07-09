@@ -19,4 +19,4 @@ run('plant-model/scripts/data_preparation.m')
 %% Controller and Estimator loading
 clear estimator_module
 clear control_scheduler
-design_param = load("model/model_params.mat");
+design_param = load('model/model_params.mat');

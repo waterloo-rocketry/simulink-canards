@@ -4,7 +4,7 @@ run('configure_plant_model');
 save('monte-carlo/plant_model_baseline.mat');
 clear
 
-model_name = "plant-model/CC_Flight_Simulation";
+model_name = 'plant-model/CC_Flight_Simulation';
 
 %% Sweep parameters
 number_simulations =5;
@@ -60,9 +60,9 @@ close_system(model_name, 0);
 
 for k = 1:number_simulations
     [sdt, sdt_vars] = sim_postprocessor(simout(k));
-    filename = sprintf("monte-carlo/batch/sim_%d.mat", k);
-    save(filename, "sdt", "sdt_vars");
+    filename = sprintf('monte-carlo/batch/sim_%d.mat', k);
+    save(filename, 'sdt', 'sdt_vars');
 end
 
 test = 1;
-save("monte-carlo/testwrite", "test");
+save('monte-carlo/testwrite', 'test');
