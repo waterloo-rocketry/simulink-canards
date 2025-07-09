@@ -3,6 +3,7 @@ function [IMU_1, IMU_2, IMU_3] = imu_handler(IMU_1, IMU_2, IMU_select)
     % Rotates IMU frame to body frame
     % IMU_select is vector containing zeros at indexes of dead IMUs
     % Example: IMU_select = [1, 0, 1]; selects IMU1 and IMU3
+    %#codegen
     
     %% load parameters
     persistent param

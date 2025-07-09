@@ -2,6 +2,7 @@ function [xhat, Phat, controller_input, bias_1, bias_2] = estimator_module(times
     % Top-level estimator module. Calls EKF algorithm.
     % Inputs: concocted measurement and output vectors with multiple sensors. Not yet fully supported, work in progress
     % IMU = struct of IMUi = [accel; omega; mag; baro] 
+    %#codegen
     
     persistent x P t b flight_phase; % remembers x, P, t from last iteration
     % global IMU_select 

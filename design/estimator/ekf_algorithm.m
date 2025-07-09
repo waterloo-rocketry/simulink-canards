@@ -3,6 +3,7 @@ function [x, P] = ekf_algorithm(x, P, b, t, T, IMU_1, IMU_2, cmd, encoder)
     % Inputs: estimates x, P; control u; measurement y; sensor bias b; timecode t
     % Input parameters: weighting Q, R; time difference to last compute T; 
     % Outputs: new estimates x, P
+    %#codegen
 
     global IMU_select 
 

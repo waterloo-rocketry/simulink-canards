@@ -2,6 +2,7 @@ function [x_init, bias_1, bias_2] = pad_filter(IMU_1, IMU_2)
     % Computes inital state and covariance estimate for EKF, and bias values for the IMU
     % Uses all available sensors: Gyroscope W, Magnetometer M, Accelerometer A, Barometer P
     % Outputs: initial state, sensor bias matrix
+    %#codegen
 
     global IMU_select
 
