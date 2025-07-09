@@ -31,6 +31,9 @@ possible_combinations = length(rocket_thrust_var) * length(wind_const_var) * ...
                         length(wind_gust_var) * length(canard_coefficient_var) * ...
                         length(canard_backlash_var) * length(fin_cant_var)
 
+test = 1;
+save('monte-carlo/testwrite', 'test');
+
 for i = 1:number_simulations
     simin(i) = Simulink.SimulationInput(model_name);
 
@@ -63,6 +66,3 @@ for k = 1:number_simulations
     filename = sprintf('monte-carlo/batch/sim_%d.mat', k);
     save(filename, 'sdt', 'sdt_vars');
 end
-
-test = 1;
-save('monte-carlo/testwrite', 'test');
