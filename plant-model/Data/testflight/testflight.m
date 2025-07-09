@@ -1,7 +1,7 @@
 %% OR Simulation Output Data
-or_data = readtable("plant-model\Data\testflight\testflight_cycle_1_1_no_wind.csv");
-or_override_aoa_cna = readtable("plant-model\Data\testflight\testflight_aoa_cna.csv");
-or_override_mach_cna = readtable("plant-model\Data\testflight\testflight_mach_cna.csv");
+or_data = readtable("plant-model/Data/testflight/testflight_cycle_1_1_no_wind.csv");
+or_override_aoa_cna = readtable("plant-model/Data/testflight/testflight_aoa_cna.csv");
+or_override_mach_cna = readtable("plant-model/Data/testflight/testflight_mach_cna.csv");
 
 %% Initial values
 location = [250; 43.47; -80.54]; % launch location on earth. Altitude, Latitude, Longitude
