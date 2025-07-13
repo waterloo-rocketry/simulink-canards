@@ -45,15 +45,15 @@ save("monte-carlo/sim_recent.mat", "sdt", "sdt_vars");
 % subplot(2,3,6)
 % stairs(sdt.error.Time, sdt.error.delta)
 
-figure(2)
-plot_est_dashboard(sdt.error, "");
-sgtitle("Estimation Error")
-
-figure(3)
-stairs(sdt.control.Time, rad2deg(sdt.control.Variables))
-legend("Reference", "Roll angle", "Roll control error")
-ylabel("Angle [deg]")
-
-figure(4)
-plots_1 = plot_est_dashboard(sdt.est, "\_est", 'on');
-plot_est_dashboard(sdt.rocket_dt, "\_sim", 'off', plots_1);
+% figure(2)
+% plot_est_dashboard(sdt.error, "");
+% sgtitle("Estimation Error")
+% 
+% figure(3)
+% stairs(sdt.control.Time, rad2deg(sdt.control.Variables))
+% legend("Reference", "Roll angle", "Roll control error")
+% ylabel("Angle [deg]")
+% 
+% figure(4)
+% plots_1 = plot_est_dashboard(sdt.est, "\_est", 'on');
+% plot_est_dashboard(sdt.rocket_dt, "\_sim", 'off', plots_1);
