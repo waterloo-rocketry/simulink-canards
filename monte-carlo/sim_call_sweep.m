@@ -7,7 +7,7 @@ clear
 model_name = 'plant-model/CC_Flight_Simulation';
 
 %% Sweep parameters
-number_simulations =5;
+number_simulations = 1;
 
 %%% nominal
 rocket_thrust_var = 1;
