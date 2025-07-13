@@ -12,7 +12,7 @@ function [x_init, bias_1, bias_2] = pad_filter(IMU_1, IMU_2)
     %% parameters
     persistent param
     if isempty(param)
-        param = load("model\model_params.mat");
+        param = load("model/model_params.mat");
     end 
 
 

@@ -8,7 +8,7 @@ function [IMU_1, IMU_2, IMU_3] = imu_handler(IMU_1, IMU_2, IMU_select)
     %% load parameters
     persistent param
     if isempty(param)
-        param = load("model\model_params.mat");
+        param = load("model/model_params.mat");
     end
 
     %% selector loop

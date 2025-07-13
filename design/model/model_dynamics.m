@@ -11,7 +11,7 @@ function [x_new] = model_dynamics(dt, x, u)
     %% load parameters
     persistent param
     if isempty(param)
-        param = load("model\model_params.mat");
+        param = load("model/model_params.mat");
     end
     
     %% compute rotation matrix 

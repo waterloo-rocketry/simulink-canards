@@ -11,7 +11,7 @@ function [J_x] = model_dynamics_jacobian(dt, x, u)
     %% load parameters
     persistent param
     if isempty(param)
-        param = load("model\model_params.mat");
+        param = load("model/model_params.mat");
     end
 
     %% airdata 
