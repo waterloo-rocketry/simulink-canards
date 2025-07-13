@@ -1,13 +1,17 @@
+%% Configure
+clear 
+run('configure_plant_model');
+save('monte-carlo/plant_model_baseline.mat');
+clear
+
+model_name = 'plant-model/CC_Flight_Simulation';
+
+simin = Simulink.SimulationInput(model_name);
+simin = simin.loadVariablesFromMATFile('plant_model_baseline.mat');
+
 %% Run Sim
 
-model_name = "plant-model/CC_Flight_Simulation";
-model_handle = load_system(model_name);
-model_workspace = get_param(model_handle, 'ModelWorkspace');
-model_workspace.clear;
-model_workspace.evalin('run(''configure_plant_model'')');
-save_system(model_name);
-
-simout = sim(model_name);
+simout = sim(simin, 'ShowProgress', 'on');
 
 %% Post processing
 [sdt, sdt_vars] = sim_postprocessor(simout);
@@ -40,7 +44,7 @@ save("monte-carlo/sim_recent.mat", "sdt", "sdt_vars");
 % stairs(sdt.error.Time, sdt.error.cl)
 % subplot(2,3,6)
 % stairs(sdt.error.Time, sdt.error.delta)
-% 
+
 figure(2)
 plot_est_dashboard(sdt.error, "");
 sgtitle("Estimation Error")

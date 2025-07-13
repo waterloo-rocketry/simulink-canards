@@ -33,7 +33,7 @@ function [xhat, Phat, controller_input, bias_1, bias_2] = estimator_module(times
 
     %% Pad filter iteration
     if flight_phase ~= 0 % only before ignition
-        [xhat, bias_1, bias_2] = pad_filter(IMU_1, IMU_2);
+        [xhat, bias_1, bias_2] = pad_filter(IMU_1, IMU_2, sensor_select);
         x = xhat; b.bias_1 = bias_1; b.bias_2 = bias_2;
     end 
 
