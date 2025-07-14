@@ -17,9 +17,10 @@ simout = sim(simin, 'ShowProgress', 'on');
 
 %% Post processing
 [sdt, sdt_vars] = sim_postprocessor(simout);
+[in_vars] = sim_postprocessor(simin);
 
 %% Save 
-save("monte-carlo/sim_recent.mat", "sdt", "sdt_vars");
+save("monte-carlo/sim_recent.mat", "sdt", "sdt_vars", 'in_vars');
 % load("monte-carlo/sim_recent.mat", "sdt", "sdt_vars");
 
 

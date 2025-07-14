@@ -1,7 +1,7 @@
 %% Configure
 clear 
 run('configure_plant_model');
-save('monte-carlo/plant_model_baseline.mat');
+save('monte-carlo/batch/plant_model_baseline.mat');
 clear
 
 model_name = 'plant-model/CC_Flight_Simulation';
@@ -63,6 +63,7 @@ close_system(model_name, 0);
 
 for k = 1:number_simulations
     [sdt, sdt_vars] = sim_postprocessor(simout(k));
+    [in_vars] = sim_postprocessor(simin(k));
     filename = sprintf('monte-carlo/batch/sim_%d.mat', k);
-    save(filename, 'sdt', 'sdt_vars');
+    save(filename, 'sdt', 'sdt_vars', 'in_vars');
 end
