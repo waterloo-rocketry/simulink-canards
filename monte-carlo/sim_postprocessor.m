@@ -21,7 +21,7 @@ function [sdt, sdt_vars] = sim_postprocessor(simout)
         sdt_vars.pos_yz = timetable(sdt_vars.pos.Time, sdt_vars.pos.pos(:,2:3), 'VariableNames', "pos_yz");
     sdt_vars.cl = sim_getdata(simout, "CL", 1);
     sdt_vars.delta = sim_getdata(simout, "delta", 1);
-    sdt.rocket = synchronize(sdt_vars.q, sdt_vars.w, sdt_vars.v, sdt_vars.alt, sdt_vars.cl, sdt_vars.delta);
+    sdt.rocket = synchronize(sdt_vars.q, sdt_vars.w, sdt_vars.v, sdt_vars.alt, sdt_vars.cl, sdt_vars.delta, sdt_vars.pos_yz);
         sdt.rocket = renamevars(sdt.rocket, 1:7, ["q", "w", "v", "alt", "cl", "delta", "pos_yz"]);
     
     %%% Estimator data
