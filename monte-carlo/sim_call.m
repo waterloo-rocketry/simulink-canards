@@ -7,6 +7,7 @@ clear
 model_name = 'plant-model/CC_Flight_Simulation';
 
 simin = Simulink.SimulationInput(model_name);
+% set_param('CC_Flight_Simulation', 'SimulationMode', 'accelerator')
 simin = simin.loadVariablesFromMATFile('plant_model_baseline.mat');
 
 %% Run Sim
