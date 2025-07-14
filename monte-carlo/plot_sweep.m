@@ -1,10 +1,10 @@
 %% Plot
-batch_name = '';
-number_plots = 10;
+batch_name = '_wind';
+number_plots = 1;
 
 for k = 1:number_plots
     filename = sprintf('monte-carlo/batch%s/sim_%d.mat', batch_name, k);
-    load(filename, "sdt", "sdt_vars");
+    load(filename, "sdt");
 
     if k == 1
         figure(1)

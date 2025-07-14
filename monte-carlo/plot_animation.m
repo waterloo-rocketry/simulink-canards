@@ -25,9 +25,11 @@ function plot_animation(sdt)
     h.createBody('testrocket.ac', 'Ac3d');
     h.createBody('testrocket.ac', 'Ac3d');
     h.createBody('ac3d_xyzisrgb.ac', 'Ac3d');
-    animationdata = [seconds(sdt.rocket_dt.Time), table2array(synchronize(sdt.rocket_dt.pos_yz, tt.euler))];
-    animationdata_hat = [seconds(sdt.rocket_dt.Time), table2array(synchronize(sdt.rocket_dt.pos_yz, tt.eulerhat, tt.eulerhat.Time))];
+    animationdata = [seconds(sdt.rocket_dt.Time), sdt.rocket_dt.alt, sdt.rocket_dt.pos_yz, table2array(tt.euler)];
+    animationdata = fillmissing(animationdata, 'linear');
+    animationdata_hat = [seconds(sdt.rocket_dt.Time), sdt.rocket_dt.alt, sdt.rocket_dt.pos_yz, table2array(tt.eulerhat)];
     animationdata_hat(:,3) = animationdata_hat(:,3) + 3;
+    animationdata_hat = fillmissing(animationdata_hat, 'linear');
     h.Bodies{1}.TimeSeriesSource = animationdata;
     h.Bodies{2}.TimeSeriesSource = animationdata_hat;
     h.Bodies{3}.TimeSeriesSource = [[0;animationdata(end,1)], repmat([animationdata(1,2:4)+[-4,0,0], deg2rad([0, 0, 90])], 2, 1)];
