@@ -1,4 +1,3 @@
-clear
 %% Choose rocket
 % run('plant-model/Data/Borealis/borealis.m')
 % run('plant-model/Data/testflight/testflight.m')

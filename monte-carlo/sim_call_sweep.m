@@ -1,13 +1,17 @@
 %% Configure
-clear 
+batch_name = '_test';
+number_simulations = 20;
+
+clearvars -except batch_name number_simulations
 run('configure_plant_model');
-save('monte-carlo/batch/plant_model_baseline.mat');
-clear
+
+mkdir(sprintf('monte-carlo/batch%s/', batch_name))
+save(sprintf('monte-carlo/batch%s/plant_model_baseline.mat', batch_name))
+clearvars -except batch_name number_simulations
 
 model_name = 'plant-model/CC_Flight_Simulation';
 
 %% Sweep parameters
-number_simulations = 20;
 
 %%% nominal
 rocket_thrust_var = 1;
@@ -35,7 +39,7 @@ possible_combinations = length(rocket_thrust_var) * length(wind_const_var) * ...
 for i = 1:number_simulations
     simin(i) = Simulink.SimulationInput(model_name);
 
-    simin(i) = simin(i).loadVariablesFromMATFile('plant_model_baseline.mat');
+    simin(i) = simin(i).loadVariablesFromMATFile(sprintf('monte-carlo/batch%s/plant_model_baseline.mat', batch_name));
     
     simin(i) = simin(i).setVariable('var_thrust', randomsampling(rocket_thrust_var));
     simin(i) = simin(i).setVariable('wind_const_strength',randomsampling(wind_const_var));
@@ -61,7 +65,7 @@ close_system(model_name, 0);
 
 for k = 1:number_simulations
     [sdt, sdt_vars] = sim_postprocessor(simout(k));
-    [in_vars] = sim_postprocessor_in(simin(k));
-    filename = sprintf('monte-carlo/batch/sim_%d.mat', k);
-    save(filename, 'sdt', 'sdt_vars', 'in_vars');
+    [in_vars] = sim_postprocessor_in(simin(k), load(sprintf('monte-carlo/batch%s/plant_model_baseline.mat', batch_name)));
+    filename = sprintf('monte-carlo/batch%s/sim_%d.mat', batch_name, k);
+    save(filename, 'sdt', 'in_vars');
 end

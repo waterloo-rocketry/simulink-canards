@@ -1,20 +1,20 @@
-function plot_animation(sdt_vars)
+function plot_animation(sdt)
     % Plays animation and saves video file
     
     %%% get Euler angles
-    euler = zeros(height(sdt_vars.q),3);
-    for t = 1:height(sdt_vars.q)
-        q = table2array(sdt_vars.q(t,:))';
+    euler = zeros(height(sdt.q),3);
+    for t = 1:height(sdt.rocket_dt.q)
+        q = sdt.rocket_dt.q(t,:)';
         euler(t,:) = quaternion_to_euler(q)';
     end
-    sdt_vars.euler = timetable(sdt_vars.q.Time, euler, 'VariableNames', "euler");
+    tt.euler = timetable(sdt.rocket_dt.Time, euler, 'VariableNames', "euler");
     
-    eulerhat = zeros(height(sdt_vars.qhat),3);
-    for t = 1:height(sdt_vars.qhat)
-        qhat = table2array(sdt_vars.qhat(t,:))';
+    eulerhat = zeros(height(sdt.est.q),3);
+    for t = 1:height(sdt.est.q)
+        qhat = sdt.est.q(t,:)';
         eulerhat(t,:) = quaternion_to_euler(qhat)';
     end
-    sdt_vars.eulerhat = timetable(sdt_vars.qhat.Time, eulerhat, 'VariableNames', "euler");
+    tt.eulerhat = timetable(sdt.rocket_dt.Time, eulerhat, 'VariableNames', "euler");
 
     
     %%% Animation
@@ -25,8 +25,8 @@ function plot_animation(sdt_vars)
     h.createBody('testrocket.ac', 'Ac3d');
     h.createBody('testrocket.ac', 'Ac3d');
     h.createBody('ac3d_xyzisrgb.ac', 'Ac3d');
-    animationdata = [seconds(sdt_vars.pos.Time), table2array(synchronize(sdt_vars.pos, sdt_vars.euler))];
-    animationdata_hat = [seconds(sdt_vars.eulerhat.Time), table2array(synchronize(sdt_vars.pos, sdt_vars.eulerhat, sdt_vars.eulerhat.Time))];
+    animationdata = [seconds(sdt.rocket_dt.Time), table2array(synchronize(sdt.rocket_dt.pos_yz, tt.euler))];
+    animationdata_hat = [seconds(sdt.rocket_dt.Time), table2array(synchronize(sdt.rocket_dt.pos_yz, tt.eulerhat, tt.eulerhat.Time))];
     animationdata_hat(:,3) = animationdata_hat(:,3) + 3;
     h.Bodies{1}.TimeSeriesSource = animationdata;
     h.Bodies{2}.TimeSeriesSource = animationdata_hat;

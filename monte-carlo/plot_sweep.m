@@ -1,9 +1,9 @@
 %% Plot
-
-number_plots = 2;
+batch_name = '';
+number_plots = 10;
 
 for k = 1:number_plots
-    filename = sprintf("monte-carlo/batch/sim_%d.mat", k);
+    filename = sprintf('monte-carlo/batch%s/sim_%d.mat', batch_name, k);
     load(filename, "sdt", "sdt_vars");
 
     if k == 1
