@@ -1,6 +1,6 @@
 %% Plot
 
-number_plots = 1;
+number_plots = 2;
 
 for k = 1:number_plots
     filename = sprintf("monte-carlo/batch/sim_%d.mat", k);

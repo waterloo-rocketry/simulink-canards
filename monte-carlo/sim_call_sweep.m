@@ -7,7 +7,7 @@ clear
 model_name = 'plant-model/CC_Flight_Simulation';
 
 %% Sweep parameters
-number_simulations = 2;
+number_simulations = 20;
 
 %%% nominal
 rocket_thrust_var = 1;
@@ -31,8 +31,6 @@ possible_combinations = length(rocket_thrust_var) * length(wind_const_var) * ...
                         length(wind_gust_var) * length(canard_coefficient_var) * ...
                         length(canard_backlash_var) * length(fin_cant_var)
 
-test = 1;
-save('monte-carlo/testwrite', 'test');
 
 for i = 1:number_simulations
     simin(i) = Simulink.SimulationInput(model_name);
