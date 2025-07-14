@@ -8,7 +8,7 @@ function [a] = model_acceleration(x, IMU_1, IMU_2, sensor_select)
     %% load parameters
     persistent param
     if isempty(param)
-        param = load("model/model_params.mat");
+        param = coder.load("model/model_params.mat");
     end
     
     %% average acceleration (specific force)
