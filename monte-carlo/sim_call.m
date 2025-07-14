@@ -7,17 +7,17 @@ clear
 model_name = 'plant-model/CC_Flight_Simulation';
 
 simin = Simulink.SimulationInput(model_name);
-% set_param('CC_Flight_Simulation', 'SimulationMode', 'accelerator')
-% set_param('CC_Flight_Simulation', Debug="on")
 simin = simin.loadVariablesFromMATFile('plant_model_baseline.mat');
+simin = simin.setVariable('wind_const_strength', 5);
 
 %% Run Sim
 
+% clear(get_param('CC_Flight_Simulation','ModelWorkspace'))
 simout = sim(simin, 'ShowProgress', 'on');
 
 %% Post processing
 [sdt, sdt_vars] = sim_postprocessor(simout);
-[in_vars] = sim_postprocessor(simin);
+[in_vars] = sim_postprocessor_in(simin, load('monte-carlo/plant_model_baseline.mat'));
 
 %% Save 
 save("monte-carlo/sim_recent.mat", "sdt", "sdt_vars", 'in_vars');
@@ -57,6 +57,6 @@ save("monte-carlo/sim_recent.mat", "sdt", "sdt_vars", 'in_vars');
 % legend("Reference", "Roll angle", "Roll control error")
 % ylabel("Angle [deg]")
 % 
-% figure(4)
-% plots_1 = plot_est_dashboard(sdt.est, "\_est", 'on');
-% plot_est_dashboard(sdt.rocket_dt, "\_sim", 'off', plots_1);
+figure(4)
+plots_1 = plot_est_dashboard(sdt.est, "\_est", 'on');
+plot_est_dashboard(sdt.rocket_dt, "\_sim", 'off', plots_1);

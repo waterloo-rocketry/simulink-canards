@@ -1,6 +1,6 @@
 %% Configure
-batch_name = '_test';
-number_simulations = 20;
+batch_name = '_wind';
+number_simulations = 1;
 
 %% load baseline
 clearvars -except batch_name number_simulations
@@ -23,7 +23,7 @@ fin_cant_var = 0;
 
 %%% sweeps
 rocket_thrust_var = 0.8:0.05:1.2;
-wind_const_var = 0:50:100;
+wind_const_var = 0:1:10;
 wind_gust_var = 0:5:40;
 canard_coefficient_var = -1:0.1:3;
 canard_backlash_var = 0:0.1:5;
@@ -34,12 +34,11 @@ possible_combinations = length(rocket_thrust_var) * length(wind_const_var) * ...
                         length(wind_gust_var) * length(canard_coefficient_var) * ...
                         length(canard_backlash_var) * length(fin_cant_var)
 
-
 for i = 1:number_simulations
     simin(i) = Simulink.SimulationInput(model_name);
 
     simin(i) = simin(i).loadVariablesFromMATFile(sprintf('monte-carlo/batch%s/plant_model_baseline.mat', batch_name));
-    
+
     simin(i) = simin(i).setVariable('var_thrust', randomsampling(rocket_thrust_var));
     simin(i) = simin(i).setVariable('wind_const_strength',randomsampling(wind_const_var));
     simin(i) = simin(i).setVariable('var_wind_gust',randomsampling(wind_gust_var));
@@ -56,6 +55,8 @@ end
 %% Run Sim
 
 % save_system(model_name,[],'OverwriteIfChangedOnDisk',true);
+% clear(get_param(model_name,'ModelWorkspace'));
+close_system(model_name, 0);
 simout = parsim(simin, 'ShowProgress', 'on')
 close_system(model_name, 0);
 % delete(gcp('nocreate'));
@@ -63,8 +64,8 @@ close_system(model_name, 0);
 %% Post processing
 
 for k = 1:number_simulations
+    [in_vars] = sim_postprocessor_in(simin(i), load(sprintf('monte-carlo/batch%s/plant_model_baseline.mat', batch_name)));
     [sdt, sdt_vars] = sim_postprocessor(simout(k));
-    [in_vars] = sim_postprocessor_in(simin(k), load(sprintf('monte-carlo/batch%s/plant_model_baseline.mat', batch_name)));
     filename = sprintf('monte-carlo/batch%s/sim_%d.mat', batch_name, k);
     save(filename, 'sdt', 'in_vars');
 end
