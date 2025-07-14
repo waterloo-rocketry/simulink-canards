@@ -2,13 +2,12 @@
 batch_name = '_test';
 number_simulations = 20;
 
+%% load baseline
 clearvars -except batch_name number_simulations
 run('configure_plant_model');
-
 mkdir(sprintf('monte-carlo/batch%s/', batch_name))
 save(sprintf('monte-carlo/batch%s/plant_model_baseline.mat', batch_name))
 clearvars -except batch_name number_simulations
-
 model_name = 'plant-model/CC_Flight_Simulation';
 
 %% Sweep parameters

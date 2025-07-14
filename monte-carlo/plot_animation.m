@@ -2,7 +2,7 @@ function plot_animation(sdt)
     % Plays animation and saves video file
     
     %%% get Euler angles
-    euler = zeros(height(sdt.q),3);
+    euler = zeros(height(sdt.rocket_dt.q),3);
     for t = 1:height(sdt.rocket_dt.q)
         q = sdt.rocket_dt.q(t,:)';
         euler(t,:) = quaternion_to_euler(q)';
