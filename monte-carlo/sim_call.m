@@ -8,7 +8,7 @@ model_name = 'plant-model/CC_Flight_Simulation';
 
 simin = Simulink.SimulationInput(model_name);
 simin = simin.loadVariablesFromMATFile('plant_model_baseline.mat');
-simin = simin.setVariable('wind_const_strength', 5);
+simin = simin.setVariable('wind_const_strength', 20);
 
 %% Run Sim
 

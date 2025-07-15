@@ -1,6 +1,6 @@
 %% Plot
 batch_name = '_wind';
-number_plots = 1;
+number_plots = 8;
 
 for k = 1:number_plots
     filename = sprintf('monte-carlo/batch%s/sim_%d.mat', batch_name, k);

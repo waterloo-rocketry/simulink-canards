@@ -1,6 +1,6 @@
 %% Configure
 batch_name = '_wind';
-number_simulations = 1;
+number_simulations = 8;
 
 %% load baseline
 clearvars -except batch_name number_simulations
@@ -23,7 +23,7 @@ fin_cant_var = 0;
 
 %%% sweeps
 rocket_thrust_var = 0.8:0.05:1.2;
-wind_const_var = 0:1:10;
+wind_const_var = 0:1:5;
 wind_gust_var = 0:5:40;
 canard_coefficient_var = -1:0.1:3;
 canard_backlash_var = 0:0.1:5;
