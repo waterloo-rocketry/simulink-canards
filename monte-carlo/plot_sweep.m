@@ -12,7 +12,7 @@ for k = 1:number_plots
         sgtitle("Estimation Error")
 
         figure(2)
-        stairs(sdt.control.Time, rad2deg(sdt.control.Variables))
+        stairs(sdt.control.Time, rad2deg([sdt.control.ref, sdt.control.roll]))
         hold on
         % legend("Reference", "Roll angle", "Roll control error")
         ylabel("Angle [deg]")
@@ -27,7 +27,7 @@ for k = 1:number_plots
         sgtitle("Estimation Error")
         
         figure(2)
-        stairs(sdt.control.Time, rad2deg(sdt.control.Variables))
+        stairs(sdt.control.Time, rad2deg([sdt.control.ref, sdt.control.roll]))
         hold off
         % legend("Reference", "Roll angle", "Roll control error")
         ylabel("Angle [deg]")
@@ -42,7 +42,7 @@ for k = 1:number_plots
         sgtitle("Estimation Error")
         
         figure(2)
-        stairs(sdt.control.Time, rad2deg(sdt.control.Variables))
+        stairs(sdt.control.Time, rad2deg([sdt.control.ref, sdt.control.roll]))
         % legend("Reference", "Roll angle", "Roll control error")
         ylabel("Angle [deg]")
         

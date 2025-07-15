@@ -18,33 +18,34 @@ wind_const_var = 0;
 wind_gust_var = 0;
 canard_coefficient_var = 1;
 canard_backlash_var = 0.1;
-fin_cant_var = 0;
+canard_cant_var = 0;
 
 
 %%% sweeps
 rocket_thrust_var = 0.8:0.05:1.2;
-wind_const_var = 0:1:5;
-wind_gust_var = 0:5:40;
-canard_coefficient_var = -1:0.1:3;
+wind_const_var = 0:1:10;
+wind_gust_var = 0:1:20;
+canard_coefficient_var = -0.5:0.1:2;
 canard_backlash_var = 0:0.1:5;
-fin_cant_var = 0:0.01:0.1;
+canard_cant_var = 0:0.1:1;
 
 % Sweep create
 possible_combinations = length(rocket_thrust_var) * length(wind_const_var) * ...
-                        length(wind_gust_var) * length(canard_coefficient_var) * ...
-                        length(canard_backlash_var) * length(fin_cant_var)
+                        length(wind_gust_var)^2 * length(canard_coefficient_var) * ...
+                        length(canard_backlash_var) * length(canard_cant_var)
 
 for i = 1:number_simulations
     simin(i) = Simulink.SimulationInput(model_name);
 
     simin(i) = simin(i).loadVariablesFromMATFile(sprintf('monte-carlo/batch%s/plant_model_baseline.mat', batch_name));
 
-    simin(i) = simin(i).setVariable('var_thrust', randomsampling(rocket_thrust_var));
+    simin(i) = simin(i).setVariable('engine_thrust_factor', randomsampling(rocket_thrust_var));
     simin(i) = simin(i).setVariable('wind_const_strength',randomsampling(wind_const_var));
-    simin(i) = simin(i).setVariable('var_wind_gust',randomsampling(wind_gust_var));
-    simin(i) = simin(i).setVariable('var_canard_coeff',randomsampling(canard_coefficient_var));
+    simin(i) = simin(i).setVariable('wind_gust1_amplitude',randomsampling(wind_gust_var));
+    simin(i) = simin(i).setVariable('wind_gust2_amplitude',randomsampling(wind_gust_var));
+    simin(i) = simin(i).setVariable('canard_roll_reversal_factor',randomsampling(canard_coefficient_var));
     simin(i) = simin(i).setVariable('act_backlash',randomsampling(canard_backlash_var));
-    simin(i) = simin(i).setVariable('var_fin_cant',randomsampling(fin_cant_var));
+    simin(i) = simin(i).setVariable('canard_cant_zero',randomsampling(canard_cant_var));
 end
 
 function value = randomsampling(vector)
