@@ -1,7 +1,7 @@
 %% OR Simulation Output Data
-or_data = readtable("plant-model\Data\Aurora\aurora_cycle_2.csv");
-or_override_aoa_cna = readtable("plant-model\Data\Aurora\aurora_cycle_2_cna_aoa.csv");
-or_override_mach_cna = readtable("plant-model\Data\Aurora\aurora_cycle_2_cna_mach.csv");
+or_data = readtable('plant-model/Data/Aurora/aurora_cycle_2.csv');
+or_override_aoa_cna = readtable('plant-model/Data/Aurora/aurora_cycle_2_cna_aoa.csv');
+or_override_mach_cna = readtable('plant-model/Data/Aurora/aurora_cycle_2_cna_mach.csv');
 
 %% Initial values
 location = [250; 43.47; -80.54]; % launch location on earth. Altitude, Latitude, Longitude
@@ -28,6 +28,10 @@ act_damping = 0.9; % damping ratio
 act_backlash = 0.5; % play in deg
 act_anglelimit = 12; % max deflection in deg
 act_ratelimit = 600; % max rate in deg/s
+
+%% Misc Rocket parameters
+engine_thrust_factor = 1;
+canard_roll_reversal_factor = 1;
 
 %% Aerodynamics Reference Geometry
 %Reference parameters   
@@ -76,4 +80,5 @@ canard_chord_tip = 0.001; % tip chord
 canard_height = 0.0508; % root to tip length
 canard_sweep_angle = deg2rad(61); % angle from radial normal [rad]
 canard_delta_max = deg2rad(12); % Canard maximum angle of attack
-canard_pos_x_roottip = -(558.29 + 40)/1000; %TODO: add this
+canard_pos_x_roottip = -(558.29 + 40)/1000; % position of the most forward tip of the canards
+canard_cant_zero = deg2rad(1); % zero roll not perfect

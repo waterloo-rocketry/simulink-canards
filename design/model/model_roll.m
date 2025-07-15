@@ -4,7 +4,7 @@ function [A,B,C,sys_roll] = model_roll(dynamicpressure, canardcoeff)
     % get parameters
     persistent param
     if isempty(param)
-        param = load("design\model\model_params.mat");
+        param = load("design/model/model_params.mat");
     end
 
     % simplified linear roll model

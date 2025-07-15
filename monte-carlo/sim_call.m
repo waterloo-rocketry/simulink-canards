@@ -1,19 +1,27 @@
+%% Configure
+clear 
+run('configure_plant_model');
+save('monte-carlo/plant_model_baseline.mat');
+clear
+
+model_name = 'plant-model/CC_Flight_Simulation';
+
+simin = Simulink.SimulationInput(model_name);
+simin = simin.loadVariablesFromMATFile('monte-carlo/plant_model_baseline.mat');
+simin = simin.setVariable('wind_const_strength', 10);
+simin = simin.setVariable('canard_cant_zero', 0);
+
 %% Run Sim
 
-model_name = "plant-model/CC_Flight_Simulation";
-model_handle = load_system(model_name);
-model_workspace = get_param(model_handle, 'ModelWorkspace');
-model_workspace.clear;
-model_workspace.evalin('run(''configure_plant_model'')');
-save_system(model_name);
-
-simout = sim(model_name);
+% clear(get_param('CC_Flight_Simulation','ModelWorkspace'))
+simout = sim(simin, 'ShowProgress', 'on');
 
 %% Post processing
 [sdt, sdt_vars] = sim_postprocessor(simout);
+[in_vars] = sim_postprocessor_in(simin, load('monte-carlo/plant_model_baseline.mat'));
 
 %% Save 
-save("monte-carlo/sim_recent.mat", "sdt", "sdt_vars");
+save("monte-carlo/sim_recent.mat", "sdt", "sdt_vars", 'in_vars');
 % load("monte-carlo/sim_recent.mat", "sdt", "sdt_vars");
 
 
@@ -40,16 +48,16 @@ save("monte-carlo/sim_recent.mat", "sdt", "sdt_vars");
 % stairs(sdt.error.Time, sdt.error.cl)
 % subplot(2,3,6)
 % stairs(sdt.error.Time, sdt.error.delta)
+
+% figure(2)
+% plot_est_dashboard(sdt.error, "");
+% sgtitle("Estimation Error")
 % 
-figure(2)
-plot_est_dashboard(sdt.error, "");
-sgtitle("Estimation Error")
-
-figure(3)
-stairs(sdt.control.Time, rad2deg(sdt.control.Variables))
-legend("Reference", "Roll angle", "Roll control error")
-ylabel("Angle [deg]")
-
+% figure(3)
+% stairs(sdt.control.Time, rad2deg(sdt.control.Variables))
+% legend("Reference", "Roll angle", "Roll control error")
+% ylabel("Angle [deg]")
+% 
 figure(4)
 plots_1 = plot_est_dashboard(sdt.est, "\_est", 'on');
 plot_est_dashboard(sdt.rocket_dt, "\_sim", 'off', plots_1);

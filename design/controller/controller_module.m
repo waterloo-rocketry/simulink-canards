@@ -2,7 +2,8 @@ function [u, r] = controller_module(timestamp, input)
     % Top-level controller module. Calls controller algorithm. Sets reference signal.
     
     %% settings
-    time_start = 5; % pad delay time
+    time_launch = 5; % pad delay time
+    time_coast = 10; % time from launch to burnout
     u_max = deg2rad(10); % cap output to this angle
     backlash = deg2rad(0); % backlash offset
 
@@ -10,16 +11,16 @@ function [u, r] = controller_module(timestamp, input)
     % Generates reference signal for roll program
     % includes multiple roll angle steps. Reference r [rad].
     
-    t = timestamp - time_start;
+    t = timestamp - time_launch;
     r = 0;
-    if t>10
-        if t<15
+    if t > (time_coast + 5)
+        if t < (time_coast + 12)
             r = 0.5;
-        elseif t<22
+        elseif t < (time_coast + 19)
             r = -0.5;
-        elseif t<28
+        elseif t < (time_coast + 26)
             r = 0.5;
-        elseif t>36
+        elseif t > (time_coast + 35)
             r = 0;
         end
     end
@@ -44,13 +45,17 @@ function [u, r] = controller_module(timestamp, input)
     u = K*roll_state + K_pre*r; 
 
     %%% backlash offset
-    if u > 0
-        u = u + backlash;
-    elseif u < 0
-        u = u - backlash;
-    end
+    % if u > 0
+    %     u = u + backlash;
+    % elseif u < 0
+    %     u = u - backlash;
+    % end
 
     %%% limit output to allowable angle
     u = min(max(u, -u_max), u_max);
+
+    if t < time_coast % disable during boost
+        u = 0;
+    end
 end
 
