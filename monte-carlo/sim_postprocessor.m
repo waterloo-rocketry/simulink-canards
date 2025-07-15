@@ -18,10 +18,11 @@ function [sdt, sdt_vars] = sim_postprocessor(simout)
     sdt_vars.v = sim_getdata(simout, "v", 3);
     sdt_vars.pos = sim_getdata(simout, "pos", 3);
         sdt_vars.alt = timetable(sdt_vars.pos.Time, sdt_vars.pos.pos(:,1), 'VariableNames', "alt");
+        sdt_vars.pos_yz = timetable(sdt_vars.pos.Time, sdt_vars.pos.pos(:,2:3), 'VariableNames', "pos_yz");
     sdt_vars.cl = sim_getdata(simout, "CL", 1);
     sdt_vars.delta = sim_getdata(simout, "delta", 1);
-    sdt.rocket = synchronize(sdt_vars.q, sdt_vars.w, sdt_vars.v, sdt_vars.alt, sdt_vars.cl, sdt_vars.delta);
-        sdt.rocket = renamevars(sdt.rocket, 1:6, ["q", "w", "v", "alt", "cl", "delta"]);
+    sdt.rocket = synchronize(sdt_vars.q, sdt_vars.w, sdt_vars.v, sdt_vars.alt, sdt_vars.cl, sdt_vars.delta, sdt_vars.pos_yz);
+        sdt.rocket = renamevars(sdt.rocket, 1:7, ["q", "w", "v", "alt", "cl", "delta", "pos_yz"]);
     
     %%% Estimator data
     sdt_vars.qhat = sim_getdata(simout, "q_hat", 4);
@@ -42,8 +43,11 @@ function [sdt, sdt_vars] = sim_postprocessor(simout)
     sdt.error = synchronize(sdt_vars.qerr, sdt_vars.werr, sdt_vars.verr, sdt_vars.alterr, sdt_vars.clerr, sdt_vars.deltaerr);
         sdt.error = renamevars(sdt.error, 1:6, ["q", "w", "v", "alt", "cl", "delta"]);
 
+    sdt.P_norm = sim_getdata(simout, "P_norm", 3);
+
     % Rocket data in estimator time code
     sdt.rocket_dt = retime(sdt.rocket, sdt.est.Time);
+    clear sdt.rocket
 end
 
 function [timetable, array] = sim_getdata(sim_out, name, dimension)
