@@ -19,6 +19,11 @@ total_mass_d = or_data.Mass_g_(find(~isnan(or_data.Mass_g_), 1, 'last')) / 1000;
 %% Input Time Series
 sim_time = or_data.x_Time_s_; % s
 F_thrust = or_data.Thrust_N_; % N assume thrust is perfectly aligned
+F_thrust = circshift(F_thrust, 5);
+F_thrust(end-5:end) = 0;
+F_thrust(2:5) = NaN;
+F_thrust = fillmissing(F_thrust, 'linear');
+
 OR_cg = -or_data.CGLocation_cm_ / 100; % centre of gravity over time (replace NaN with Last val)
 % Do diff here since simulink may become unstable
 mass = or_data.Mass_g_ / 1000; % g -> kg
@@ -66,11 +71,11 @@ CD_data = lookup_table(:, 2); % Cd
 
 %% Cn_alpha tables
 
-CNa_input_aoa = deg2rad(or_override_aoa_cna{:,1}); % angle of attack
-CNa_data_aoa = or_override_aoa_cna{:,2}; % CN_alpha
-
-CNa_input_mach = or_override_mach_cna{:,1}; % Mach number
-CNa_data_mach = or_override_mach_cna{:,2}; % CN_alpha
+% CNa_input_aoa = deg2rad(or_override_aoa_cna{:,1}); % angle of attack
+% CNa_data_aoa = or_override_aoa_cna{:,2}; % CN_alpha
+% 
+% CNa_input_mach = or_override_mach_cna{:,1}; % Mach number
+% CNa_data_mach = or_override_mach_cna{:,2}; % CN_alpha
 
 
 %% Aero

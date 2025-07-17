@@ -13,8 +13,6 @@ run('plant-model/Data/Sensors/sensors_processing.m')
 
 %% data pre-processing
 run('plant-model/scripts/data_preparation.m')
-OR_cg = OR_cg - 0.5;
-body_CNa = 0;
 
 %% Controller and Estimator loading
 clear estimator_module

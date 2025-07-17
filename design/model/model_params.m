@@ -1,7 +1,7 @@
 clear
 
 %% Launch site
-elevation = 250; % m above sea level
+elevation = 420; % m above sea level
 
 %% Rocket body
 m = 54.9; %mass in kg
