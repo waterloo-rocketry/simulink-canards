@@ -1,8 +1,6 @@
-function [C_normal_alpha_1] = aerosurface_online(mach, incidence, aspect_ratio, midchord_angle)
+function [C_normal_alpha_1, cp] = aerosurface_online(mach, incidence, aspect_ratio, midchord_angle, cp_subsonic, cp_mach2)
     
-    % should aerosurface.m be pasted here? 
-    % how to do handling of the dozens of constant parameters?
-
+    %%% Normal force coefficient 
     gamma = 1.4; % adiabatic exponent of air
 
     % threshold values
