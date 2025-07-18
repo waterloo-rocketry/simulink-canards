@@ -80,12 +80,11 @@ CD_data = lookup_table(:, 2); % Cd
 
 %% Aero
 % Nose
-%nosecone_CNa = 2 * pi * (nosecone_radius^2) / rocket_area_frontal;
-nosecone_pos_x_cp = 0 - nosecone_length / 2; % Nosecone center of pressure
+[nosecone_area_planform, nosecone_area_bow, nosecone_area_aft, nosecone_volume, nosecone_pos_x_cp] = aerobody(nosecone_length, 0, 2 * nosecone_radius, 0);
+
 
 % Body
-% body_CNa = 2 * 1.1 * body_length * rocket_diameter / rocket_area_frontal; %derivative of eq. 3.26 wrt alpha (making the substitution sin^2(a) = a^2)
-body_pos_x_cp = 0 - nosecone_length - body_length/2; % Fuselage center of pressure
+[body_area_planform, body_area_bow, body_area_aft, body_volume, body_pos_x_cp] = aerobody(body_length, rocket_diameter, rocket_diameter, - nosecone_length);
 
 % Fins 
 % [fin_pos_x_cp, fin_Cnfdelta, fin_CndNi, fin_CNa, fin_aspectratio, fin_area, fin_midchord_angle, fin_dist_chord_mean, fin_pos_r_chord_mean, fin_leading_edge] = fins(fin_chord_root, fin_chord_tip, fin_height, fin_sweep, fin_pos_x_roottip, fin_number, rocket_area_frontal, rocket_diameter);
@@ -93,9 +92,7 @@ body_pos_x_cp = 0 - nosecone_length - body_length/2; % Fuselage center of pressu
 
 
 % Tail
-tail_radius_ratio = tail_radius_outer / tail_radius_smallest;
-% tail_CNa= -2 * (1 - ((tail_radius_ratio)^(-2)));
-tail_pos_x_cp = tail_pos_x_roottip - (tail_length/3) * (1 + ( (1 - tail_radius_ratio) / (1 - tail_radius_ratio^2) ) );
+[tail_area_planform, tail_area_bow, tail_area_aft, tail_volume, tail_pos_x_cp] = aerobody(tail_length, 2 * tail_radius_outer, 2 * tail_radius_smallest, - nosecone_length - body_length);
 
 % Canards 
 % [canard_pos_x, canard_Cnalfat, canard_Cnfdelta, canard_CndNi, canard_aspectratio, canard_area, canard_midchord_angle, canard_dist_chord_mean, canard_pos_r_mean, canard_leading_edge] = canards(canard_chord_root, canard_chord_tip, canard_height, canard_pos_x_roottip, canard_number, rocket_area_frontal, rocket_diameter);
