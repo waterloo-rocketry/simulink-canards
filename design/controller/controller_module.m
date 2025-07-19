@@ -12,12 +12,12 @@ function [u, r] = controller_module(timestamp, input)
     
     t = timestamp - time_launch;
     r = 0;
-    if t > (time_coast + 5)
-        if t < (time_coast + 12)
+    if t > (time_coast + 7)
+        if t < (time_coast + 14)
             r = 0.5;
-        elseif t < (time_coast + 19)
+        elseif t < (time_coast + 21)
             r = -0.5;
-        elseif t < (time_coast + 26)
+        elseif t < (time_coast + 28)
             r = 0.5;
         elseif t > (time_coast + 35)
             r = 0;
