@@ -22,12 +22,12 @@ canard_cant_var = 0;
 
 
 %%% sweeps
-rocket_thrust_var = 0.8:0.05:1.2;
-wind_const_var = 0:1:10;
-wind_gust_var = 0:1:20;
-canard_coefficient_var = -0.5:0.1:2;
-canard_backlash_var = 0:0.1:2;
-canard_cant_var = 0:0.1:1;
+rocket_thrust_var = 0.9 :0.05: 1.1;
+wind_const_var = 0 :1: 20;
+wind_gust_var = 0 :1: 30;
+canard_coefficient_var = -1 :0.1: 3;
+canard_backlash_var = 0 :0.1: 2;
+canard_cant_var = 0 :0.1: 1;
 
 % Sweep create
 possible_combinations = length(rocket_thrust_var) * length(wind_const_var) * ...

@@ -5,7 +5,6 @@ function [u, r] = controller_module(timestamp, input)
     time_launch = 5; % pad delay time
     time_coast = 10; % time from launch to burnout
     u_max = deg2rad(10); % cap output to this angle
-    backlash = deg2rad(0); % backlash offset
 
     %% Reference signal
     % Generates reference signal for roll program
@@ -13,12 +12,12 @@ function [u, r] = controller_module(timestamp, input)
     
     t = timestamp - time_launch;
     r = 0;
-    if t > (time_coast + 5)
-        if t < (time_coast + 12)
+    if t > (time_coast + 7)
+        if t < (time_coast + 14)
             r = 0.5;
-        elseif t < (time_coast + 19)
+        elseif t < (time_coast + 21)
             r = -0.5;
-        elseif t < (time_coast + 26)
+        elseif t < (time_coast + 28)
             r = 0.5;
         elseif t > (time_coast + 35)
             r = 0;
@@ -43,13 +42,6 @@ function [u, r] = controller_module(timestamp, input)
     %%% Feedback law
     % two degree of freedom, full state feedback + feedforward
     u = K*roll_state + K_pre*r; 
-
-    %%% backlash offset
-    % if u > 0
-    %     u = u + backlash;
-    % elseif u < 0
-    %     u = u - backlash;
-    % end
 
     %%% limit output to allowable angle
     u = min(max(u, -u_max), u_max);
