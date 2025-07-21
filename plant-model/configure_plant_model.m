@@ -10,6 +10,7 @@ wind_dist_enable = 1; % no disturbances is = 0
 
 %%% sensors
 run('plant-model/Data/Sensors/sensors_processing.m')
+sensor_fault_enable = [0, 0, 0]; % no faults is = 0
 
 %% data pre-processing
 run('plant-model/scripts/data_preparation.m')
