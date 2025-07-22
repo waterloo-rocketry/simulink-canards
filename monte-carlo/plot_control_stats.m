@@ -1,0 +1,83 @@
+function plot_control_stats(sdt_array, type, commontitle, percentiles)
+    % Plot the mean and standard deviation across multiple simulations
+    % Input: sdt_array - cell array of sdt structs
+
+    N = numel(sdt_array);
+    fields = {'ref', 'roll', 'err', 'cmd', 'rate', 'delta'};
+    names = {'Reference [rad]', 'Roll angle [rad]', 'Roll error [rad]', 'Command [rad]', 'Rates [rad/s]', 'Actuation [rad]',};
+    dims = [1, 1, 1, 1, 1, 1];
+
+    % Preallocate
+    T_ref = sdt_array{1}.est.Time;
+    num_steps = length(T_ref);
+
+    % Initialize storage
+    for f = 1:numel(fields)
+        all_data.(fields{f}) = zeros(num_steps, dims(f), N);
+    end
+
+    % Gather data
+    for k = 1:N
+        sdt = sdt_array{k};
+        % Skip if not a struct or missing expected field
+        if ~isstruct(sdt) || ~isfield(sdt, type) || isempty(sdt.(type))
+            warning('Skipping sdt_array{%d} — invalid or empty', k);
+            continue;
+        end
+        data_ts = sdt.(type);
+        for f = 1:numel(fields)
+            field = fields{f};
+            data = data_ts.(field);
+            all_data.(field)(:,:,k) = data;
+        end
+    end
+
+    % Colors
+    var_colors(1,:) = [0.00, 0.45, 0.74];  % Deep Blue (unchanged)
+    var_colors(2,:) = [0.00, 0.60, 0.20];  % Clear Green
+    var_colors(3,:) = [1.00, 0.50, 0.00];  % True Orange
+    var_colors(4,:) = [0.60, 0.20, 0.50];  % Warmer Purple (less blue, more magenta)
+
+    % Plotting
+    tlo = tiledlayout(2,3,'TileSpacing','Compact','Padding','Compact');
+    axes_list = [];
+    for f = 1:numel(fields)
+        ax = nexttile;
+        axes_list(end+1) = ax;
+        field = fields{f};
+        name = names{f};
+        dim = dims(f);
+
+        hold(ax, 'on');
+        for d = 1:dim
+            color = var_colors(d,:);
+            data = squeeze(all_data.(field)(:,d,:));  % [time x runs]
+            % mu = mean(data, 2);
+            mu = median(data, 2, "omitmissing");
+            sigma = std(data, 0, 2);
+            lower_mid = prctile(data, (100-percentiles(1))/2, 2);
+            upper_mid = prctile(data, 100-(100-percentiles(1))/2, 2);
+            lower = prctile(data, (100-percentiles(2))/2, 2);
+            upper = prctile(data, 100-(100-percentiles(2))/2, 2);
+            
+            
+            % Shaded area for ±1σ
+            fill([T_ref; flipud(T_ref)], ...
+                 [upper; flipud(lower)], ... % [mu+sigma; flipud(mu-sigma)],...
+                 color, 'FaceAlpha', 0.15, 'EdgeColor', 'none', 'Parent', ax);
+
+            % Mean line
+            plot(ax, T_ref, mu, 'Color', color, 'LineWidth', 1.5);
+            plot(T_ref, lower_mid, ':', 'Color', color, 'LineWidth', 1, 'Parent', ax);
+            plot(T_ref, upper_mid, ':', 'Color', color, 'LineWidth', 1, 'Parent', ax);
+        end
+        title(ax, name);
+        grid(ax, 'on');
+        xlabel(ax, 'Time [s]');
+    end
+
+
+    % Add common
+    % legend(axes_list(1), 'Median ± 95%', 'FontSize', 7, 'Location', 'best');
+    title(tlo, commontitle)
+end

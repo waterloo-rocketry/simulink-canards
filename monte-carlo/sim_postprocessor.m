@@ -10,7 +10,10 @@ function [sdt, sdt_vars] = sim_postprocessor(simout)
     
     sdt_vars.roll = timetable(sdt_vars.control.Time, sdt_vars.control.controlinput(:,1), 'VariableNames', "roll");
     sdt_vars.rollerr = sim_ttdiff(sdt_vars.ref, sdt_vars.roll, "err");
-    sdt.control = synchronize(sdt_vars.ref, sdt_vars.roll, sdt_vars.rollerr);
+    sdt_vars.rate = timetable(sdt_vars.control.Time, sdt_vars.control.controlinput(:,2), 'VariableNames', "rate");
+    sdt_vars.delta = timetable(sdt_vars.control.Time, sdt_vars.control.controlinput(:,3), 'VariableNames', "delta");
+
+    sdt.control = synchronize(sdt_vars.ref, sdt_vars.roll, sdt_vars.rollerr, sdt_vars.cmd, sdt_vars.delta, sdt_vars.rate);
     
     %%% Rocket data
     sdt_vars.q = sim_getdata(simout, "q", 4);
@@ -34,6 +37,9 @@ function [sdt, sdt_vars] = sim_postprocessor(simout)
     sdt.est = synchronize(sdt_vars.qhat, sdt_vars.what, sdt_vars.vhat, sdt_vars.althat, sdt_vars.clhat, sdt_vars.deltahat);
         sdt.est = renamevars(sdt.est, 1:6, ["q", "w", "v", "alt", "cl", "delta"]);
     
+    % Rocket data in estimator time code
+    sdt.rocket_dt = retime(rocket, sdt.est.Time, 'linear');
+
     sdt_vars.qerr = sim_ttdiff(sdt_vars.q, sdt_vars.qhat, "err");
     sdt_vars.werr = sim_ttdiff(sdt_vars.w, sdt_vars.what, "err");
     sdt_vars.verr = sim_ttdiff(sdt_vars.v, sdt_vars.vhat, "err");
@@ -45,8 +51,6 @@ function [sdt, sdt_vars] = sim_postprocessor(simout)
 
     sdt.P_norm = sim_getdata(simout, "P_norm", 3);
 
-    % Rocket data in estimator time code
-    sdt.rocket_dt = retime(rocket, sdt.est.Time);
     % clear sdt.rocket
 end
 
@@ -56,8 +60,14 @@ function [timetable, array] = sim_getdata(sim_out, name, dimension)
     timetable = timeseries2timetable(getElement(sim_out.logsout, name).Values);
 end
 
+function [timetable_difference] = sim_ttdiff_synced(tt_sim, tt_est, name)
+    tt_sync = synchronize(tt_sim, tt_est, tt_est.Time, 'linear');
+    array_diff = table2array(tt_sync(:,1)) - table2array(tt_sync(:,2));
+    timetable_difference = timetable(tt_sync.Time, array_diff, 'VariableNames', name);
+end
+
 function [timetable_difference] = sim_ttdiff(tt_sim, tt_est, name)
-    tt_sync = synchronize(tt_sim, tt_est, tt_est.Time);
+    tt_sync = synchronize(tt_sim, tt_est, tt_est.Time, 'linear');
     array_diff = table2array(tt_sync(:,1)) - table2array(tt_sync(:,2));
     timetable_difference = timetable(tt_sync.Time, array_diff, 'VariableNames', name);
 end

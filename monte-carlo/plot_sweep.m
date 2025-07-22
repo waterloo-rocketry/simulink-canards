@@ -2,35 +2,32 @@
 batch_name = '_all_200';
 number_plots = 200;
 exclude = [88, 177]; %indices
-size_limit = 4000; %kB
+limit_filesize = 4000; %kB
+limit_velocity = 1000;
 
 
 %% Plot statistical
-% Preallocate arrays/cells to hold data for all simulations
-all_error = cell(number_plots, 1);
-all_control_ref = cell(number_plots, 1);
-all_control_roll = cell(number_plots, 1);
-all_est = cell(number_plots, 1);
-all_rocket_dt = cell(number_plots, 1);
-all_time = cell(number_plots, 1);
-
+sdt_array = cell(1, number_plots);
 for k = 1:number_plots
-    if ismember(k, exclude)
-        continue  % skip excluded simulations
-    end
     filename = sprintf('monte-carlo/batch%s/sim_%d.mat', batch_name, k);
-    load(filename, "sdt");
-    
-    all_error{k} = sdt.error;
-    all_control_ref{k} = sdt.control.ref;
-    all_control_roll{k} = sdt.control.roll;
-    all_time{k} = sdt.control.Time;
-    all_est{k} = sdt.est;
-    all_rocket_dt{k} = sdt.rocket_dt;
+    load(filename);  % loads variables: sdt, in_vars
+    % if any(sdt.est.v(:,1) > limit_velocity) 
+    %     continue    % skip these for now
+    % end
+    sdt_array{k} = sdt;  % store the sdt struct
 end
-plot_multiple_errors(all_error)
-plot_all_controls(all_time, all_control_ref, all_control_roll)
-plot_multiple_estimations(all_est, all_rocket_dt)
+
+percentiles = [80, 95];
+figure(1)
+plot_est_stats(sdt_array, 'rocket_dt', 'Simulation', percentiles);
+figure(2)
+plot_est_stats(sdt_array, 'est', 'Estimation', percentiles);
+figure(3)
+plot_est_stats(sdt_array, 'error', 'Estimation error', percentiles);
+figure(4)
+plot_est_stats_covariance(sdt_array, 'P_norm', 'Covariance norm', percentiles);
+% figure(5)
+% plot_control_stats(sdt_array, 'control', 'Controller', percentiles);
 
 %% Plot individual
 for k = 1:number_plots
@@ -39,11 +36,15 @@ for k = 1:number_plots
 
     if ismember(k, exclude)
         continue  % skip excluded simulations
-    elseif dir(filename).bytes / 1024 > size_limit
+    elseif dir(filename).bytes / 1024 > limit_filesize
         continue  % skip excluded simulations
     end
 
     load(filename, "sdt");
+
+    if any(sdt.est.v(:,1) > limit_velocity) 
+        continue    
+    end
 
     if k == 1
         figure(1)
