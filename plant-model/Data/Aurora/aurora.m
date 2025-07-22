@@ -22,12 +22,12 @@ sensor_2_S = [0, -1, 0;
               -1, 0, 0]; % mounting orientation of IMU 2 relative body frame
 
 %% Actuator parameters
-act_freq = 70; % natural frequency, approx 1/timeconstant
+act_freq = 150; % natural frequency, approx 1/timeconstant
 act_deadtime = 0.02; % delay in servo internal control loop
 act_damping = 0.9; % damping ratio
 act_backlash = 0.5; % play in deg
 act_anglelimit = 12; % max deflection in deg
-act_ratelimit = 600; % max rate in deg/s
+act_ratelimit = 480; % max rate in deg/s
 
 %% Misc Rocket parameters
 engine_thrust_factor = 1;
