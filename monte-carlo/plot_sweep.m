@@ -1,7 +1,7 @@
 %% Configure
 batch_name = '_all_200';
 number_plots = 200;
-exclude = [57, 173, 187]; %indices
+exclude = [88, 177]; %indices
 size_limit = 4000; %kB
 
 
