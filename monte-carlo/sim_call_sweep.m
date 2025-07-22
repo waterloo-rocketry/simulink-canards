@@ -1,6 +1,6 @@
 %% Configure
-batch_name = '_all_1';
-number_simulations = 20;
+batch_name = '_all_200';
+number_simulations = 200;
 
 %% load baseline
 clearvars -except batch_name number_simulations
