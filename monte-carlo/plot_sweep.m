@@ -1,6 +1,6 @@
 %% Configure
-batch_name = '_test';
-number_plots = 16;
+batch_name = '_all_300';
+number_plots = 300;
 % exclude = [88, 177]; %indices
 % limit_filesize = 4000; %kB
 % limit_velocity = 1000;
@@ -17,7 +17,7 @@ for k = 1:number_plots
     sdt_array{k} = sdt;  % store the sdt struct
 end
 
-percentiles = [40, 60];
+percentiles = [70, 94];
 figure(1)
 plot_stats_state(sdt_array, 'rocket_dt', 'Simulation', percentiles);
 figure(2)

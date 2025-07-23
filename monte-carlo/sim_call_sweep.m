@@ -1,7 +1,7 @@
 %% Configure
 batch_name = '_all_300';
 number_simulations = 300;
-P_threshold = 1e5;
+P_threshold = 5000;
 
 %% load baseline
 clearvars -except batch_name number_simulations P_threshold
