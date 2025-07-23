@@ -70,9 +70,19 @@ close_system(model_name, 0);
 
 %% Post processing
 
+unstable_count = 0;
 for k = 1:number_simulations
-    [in_vars] = sim_postprocessor_in(simin(i), load(sprintf('monte-carlo/batch%s/plant_model_baseline.mat', batch_name)));
+    [in_vars] = sim_postprocessor_in(simin(k), load(sprintf('monte-carlo/batch%s/plant_model_baseline.mat', batch_name)));
     [sdt, sdt_vars] = sim_postprocessor(simout(k));
     filename = sprintf('monte-carlo/batch%s/sim_%d.mat', batch_name, k);
     save(filename, 'sdt', 'in_vars');
+    if any(sdt.P_norm.P_norm > P_threshold, 'all') || simout(k).ErrorMessage
+        unstable_count = unstable_count + 1;
+    end
 end
+
+unstable_count 
+unstable_ratio = unstable_count / number_simulations
+
+filename = sprintf('monte-carlo/batch%s/result_summary.mat', batch_name);
+save(filename, 'number_simulations', 'unstable_count', 'unstable_ratio');
