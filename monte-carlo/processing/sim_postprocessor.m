@@ -3,6 +3,13 @@ function [sdt, sdt_vars] = sim_postprocessor(simout)
     % Input parmaters: simout (Simulink.SimulationOutput)
     % Output parameters: sdt (struct with timetables of combined data), sdt_vars (struct with timetables of individual variables)
     
+    if ~isempty(simout.ErrorMessage)
+        warning('Simulation error: %s. Skipping postprocessing.', simout.ErrorMessage);
+        sdt = [];
+        sdt_vars = [];
+        return;
+    end
+
     %%% Controller data
     sdt_vars.ref = sim_getdata(simout, "ref", 1);
     sdt_vars.control = sim_getdata(simout, "controlinput", 5);
@@ -13,7 +20,7 @@ function [sdt, sdt_vars] = sim_postprocessor(simout)
     sdt_vars.rate = timetable(sdt_vars.control.Time, sdt_vars.control.controlinput(:,2), 'VariableNames', "rate");
     sdt_vars.delta = timetable(sdt_vars.control.Time, sdt_vars.control.controlinput(:,3), 'VariableNames', "delta");
 
-    sdt.control = synchronize(sdt_vars.ref, sdt_vars.roll, sdt_vars.rollerr, sdt_vars.cmd, sdt_vars.delta, sdt_vars.rate);
+    sdt.control = synchronize(sdt_vars.ref, sdt_vars.rollerr, sdt_vars.cmd, sdt_vars.roll, sdt_vars.delta, sdt_vars.rate);
     
     %%% Rocket data
     sdt_vars.q = sim_getdata(simout, "q", 4);

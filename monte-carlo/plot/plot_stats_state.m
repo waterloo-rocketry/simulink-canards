@@ -8,16 +8,36 @@ function plot_est_stats(sdt_array, type, commontitle, percentiles)
     dims = [4, 3, 3, 1, 1, 1];
 
     % Preallocate
-    T_ref = sdt_array{1}.est.Time;
-    num_steps = length(T_ref);
+    T_length_max = 0;
+    valid_idx = [];  
+    for n = 1:N
+        sdt = sdt_array{n};
+        if ~isstruct(sdt) || ~isfield(sdt, type) || isempty(sdt.(type)) || isfield(sdt.(type), 'Time') || isempty(sdt.(type).Time)
+            continue;
+        end
+        T_now = sdt.(type).Time;
+        T_length = length(T_now);
+        if T_length > T_length_max 
+            T_length_max = T_length;
+            T_ref = T_now;
+        end
+        valid_idx(end+1) = n;  %#ok<AGROW>
+    end
+    
+    num_valid = numel(valid_idx);
+    if num_valid == 0
+        warning('No valid simulations found. Skipping plot.');
+        return;
+    end
 
     % Initialize storage
     for f = 1:numel(fields)
-        all_data.(fields{f}) = zeros(num_steps, dims(f), N);
+        all_data.(fields{f}) = nan(num_valid, dims(f), N);
     end
 
     % Gather data
-    for k = 1:N
+    for i = 1:num_valid
+        k = valid_idx(i);
         sdt = sdt_array{k};
         % Skip if not a struct or missing expected field
         if ~isstruct(sdt) || ~isfield(sdt, type) || isempty(sdt.(type))
@@ -28,7 +48,7 @@ function plot_est_stats(sdt_array, type, commontitle, percentiles)
         for f = 1:numel(fields)
             field = fields{f};
             data = data_ts.(field);
-            all_data.(field)(:,:,k) = data;
+            all_data.(field)(1:length(data),:,k) = data;
         end
     end
 

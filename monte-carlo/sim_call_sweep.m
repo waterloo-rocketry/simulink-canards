@@ -1,6 +1,6 @@
 %% Configure
-batch_name = '_all_200';
-number_simulations = 200;
+batch_name = '_test';
+number_simulations = 16;
 
 %% load baseline
 clearvars -except batch_name number_simulations
@@ -13,12 +13,12 @@ model_name = 'plant-model/CC_Flight_Simulation';
 %% Sweep parameters
 
 %%% nominal
-rocket_thrust_var = 1;
-wind_const_var = 0;
-wind_gust_var = 0;
-canard_coefficient_var = 1;
-canard_backlash_var = 0.1;
-canard_cant_var = 0;
+rocket_thrust_exp = 1;
+wind_const_exp = 10;
+wind_gust_exp = 10;
+canard_coefficient_exp = 1;
+canard_backlash_exp = 0.5;
+canard_cant_exp = 0.1;
 
 
 %%% sweeps
@@ -30,27 +30,33 @@ canard_backlash_var = 0 :0.1: 2;
 canard_cant_var = 0 :0.1: 1;
 
 % Sweep create
-possible_combinations = length(rocket_thrust_var) * length(wind_const_var) * ...
-                        length(wind_gust_var)^2 * length(canard_coefficient_var) * ...
-                        length(canard_backlash_var) * length(canard_cant_var)
+% possible_combinations = length(rocket_thrust_var) * length(wind_const_var) * ...
+%                         length(wind_gust_var)^2 * length(canard_coefficient_var) * ...
+%                         length(canard_backlash_var) * length(canard_cant_var)
 
 for i = 1:number_simulations
     simin(i) = Simulink.SimulationInput(model_name);
 
     simin(i) = simin(i).loadVariablesFromMATFile(sprintf('monte-carlo/batch%s/plant_model_baseline.mat', batch_name));
 
-    simin(i) = simin(i).setVariable('engine_thrust_factor', randomsampling(rocket_thrust_var));
-    simin(i) = simin(i).setVariable('wind_const_strength',randomsampling(wind_const_var));
-    simin(i) = simin(i).setVariable('wind_gust1_amplitude',randomsampling(wind_gust_var));
-    simin(i) = simin(i).setVariable('wind_gust2_amplitude',randomsampling(wind_gust_var));
-    simin(i) = simin(i).setVariable('canard_roll_reversal_factor',randomsampling(canard_coefficient_var));
-    simin(i) = simin(i).setVariable('act_backlash',randomsampling(canard_backlash_var));
-    simin(i) = simin(i).setVariable('canard_cant_zero',randomsampling(canard_cant_var));
+    simin(i) = simin(i).setVariable('engine_thrust_factor', normalsampling(rocket_thrust_var, rocket_thrust_exp));
+    simin(i) = simin(i).setVariable('wind_const_strength',normalsampling(wind_const_var, wind_const_exp));
+    simin(i) = simin(i).setVariable('wind_gust1_amplitude',normalsampling(wind_gust_var, wind_gust_exp));
+    simin(i) = simin(i).setVariable('wind_gust2_amplitude',normalsampling(wind_gust_var, wind_gust_exp));
+    simin(i) = simin(i).setVariable('canard_roll_reversal_factor',normalsampling(canard_coefficient_var, canard_coefficient_exp));
+    simin(i) = simin(i).setVariable('act_backlash',normalsampling(canard_backlash_var, canard_backlash_exp));
+    simin(i) = simin(i).setVariable('canard_cant_zero',normalsampling(canard_cant_var, canard_cant_exp));
 end
 
 function value = randomsampling(vector)
     index = randsample(length(vector), 1);
     value = vector(index);
+end
+
+function value = normalsampling(vector, mean_val)
+    std_dev = (max(vector) - min(vector)) / 4;  % 95% of values in range
+    value = mean_val + std_dev * randn();
+    value = max(min(value, max(vector)), min(vector)); % Clip to the range of the vector
 end
 
 %% Run Sim

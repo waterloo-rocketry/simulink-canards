@@ -39,13 +39,17 @@ function plot_animation(sdt)
     h.Camera.Offset = [250, 0, -2000];
     h.updateCamera(0);
     h.show();
-    h.VideoRecord = 'on';
-    h.VideoQuality = 70;
-    h.VideoCompression = 'MPEG-4';
-    h.VideoFilename = 'monte-carlo/animation';
-    h.VideoTStart = 0;
-    h.VideoTFinal = 60;
-    h.play();
+
+    % %%% Record
+    % h.VideoRecord = 'on';
+    % h.VideoQuality = 70;
+    % h.VideoCompression = 'MPEG-4';
+    % h.VideoFilename = 'monte-carlo/animation';
+    % h.VideoTStart = 0;
+    % h.VideoTFinal = 60;
+    % h.play();
+    
+    
     % h.wait();
     % h.hide();
     % h.VideoRecord = 'off';
