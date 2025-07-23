@@ -12,11 +12,11 @@ rail_length = 11.28; % [m]
 time_idle = 5; % wait time on the rail before launch
 
 %% Sensor mounting
-sensor_1_d = [0.127; 0.074; -0.027]; % mounting location of IMU 1 relative CG
+sensor_1_d = [-1.83; 0.074; -0.027]; % mounting location of IMU 1 relative nosetip
 sensor_1_S = [0, 1, 0;
               0, 0, 1;
               1, 0, 0]; % mounting orientation of IMU 1 relative body frame
-sensor_2_d = [0.127; 0.065; 0.047]; % mounting location of IMU 2 relative CG
+sensor_2_d = [-1.83; 0.065; 0.047]; % mounting location of IMU 2 relative nosetip
 sensor_2_S = [0, -1, 0;
               0, 0, 1;
               -1, 0, 0]; % mounting orientation of IMU 2 relative body frame
@@ -38,15 +38,6 @@ canard_roll_reversal_factor = 1;
 rocket_diameter = 0.203; % reference length [m]
 rocket_area_frontal = pi * rocket_diameter^2 / 4; % reference area [m^2]
 rocket_length = 5.11; % rocket length [m]
-
-%%% TEMPORARY
-% Cn_alpha override
-rocket_pos_cp = -0.82; % [m]
-nosecone_CNa = 2;
-body_CNa = 3;
-fin_CNa = 7.225;
-tail_CNa = 0;
-canard_CNa = 2;
 
 %Nosecone parameters
 nosecone_length = 1.02; % nosecone length [m]

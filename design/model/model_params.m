@@ -11,16 +11,16 @@ J = diag([Jx, Jy, Jy]);
 Jinv = inv(J);
 
 length_cg = 0; % center of gravity
-length_cp = -0.6; % center of pressure
+length_cp = -0.5; % center of pressure
 area_reference = pi*(0.203/2)^2; % cross section of body tube
 c_aero = area_reference * (length_cp-length_cg);
-Cn_alpha = 50; % pitch forcing coefficent 
+Cn_alpha = 10; % pitch forcing coefficent 
 Cn_omega = 0; % pitch damping coefficent 
 
 
 %% Actuator
-tau_est = 0.08; % time constant of first order actuator dynamics, in estimation
-tau_ctr = 0.08; % time constant of first order actuator dynamics, for controller tuning
+tau_est = 0.04; % time constant of first order actuator dynamics, in estimation
+tau_ctr = 0.04; % time constant of first order actuator dynamics, for controller tuning
 
 
 %% Canards
@@ -49,10 +49,9 @@ S1 = [0, 0, 1;
 S2 = [0, 0, -1;
      -1, 0, 0;
       0, 1, 0]; % IMU 2, rotation transform from sensor frame to body frame
-S_k = cat(3, S1, S2);
 
-d1 = [-0.127; -0.074; 0.027]; % center of sensor frame
-d2 = [-0.127; -0.065; -0.047]; % center of sensor frame
+d1 = [-1.2; -0.074; 0.027]; % center of sensor frame
+d2 = [-1.2; -0.065; -0.047]; % center of sensor frame
 
 B1 = eye(3); % Soft iron compensation
 B2 = eye(3); % Soft iron compensation
