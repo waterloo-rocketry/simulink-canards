@@ -1,7 +1,7 @@
 %% Configure
-batch_name = '_test';
-number_simulations = 16;
-P_threshold = 1000;
+batch_name = '_all_300';
+number_simulations = 300;
+P_threshold = 1e5;
 
 %% load baseline
 clearvars -except batch_name number_simulations P_threshold
@@ -97,3 +97,6 @@ unstable_ratio = unstable_count / number_simulations
 
 filename = sprintf('monte-carlo/batch%s/result_summary.mat', batch_name);
 save(filename, 'number_simulations', 'error_id', 'error_count', 'error_ratio', 'unstable_id', 'unstable_count', 'unstable_ratio');
+
+%% Plot
+plot_sweep
