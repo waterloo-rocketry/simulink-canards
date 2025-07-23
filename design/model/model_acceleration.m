@@ -15,8 +15,8 @@ function [a] = model_acceleration(x, IMU_1, IMU_2, sensor_select)
     a = zeros(3,1);
     %%% average specific force
     if sensor_select(1) == 1 && sensor_select(2) == 1 % average if both IMUs are alive
-        a = (IMU_1(1:3,1) - cross(w, cross(w, param.d1)) + ... 
-            IMU_2(1:3,1) - cross(w, cross(w, param.d2)) ) / 2;       
+        a = ( IMU_1(1:3,1) - cross(w, cross(w, param.d1)) + ... 
+              IMU_2(1:3,1) - cross(w, cross(w, param.d2)) ) / 2;       
     elseif sensor_select(1) == 1 
         a = a + IMU_1(1:3,1) - cross(w, cross(w, param.d1)); % correction for centrifugal force
     elseif sensor_select(2) == 1
