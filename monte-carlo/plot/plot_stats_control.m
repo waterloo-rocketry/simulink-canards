@@ -1,9 +1,9 @@
-function plot_control_stats(sdt_array, type, commontitle, percentiles)
+function plot_stats_control(sdt_array, type, commontitle, percentiles)
     % Plot the mean and standard deviation across multiple simulations
     % Input: sdt_array - cell array of sdt structs
 
     N = numel(sdt_array);
-    fields = {'ref', 'roll', 'err', 'cmd', 'rate', 'delta'};
+    fields = {'ref', 'err', 'cmd', 'roll', 'rate', 'delta'};
     names = {'Reference [rad]', 'Roll error [rad]', 'Command [rad]', 'Roll angle [rad]', 'Rates [rad/s]', 'Actuation [rad]',};
     dims = [1, 1, 1, 1, 1, 1];
 

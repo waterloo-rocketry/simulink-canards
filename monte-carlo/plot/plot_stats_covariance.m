@@ -1,4 +1,4 @@
-function plot_est_stats_covariance(sdt_array, type, commontitle, percentiles)
+function plot_stats_covariance(sdt_array, type, commontitle, percentiles)
     % Plot the mean and standard deviation across multiple simulations
     % Input: sdt_array - cell array of sdt structs
 
