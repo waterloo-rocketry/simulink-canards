@@ -1,5 +1,5 @@
 %% Configure
-batch_name = '_all_300';
+batch_name = '_fixaccel_300';
 number_simulations = 300;
 P_threshold = 5000;
 
@@ -99,4 +99,4 @@ filename = sprintf('monte-carlo/batch%s/result_summary.mat', batch_name);
 save(filename, 'number_simulations', 'error_id', 'error_count', 'error_ratio', 'unstable_id', 'unstable_count', 'unstable_ratio');
 
 %% Plot
-plot_sweep
+% plot_sweep
