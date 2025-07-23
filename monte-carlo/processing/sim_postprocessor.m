@@ -56,7 +56,7 @@ function [sdt, sdt_vars] = sim_postprocessor(simout)
     sdt.error = synchronize(sdt_vars.qerr, sdt_vars.werr, sdt_vars.verr, sdt_vars.alterr, sdt_vars.clerr, sdt_vars.deltaerr);
         sdt.error = renamevars(sdt.error, 1:6, ["q", "w", "v", "alt", "cl", "delta"]);
 
-    sdt.P_norm = sim_getdata(simout, "P_norm", 3);
+    sdt.P_norm = sim_getdata(simout, "P_norm", 4);
 
     % clear sdt.rocket
 end

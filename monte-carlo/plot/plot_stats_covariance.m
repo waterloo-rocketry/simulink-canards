@@ -4,8 +4,8 @@ function plot_stats_covariance(sdt_array, type, commontitle, percentiles)
 
     N = numel(sdt_array);
     fields = {'P_norm'};
-    names = {'1-norm ', '2-norm', 'inf-norm'};
-    dims = 3;
+    names = {'det(P)', '1-norm ', '2-norm', 'inf-norm'};
+    dims = 4;
 
     % Preallocate
     T_length_max = 0;
@@ -55,7 +55,7 @@ function plot_stats_covariance(sdt_array, type, commontitle, percentiles)
     var_colors(4,:) = [0.60, 0.20, 0.50];  % Warm Purple
 
     % Plotting
-    tlo = tiledlayout(3,1,'TileSpacing','Compact','Padding','Compact');
+    tlo = tiledlayout(4,1,'TileSpacing','Compact','Padding','Compact');
     axes_list = [];
     for d = 1:dims
         ax = nexttile;
