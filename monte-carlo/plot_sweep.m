@@ -1,6 +1,6 @@
 %% Configure
-batch_name = '_test';
-number_plots = 16;
+batch_name = '_all_300';
+number_plots = 300;
 % exclude = [88, 177]; %indices
 % limit_filesize = 4000; %kB
 % limit_velocity = 1000;
