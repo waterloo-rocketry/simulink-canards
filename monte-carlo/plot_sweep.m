@@ -25,7 +25,7 @@ plot_stats_state(sdt_array, 'est', 'Estimation', percentiles);
 figure(3)
 plot_stats_state(sdt_array, 'error', 'Estimation error', percentiles);
 figure(4)
-plot_stats_covariance(sdt_array, 'P_norm', 'Covariance norm', percentiles);
+plot_stats_covariance(sdt_array, 'P_norm', 'Covariance stats', percentiles);
 figure(5)
 plot_stats_control(sdt_array, 'control', 'Controller', percentiles);
 

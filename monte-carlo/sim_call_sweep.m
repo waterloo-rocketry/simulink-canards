@@ -1,6 +1,6 @@
 %% Configure
-batch_name = '_all_300';
-number_simulations = 300;
+batch_name = '_test';
+number_simulations = 16;
 P_threshold = 1000;
 
 %% load baseline
@@ -82,7 +82,7 @@ for k = 1:number_simulations
     save(filename, 'sdt', 'in_vars');
     if ~isempty(simout(k).ErrorMessage)
         error_id(end+1) = k;
-    elseif any(sdt.P_norm.P_norm(:,2:end) > P_threshold, 'all')
+    elseif any(sdt.P_norm.P_norm(:,end) > P_threshold, 'all')
         unstable_id(end+1) = k;
     end
 end
