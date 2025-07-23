@@ -1,6 +1,7 @@
 %% Configure
 batch_name = '_all_300';
 number_simulations = 300;
+P_threshold = 1000;
 
 %% load baseline
 clearvars -except batch_name number_simulations
@@ -78,11 +79,13 @@ for k = 1:number_simulations
     save(filename, 'sdt', 'in_vars');
     if any(sdt.P_norm.P_norm > P_threshold, 'all') || simout(k).ErrorMessage
         unstable_count = unstable_count + 1;
+        unstable_id(end+1) = k;
     end
 end
 
+unstable_id
 unstable_count 
 unstable_ratio = unstable_count / number_simulations
 
 filename = sprintf('monte-carlo/batch%s/result_summary.mat', batch_name);
-save(filename, 'number_simulations', 'unstable_count', 'unstable_ratio');
+save(filename, 'number_simulations', 'unstable_count', 'unstable_ratio', 'unstable_id');

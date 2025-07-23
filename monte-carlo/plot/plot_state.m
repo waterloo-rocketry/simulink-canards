@@ -1,4 +1,4 @@
-function [plots] = plot_est_dashboard(dataset, varargin)
+function [plots] = plot_state(dataset, varargin)
     % plot simulation data on a dashboard for estimator visualization
     
      if nargin == 1 || nargin == 2 || nargin == 3
