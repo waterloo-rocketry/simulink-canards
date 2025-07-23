@@ -1,12 +1,12 @@
 %% Configure
-batch_name = '_all_300';
+batch_name = '_fixaccel_300';
 number_plots = 300;
 % exclude = [88, 177]; %indices
 % limit_filesize = 4000; %kB
 % limit_velocity = 1000;
 
 
-%% Plot statistical
+%% Load statistical
 sdt_array = cell(1, number_plots);
 for k = 1:number_plots
     filename = sprintf('monte-carlo/batch%s/sim_%d.mat', batch_name, k);
@@ -17,17 +17,30 @@ for k = 1:number_plots
     sdt_array{k} = sdt;  % store the sdt struct
 end
 
-percentiles = [70, 94];
-figure(1)
+
+%% Plot statistical
+percentiles = [80, 95];
+f_sim = figure(1);
 plot_stats_state(sdt_array, 'rocket_dt', 'Simulation', percentiles);
-figure(2)
+f_est = figure(2);
 plot_stats_state(sdt_array, 'est', 'Estimation', percentiles);
-figure(3)
+f_error = figure(3);
 plot_stats_state(sdt_array, 'error', 'Estimation error', percentiles);
-figure(4)
-plot_stats_covariance(sdt_array, 'P_norm', 'Covariance stats', percentiles);
-figure(5)
+f_cov = figure(4);
+plot_stats_covariance(sdt_array, 'P_norm', 'Covariance', percentiles);
+f_control = figure(5);
 plot_stats_control(sdt_array, 'control', 'Controller', percentiles);
+
+%% save statistical
+set(f_sim, 'Units', 'normalized', 'WindowState', 'maximized');
+saveas(f_sim, sprintf('monte-carlo/batch%s/result_stats_sim%s.png', batch_name, batch_name))
+set(f_est, 'Units', 'normalized', 'WindowState', 'maximized');
+saveas(f_est, sprintf('monte-carlo/batch%s/result_stats_est%s.png', batch_name, batch_name))
+set(f_error, 'Units', 'normalized', 'WindowState', 'maximized');
+saveas(f_error, sprintf('monte-carlo/batch%s/result_stats_error%s.png', batch_name, batch_name))
+set(f_control, 'Units', 'normalized', 'WindowState', 'maximized');
+saveas(f_control, sprintf('monte-carlo/batch%s/result_stats_control%s.png', batch_name, batch_name))
+saveas(f_cov, sprintf('monte-carlo/batch%s/result_stats_cov%s.png', batch_name, batch_name))
 
 %% Plot individual
 if 0

@@ -98,6 +98,35 @@ function plot_stats_state(sdt_array, type, commontitle, percentiles)
 
 
     % Add common
-    % legend(axes_list(1), 'Median ± 95%', 'FontSize', 7, 'Location', 'best');
     title(tlo, commontitle)
+
+    % legend
+    % Median & percentile handles (in black)
+    h_median = plot(nan, nan, '-', 'Color', [0 0 0], 'LineWidth', 1.5);
+    h_perc1 = plot(nan, nan, ':', 'Color', [0 0 0], 'LineWidth', 1);
+    h_fill = fill(nan, nan, [0 0 0], 'FaceAlpha', 0.15, 'EdgeColor', 'none');
+    
+    % Now create dummy lines for each var_colors entry (vector timeseries)
+    num_colors = size(var_colors, 1);
+    h_vec = gobjects(num_colors, 1); % preallocate graphic handles
+    for k = 1:num_colors
+        h_vec(k) = plot(nan, nan, '-', 'Color', var_colors(k,:), 'LineWidth', 1.5);
+    end
+    
+    % Combine all legend handles
+    all_handles = [h_vec', h_median, h_perc1, h_fill];
+    
+    % Create labels for the legend
+    labels = cell(1, num_colors + 3);
+    for k = 1:num_colors
+        labels{k} = sprintf('%d', k);
+    end
+    labels{num_colors + 1} = 'Med.';
+    labels{num_colors + 2} = sprintf('%d%%', percentiles(1));
+    labels{num_colors + 3} = sprintf('%d%%', percentiles(2));
+
+    % Create legend'
+    lgd = legend(ax, all_handles, labels, 'FontSize', 8, 'Orientation', 'horizontal', 'NumColumns', 7);
+    set(lgd, 'Units', 'normalized');
+    lgd.Position(1:2) = [0.56, 0.97];
 end

@@ -100,4 +100,23 @@ function plot_stats_control(sdt_array, type, commontitle, percentiles)
     % Add common
     % legend(axes_list(1), 'Median ± 95%', 'FontSize', 7, 'Location', 'best');
     title(tlo, commontitle)
+
+    % legend
+    % Median & percentile handles (in black)
+    h_median = plot(nan, nan, '-', 'Color', [0 0 0], 'LineWidth', 1.5);
+    h_perc1 = plot(nan, nan, ':', 'Color', [0 0 0], 'LineWidth', 1);
+    h_fill = fill(nan, nan, [0 0 0], 'FaceAlpha', 0.15, 'EdgeColor', 'none');
+    
+    % Combine all legend handles
+    all_handles = [h_median, h_perc1, h_fill];
+    
+    % Create labels for the legend
+    labels{1} = 'Med.';
+    labels{2} = sprintf('%d%%', percentiles(1));
+    labels{3} = sprintf('%d%%', percentiles(2));
+
+    % Create legend'
+    lgd = legend(ax, all_handles, labels, 'FontSize', 8, 'Orientation', 'horizontal', 'NumColumns', 3);
+    set(lgd, 'Units', 'normalized');
+    lgd.Position(1:2) = [0.56, 0.97];
 end
