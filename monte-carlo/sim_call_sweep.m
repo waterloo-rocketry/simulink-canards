@@ -1,6 +1,6 @@
 %% Configure
-batch_name = '_test';
-number_simulations = 16;
+batch_name = '_all_300';
+number_simulations = 300;
 P_threshold = 1000;
 
 %% load baseline
