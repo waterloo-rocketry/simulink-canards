@@ -104,10 +104,10 @@ function [x_init, bias_1, bias_2] = pad_filter(IMU_1, IMU_2, sensor_select)
     end
     
     %%% earth magnetic field
-    ST = transpose(quaternion_rotmatrix(q)); % launch attitude  
-    if sensor_select(1) == 1 % only add alive IMUs to average
+    ST = transpose(quaternion_rotmatrix(q)); % launch attitude
+    % TODO: add iron corrections. Maybe in IMU handler, next to rotation correction??
+    if sensor_select(1) == 1
         bias_1(7:9) = ST * filtered_1(7:9);
-        % TODO: add iron corrections. Maybe in IMU handler, next to rotation correction??
     end
     if sensor_select(2) == 1
         bias_2(7:9) = ST * filtered_2(7:9);

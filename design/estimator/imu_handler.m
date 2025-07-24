@@ -12,13 +12,13 @@ function [IMU_1, IMU_2] = imu_handler(IMU_1, IMU_2, sensor_select)
     end
 
     %% selector loop
-    for k = 1:2
+    for k = 1:3
         if sensor_select(1) == 1 % use only alive IMUs
             % rotate into body coordinates from sensor coordinate
-            IMU_1( 3*k-2 : 3*k ) = param.S_k(:,:,1) * IMU_1( 3*k-2 : 3*k );
+            IMU_1( 3*k-2 : 3*k ) = param.S1 * IMU_1( 3*k-2 : 3*k );
         end
         if sensor_select(2) == 1
-            IMU_2( 3*k-2 : 3*k ) = param.S_k(:,:,2) * IMU_2( 3*k-2 : 3*k );
+            IMU_2( 3*k-2 : 3*k ) = param.S2 * IMU_2( 3*k-2 : 3*k );
         end
     end
 end
