@@ -41,7 +41,7 @@ rocket_area_frontal = pi * rocket_diameter^2 / 4; % reference area [m^2]
 rocket_length = 5.11; % rocket length [m]
 
 %Parachutes
-chute_drogue_drag = 1 * (0.981/2)^2*pi; % Cd * A [m^2]
+chute_drogue_drag = 0.55 * 0.82; % Cd * A [m^2]
 chute_pos_x = -1.1; % chute attachment [m]
 
 %Nosecone parameters
