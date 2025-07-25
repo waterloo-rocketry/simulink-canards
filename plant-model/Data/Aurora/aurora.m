@@ -30,7 +30,7 @@ act_anglelimit = 12; % max deflection in deg
 act_ratelimit = 480; % max rate in deg/s
 
 %% Misc Rocket parameters
-time_chute_drogue = 50; % time from liftoff to 1st deployment
+time_chute_drogue = 55; % time from liftoff to 1st deployment
 engine_thrust_factor = 1; % perfomance gain
 canard_roll_reversal_factor = 1; % coefficient gain
 
@@ -41,7 +41,7 @@ rocket_area_frontal = pi * rocket_diameter^2 / 4; % reference area [m^2]
 rocket_length = 5.11; % rocket length [m]
 
 %Parachutes
-chute_drogue_drag = 2.3 * 0.2^2*pi; % Cd * A [m^2]
+chute_drogue_drag = 1 * (0.981/2)^2*pi; % Cd * A [m^2]
 chute_pos_x = -1.1; % chute attachment [m]
 
 %Nosecone parameters
