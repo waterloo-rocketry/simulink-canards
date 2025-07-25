@@ -112,12 +112,12 @@ function [torque_v, torque_cl, torque_delta] = aerodynamics_jacobian(v, airdata,
 end
 
 
-function [Cl_v] = airfoil_v(airspeed, sonic_speed, param)
-    mach_num = airspeed / sonic_speed;
-
-    if mach_num <= 1
-        Cl_v = param.Cl_alpha;
-    else
-        Cl_v = param.canard_slope_linear / sonic_speed;
-    end
-end
+% function [Cl_v] = airfoil_v(airspeed, sonic_speed, param)
+%     mach_num = airspeed / sonic_speed;
+% 
+%     if mach_num <= 1
+%         Cl_v = param.Cl_alpha;
+%     else
+%         Cl_v = param.canard_slope_linear / sonic_speed;
+%     end
+% end

@@ -28,8 +28,6 @@ function [x_new] = model_dynamics(dt, x, u)
 
     % quaternion update
     q_new = quaternion_update(q, w, dt);
-    % q_new = q + dt * quaternion_derivative(q, w);
-    % q_new = q_new / norm(q_new);
 
     % rate update
     w_new = w + dt * param.Jinv * (torque - cross(w, param.J*w));
@@ -37,7 +35,6 @@ function [x_new] = model_dynamics(dt, x, u)
     % velocity update 
     %%% acceleration specific force    
     v_new = v + dt * (a - cross(w,v) + S*param.g);
-    % v_new(2:3) = [0;0]; % stupid hack to force velocity convergence
 
     % altitude update
     v_earth = (S')*v;
@@ -45,7 +42,8 @@ function [x_new] = model_dynamics(dt, x, u)
 
     % canard coefficients derivative
     %%% returns Cl to expected value slowly, to force convergence in EKF
-    Cl_theory = airfoil(norm(v), airdata.mach, param);
+    %%% * sign(v(1)) for easy flying backwards under chute
+    Cl_theory = airfoil(norm(v), airdata.mach, param) * sign(v(1));
     Cl_new = Cl + dt * (1/param.tau_cl_alpha * (Cl_theory - Cl)); 
     
     % actuator dynamics
@@ -63,13 +61,8 @@ function [torque] = aerodynamics(w, v, airdata, Cl, delta, param)
     p_dyn = airdata.density / 2 * norm(v)^2;
 
     %%% angle of attack/sideslip
-    if 1 %v(1) >= 0.5
-        sin_alpha = sin(atan2(v(3),v(1)));
-        sin_beta =  - sin(atan2(v(2),v(1)));
-    else
-        sin_alpha = pi/2; 
-        sin_beta = -pi/2;
-    end
+    sin_alpha = sin(atan2(v(3),v(1)));
+    sin_beta =  - sin(atan2(v(2),v(1)));
 
     %%% torques
     torque_canards = Cl *  delta * param.c_canard * p_dyn *[1;0;0];
@@ -77,7 +70,6 @@ function [torque] = aerodynamics(w, v, airdata, Cl, delta, param)
             %+ param.Cn_omega*[0; w(2); w(3)] ) * param.c_aero; % commented
             % out because timeline
     torque = torque_canards + torque_aero;
-    % torque = [0;0;0]; 
 end
 
 function [Cl_theory] = airfoil(airspeed, sonic_speed, param)
