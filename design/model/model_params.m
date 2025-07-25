@@ -50,8 +50,8 @@ S2 = [0, 0, -1;
      -1, 0, 0;
       0, 1, 0]; % IMU 2, rotation transform from sensor frame to body frame
 
-d1 = [-1.2; -0.074; 0.027]; % center of sensor frame
-d2 = [-1.2; -0.065; -0.047]; % center of sensor frame
+d1 = [1.2; 0.074; -0.027]; % center of sensor frame
+d2 = [1.2; 0.065; 0.047]; % center of sensor frame
 
 B1 = eye(3); % Soft iron compensation
 B2 = eye(3); % Soft iron compensation
