@@ -1,5 +1,5 @@
-% table = readtable("design-support/analysis/pololu_pt1.csv"); 
-table = readtable("design-support/analysis/attempt2upright.csv"); 
+table = readtable("design-support/analysis/pololu_pt1.csv"); 
+% table = readtable("design-support/analysis/attempt2upright.csv"); 
 
 timestamps = table.timestamp / 1000;
 IMU_array = table2array(table(:,2:11));
