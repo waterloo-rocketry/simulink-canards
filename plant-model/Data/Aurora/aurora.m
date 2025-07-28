@@ -9,7 +9,6 @@ rail_angle_pitch = deg2rad(-5); % Rail pitch angle. Negative is pitched downrang
 rail_angle_yaw = deg2rad(0); % Rail yaw angle. Negative is yawed downrange
 rail_angle_roll = deg2rad(0); % Rocket clocking angle. 
 rail_length = 11.28; % [m]
-time_idle = 5; % wait time on the rail before launch
 
 %% Sensor mounting
 sensor_1_d = [-1.83; 0.074; -0.027]; % mounting location of IMU 1 relative nosetip
@@ -30,8 +29,7 @@ act_anglelimit = 12; % max deflection in deg
 act_ratelimit = 480; % max rate in deg/s
 
 %% Misc Rocket parameters
-time_chute_drogue = 55; % time from liftoff to 1st deployment
-engine_thrust_factor = 1; % perfomance gain
+engine_thrust_factor = 0.85; % perfomance gain
 canard_roll_reversal_factor = 1; % coefficient gain
 
 %% Aerodynamics Reference Geometry
@@ -41,7 +39,10 @@ rocket_area_frontal = pi * rocket_diameter^2 / 4; % reference area [m^2]
 rocket_length = 5.11; % rocket length [m]
 
 %Parachutes
+time_chute_drogue = 55; % time from liftoff to 1st deployment
+time_chute_main = 220; % time from liftoff to 1st deployment
 chute_drogue_drag = 0.55 * 0.82; % Cd * A [m^2]
+chute_main_drag = 1.23 * 8.36; % Cd * A [m^2]
 chute_pos_x = -1.1; % chute attachment [m]
 
 %Nosecone parameters
