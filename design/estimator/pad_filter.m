@@ -35,7 +35,7 @@ function [x_init, bias_1, bias_2] = pad_filter(IMU_1, IMU_2, sensor_select)
 
     %% lowpass filter
 
-    alpha = 0.005; % low pass time constant
+    alpha = 0.001; % low pass time constant
     % filtered = filtered + alpha*(measured-filtered);
 
     if sensor_select(1) == 1
@@ -59,14 +59,19 @@ function [x_init, bias_1, bias_2] = pad_filter(IMU_1, IMU_2, sensor_select)
     a = a / norm(sensor_select, 1); % divide by number of alive IMUs
 
     %%% gravity vector in body-fixed frame
-    psi = atan2(-a(2), a(1)); % rail yaw angle
-    theta = atan2(a(3), a(1)); % rail pitch angle
-
-    %%% compute launch attitude quaternion
-    q = [cos(psi/2) * cos(theta/2); 
-         -sin(psi/2) * sin(theta/2);
-         cos(psi/2) * sin(theta/2);
-         sin(psi/2) * cos(theta/2)];
+    A = a / norm(a); % unit vector of gravity direction
+    
+    %%% determine initial orientation quaternion
+    qw = sqrt( 0.5 + 0.5*A(1) );
+    qx = 0;
+    if qw == 0 % exact upside down case
+        qy = 1; % either qy = 1 or qz = 1, this is arbitrary 
+        qz = 0;
+    else 
+        qy = 0.5 * A(3) / qw;
+        qz = -0.5 * A(2) / qw;
+    end
+    q = [qw; qx; qy; qz];
 
     %%% launch altitude
     alt = param.elevation;

@@ -2,7 +2,7 @@
 
 %%% Constant wind
 wind_const_direction = deg2rad(180);
-wind_const_strength = 2; % m/s
+wind_const_strength = 10; % m/s
 
 %%% discrete gusts
 wind_gust1_start = 10; % s

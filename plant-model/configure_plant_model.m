@@ -2,7 +2,11 @@
 % run('plant-model/Data/Borealis/borealis.m')
 % run('plant-model/Data/testflight/testflight.m')
 run('plant-model/Data/Aurora/aurora.m')
-chute_enable = 1; % no recovery is = 0
+
+%%% Settings
+chute_enable = [1, 1]; % no recovery is = 0
+time_idle = 10; % wait time on the rail before launch
+rail_angle_pitch = deg2rad(-6);
 
 %%% environment
 run('plant-model/Data/Environment/environment.m')
