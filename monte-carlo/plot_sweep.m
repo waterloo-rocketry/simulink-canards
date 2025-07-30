@@ -1,5 +1,5 @@
 %% Configure
-batch_name = '_fixaccel_300';
+batch_name = '_chute_100';
 number_plots = 300;
 % exclude = [88, 177]; %indices
 % limit_filesize = 4000; %kB
