@@ -57,11 +57,11 @@ function [plots] = plot_state(dataset, varargin)
 
     names = append("delta",name);
     for i = 1
-        stairs(plots.delta, dataset.Time, dataset.delta(:,i), 'DisplayName', names(i))
+        stairs(plots.delta, dataset.Time, rad2deg(dataset.delta(:,i)), 'DisplayName', names(i))
         hold(plots.delta, 'on')
     end
     %legend(plots.delta, 'show')
-    ylabel(plots.delta, "Canard Angle [rad]")
+    ylabel(plots.delta, "Canard Angle [deg]")
 
     if  nargin == 3 || nargin == 4
         enablehold = varargin{2};

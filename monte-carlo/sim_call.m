@@ -10,6 +10,8 @@ simin = Simulink.SimulationInput(model_name);
 simin = simin.loadVariablesFromMATFile('monte-carlo/single/plant_model_baseline.mat');
 simin = simin.setVariable('wind_const_strength', 10);
 simin = simin.setVariable('canard_cant_zero', 0);
+simin = simin.setVariable('engine_thrust_factor', 0.85);
+
 
 %% Run Sim
 
@@ -37,8 +39,8 @@ plot_state(sdt.error, "");
 sgtitle("Estimation Error")
 
 figure(3)
-stairs(sdt.control.Time, rad2deg(sdt.control.Variables))
-legend("Reference", "Roll angle", "Roll control error")
+stairs(sdt.control.Time, rad2deg([sdt.control.(1), sdt.control.(4), sdt.control.(3)]))
+legend("Reference", "Roll angle", "Command")
 ylabel("Angle [deg]")
 
 figure(4)

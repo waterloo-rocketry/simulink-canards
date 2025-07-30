@@ -1,7 +1,7 @@
 %% Configure
 batch_name = '_chute_100';
 number_simulations = 100;
-P_threshold = 5000;
+P_threshold = 1000;
 
 %% load baseline
 clearvars -except batch_name number_simulations P_threshold
@@ -18,15 +18,15 @@ rocket_thrust_exp = 1;
 wind_const_exp = 10;
 wind_gust_exp = 10;
 canard_coefficient_exp = 1;
-canard_backlash_exp = 0.2;
+canard_backlash_exp = 0.25;
 canard_cant_exp = 0.1;
 
 
 %%% sweeps
-rocket_thrust_var = 0.8 :0.05: 1.05;
+rocket_thrust_var = 0.85 :0.05: 1.05;
 wind_const_var = 0 :1: 20;
 wind_gust_var = 0 :1: 20;
-canard_coefficient_var = -1 :0.1: 3;
+canard_coefficient_var = -1 :0.1: 2;
 canard_backlash_var = 0 :0.1: 1;
 canard_cant_var = 0 :0.1: 0.5;
 

@@ -1,10 +1,10 @@
 %% Configure
 batch_name = '_chute_100';
-number_plots = 300;
+number_plots = 100;
 % exclude = [88, 177]; %indices
 % limit_filesize = 4000; %kB
 % limit_velocity = 1000;
-
+percentiles = [60, 80];
 
 %% Load statistical
 sdt_array = cell(1, number_plots);
@@ -19,7 +19,6 @@ end
 
 
 %% Plot statistical
-percentiles = [80, 95];
 f_sim = figure(1);
 plot_stats_state(sdt_array, 'rocket_dt', 'Simulation', percentiles);
 f_est = figure(2);
