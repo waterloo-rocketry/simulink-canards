@@ -4,16 +4,19 @@ number_plots = 100;
 % exclude = [88, 177]; %indices
 % limit_filesize = 4000; %kB
 % limit_velocity = 1000;
-percentiles = [60, 80];
+percentiles = [80, 100];
 
 %% Load statistical
 sdt_array = cell(1, number_plots);
+filename = sprintf('monte-carlo/batch%s/result_summary.mat', batch_name);
+load(filename);
 for k = 1:number_plots
     filename = sprintf('monte-carlo/batch%s/sim_%d.mat', batch_name, k);
     load(filename);  % loads variables: sdt, in_vars
     % if any(sdt.est.v(:,1) > limit_velocity) 
-    %     continue    % skip these for now
-    % end
+    if ismember(k, unstable_id) 
+        continue    % skip these for now
+    end
     sdt_array{k} = sdt;  % store the sdt struct
 end
 
