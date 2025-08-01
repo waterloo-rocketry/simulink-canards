@@ -1,7 +1,8 @@
 %% Configure
-batch_name = '_chute_100';
-number_simulations = 100;
-P_threshold = 1000;
+batch_name = '_ascent_200';
+number_simulations = 200;
+P_threshold = 2000;
+stop_time = 55; % 55 is apogee, 240 is after main deploy
 
 %% load baseline
 clearvars -except batch_name number_simulations P_threshold
@@ -37,6 +38,7 @@ canard_cant_var = 0 :0.1: 0.5;
 
 for i = 1:number_simulations
     simin(i) = Simulink.SimulationInput(model_name);
+    simin(i) = setModelParameter(simin(i),"StopTime", num2str(stop_time));
 
     simin(i) = simin(i).loadVariablesFromMATFile(sprintf('monte-carlo/batch%s/plant_model_baseline.mat', batch_name));
 
@@ -97,6 +99,3 @@ unstable_ratio = unstable_count / number_simulations
 
 filename = sprintf('monte-carlo/batch%s/result_summary.mat', batch_name);
 save(filename, 'number_simulations', 'error_id', 'error_count', 'error_ratio', 'unstable_id', 'unstable_count', 'unstable_ratio');
-
-%% Plot
-% plot_sweep

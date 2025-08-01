@@ -5,12 +5,18 @@ save('monte-carlo/single/plant_model_baseline.mat');
 clear
 
 model_name = 'plant-model/CC_Flight_Simulation';
-
 simin = Simulink.SimulationInput(model_name);
+
+%%% Stop time
+% 55 is apogee, 240 is after main deploy
+simin = setModelParameter(simin,"StopTime","240");
+
+%%% Load parameters
 simin = simin.loadVariablesFromMATFile('monte-carlo/single/plant_model_baseline.mat');
-simin = simin.setVariable('wind_const_strength', 10);
-simin = simin.setVariable('canard_cant_zero', 0);
-simin = simin.setVariable('engine_thrust_factor', 0.85);
+simin = simin.setVariable('wind_const_strength', 20);
+simin = simin.setVariable('canard_cant_zero', 0.1);
+simin = simin.setVariable('engine_thrust_factor', 1);
+simin = simin.setVariable('canard_roll_reversal_factor', 2);
 
 
 %% Run Sim

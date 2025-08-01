@@ -4,7 +4,7 @@ number_plots = 100;
 % exclude = [88, 177]; %indices
 % limit_filesize = 4000; %kB
 % limit_velocity = 1000;
-percentiles = [80, 100];
+percentiles = [80, 95];
 
 %% Load statistical
 sdt_array = cell(1, number_plots);
