@@ -5,11 +5,11 @@ P_threshold = 2000;
 stop_time = 55; % 55 is apogee, 240 is after main deploy
 
 %% load baseline
-clearvars -except batch_name number_simulations P_threshold
+clearvars -except batch_name number_simulations P_threshold stop_time
 run('configure_plant_model');
 mkdir(sprintf('monte-carlo/batch%s/', batch_name))
 save(sprintf('monte-carlo/batch%s/plant_model_baseline.mat', batch_name))
-clearvars -except batch_name number_simulations P_threshold
+clearvars -except batch_name number_simulations P_threshold stop_time
 model_name = 'plant-model/CC_Flight_Simulation';
 
 %% Sweep parameters
