@@ -1,15 +1,16 @@
 %% Configure
-batch_name = '_chute_100';
-number_plots = 100;
+batch_name = '_ascent_200';
+number_plots = 200;
 % exclude = [88, 177]; %indices
 % limit_filesize = 4000; %kB
 % limit_velocity = 1000;
-percentiles = [80, 95];
+percentiles = [80, 100];
 
 %% Load statistical
 sdt_array = cell(1, number_plots);
 filename = sprintf('monte-carlo/batch%s/result_summary.mat', batch_name);
 load(filename);
+unstable_id
 for k = 1:number_plots
     filename = sprintf('monte-carlo/batch%s/sim_%d.mat', batch_name, k);
     load(filename);  % loads variables: sdt, in_vars

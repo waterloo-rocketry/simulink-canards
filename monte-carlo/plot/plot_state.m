@@ -2,7 +2,7 @@ function [plots] = plot_state(dataset, varargin)
     % plot simulation data on a dashboard for estimator visualization
     
      if nargin == 1 || nargin == 2 || nargin == 3
-        tiledlayout(2,3,'TileSpacing','Compact');
+        tiledlayout(3,2,'TileSpacing','Compact');
         plots.q = nexttile; plots.w = nexttile; plots.v = nexttile; plots.alt = nexttile; 
         plots.cl = nexttile; plots.delta = nexttile;
      elseif nargin == 4
@@ -29,7 +29,7 @@ function [plots] = plot_state(dataset, varargin)
         hold(plots.w, 'on')
     end
     %legend(plots.w, 'show')
-    ylabel(plots.w, "Angular Rates [rad/s]")
+    ylabel(plots.w, "Rates [rad/s]")
 
     names = append(["vx","vy","vz"],name);
     for i = 1:3
@@ -41,11 +41,11 @@ function [plots] = plot_state(dataset, varargin)
 
     names = append("alt",name);
     for i = 1
-        stairs(plots.alt, dataset.Time, dataset.alt(:,i), 'DisplayName', names(i))
+        stairs(plots.alt, dataset.Time, dataset.alt(:,i) / 1000, 'DisplayName', names(i))
         hold(plots.alt, 'on')
     end
     %legend(plots.alt, 'show')
-    ylabel(plots.alt, "Altitude [m]")
+    ylabel(plots.alt, "Altitude [km]")
 
     names = append("CL",name);
     for i = 1
