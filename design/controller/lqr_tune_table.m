@@ -1,17 +1,17 @@
 %% define dimensions
-V_max = 900; % max velocity
-C_max = 12; % max canard coefficient
-C_min = -6; % min canard coefficient
+V_max = 1000; % max velocity
+C_max = 15; % max canard coefficient
+C_min = -15; % min canard coefficient
 
 % amount of design point for each dimension
 P_size = 200; % dynamic pressure
 C_size = 30; % coefficient of lift
 
 %% tuning parameters
-Q = diag([9, 4, 4]);
+Q = diag([10, 4, 2]);
 R = 3e2; % constant R. Can be scaled by dynamic pressure in loop
 N = 0; % if desired cross term can be passed to lqr_tune
-T_sample = 0.01; % sampling time of the loop
+T_sample = 0.005; % sampling time of the loop
 C = [1, 0, 0]; % output channel
 
 %% prep table
@@ -40,7 +40,7 @@ for i=1:m
     for k=1:n
         [F_roll, B, ~, ~] = model_roll(Ps(i), Cls(k));
 
-        R_scaled = R + 1e-5*R*Ps(i); % scale R by roll control derivative
+        R_scaled = R + 2e-5*R*Ps(i); % scale R by roll control derivative
 
         K = -lqr(F_roll,B,Q,R_scaled,N);    
         Ks(i,k,1:3) = K;
@@ -66,7 +66,7 @@ run("design-support\test\test_step.m")
 
 %% Plot
 if 0
-    load("controller\gains.mat", "Ks", "P_mesh", "C_mesh");
+    load("controller/gains.mat", "Ks", "P_mesh", "C_mesh");
 
     % samplep = 1e5; samplec = 1.5;
     % for i=1:4

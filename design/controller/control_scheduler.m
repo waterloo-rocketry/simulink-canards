@@ -8,7 +8,7 @@ function [K] = control_scheduler(flight_cond)
     persistent table; 
 
     if isempty(table)
-        table = coder.load('controller/gains.mat', 'Ks', 'P_mesh', 'C_mesh');
+        table = coder.load('design/controller/gains.mat', 'Ks', 'P_mesh', 'C_mesh');
     end
     
     %% Load table
