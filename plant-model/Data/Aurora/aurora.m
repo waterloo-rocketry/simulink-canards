@@ -24,7 +24,7 @@ sensor_2_S = [0, -1, 0;
 act_freq = 150; % natural frequency, approx 1/timeconstant
 act_deadtime = 0.02; % delay in servo internal control loop
 act_damping = 0.9; % damping ratio
-act_backlash = 0.5; % play in deg
+act_backlash = 0.25; % play in deg
 act_anglelimit = 12; % max deflection in deg
 act_ratelimit = 480; % max rate in deg/s
 
@@ -78,4 +78,4 @@ canard_height = 0.0508; % root to tip length
 canard_sweep_angle = deg2rad(60.3); % angle from radial normal [rad]
 canard_delta_max = deg2rad(12); % Canard maximum angle of attack
 canard_pos_x_roottip = - (nosecone_length + 0.241 + 0.518 + 0.102 - 0.0254); % position of the most forward tip of the canards
-canard_cant_zero = deg2rad(0); % zero roll not perfect
+canard_cant_zero = deg2rad(0.1); % zero roll not perfect

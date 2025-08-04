@@ -19,8 +19,8 @@ Cn_omega = 0; % pitch damping coefficent
 
 
 %% Actuator
-tau_est = 0.04; % time constant of first order actuator dynamics, in estimation
-tau_ctr = 0.04; % time constant of first order actuator dynamics, for controller tuning
+tau_est = 0.03; % time constant of first order actuator dynamics, in estimation
+tau_ctr = 0.03; % time constant of first order actuator dynamics, for controller tuning
 
 
 %% Canards
@@ -30,7 +30,7 @@ length_canard = 0.203/2 + 0.0508/3; % lever arm of canard to x-axis
 c_canard = area_canard*length_canard; % moment arm * area of canard
 
 %%% airfoil theory
-tau_cl_alpha = 20; % time constant to converge Cl back to theoretical value in filter
+tau_cl_alpha = 50; % time constant to converge Cl back to theoretical value in filter
 canard_sweep = deg2rad(61);
 canard_sweep_cot = cot(canard_sweep);
 Cl_alpha = 2*pi*canard_sweep_cot; % estimated coefficient of lift, const with Ma

@@ -62,6 +62,6 @@ semilogx([wubd wubd],[Lubd ymax],'r');
 % set(phLub,'FaceAlpha',0.15,'LineStyle','none');
 % set(phLclb,'FaceAlpha',0.15,'LineStyle','none');
 % set(phLcub,'FaceAlpha',0.15,'LineStyle','none');
-xlabel('Frequency, rad/sec');
-ylabel('|L|=|GK|, dB');
+xlabel('Frequency [rad/s]');
+ylabel('Open loop |L| [dB]');
 hold off

@@ -2,7 +2,7 @@ function [plots] = plot_state(dataset, varargin)
     % plot simulation data on a dashboard for estimator visualization
     
      if nargin == 1 || nargin == 2 || nargin == 3
-        tiledlayout(2,3,'TileSpacing','Compact');
+        tiledlayout(3,2,'TileSpacing','Compact');
         plots.q = nexttile; plots.w = nexttile; plots.v = nexttile; plots.alt = nexttile; 
         plots.cl = nexttile; plots.delta = nexttile;
      elseif nargin == 4
@@ -21,7 +21,7 @@ function [plots] = plot_state(dataset, varargin)
         hold(plots.q, 'on')
     end
     %legend(plots.q, 'show', 'FontSize', 7)
-    ylabel(plots.q, "Quaternion")
+    title(plots.q, "Quaternion",'FontWeight','Normal')
 
     names = append(["wx","wy","wz"],name);
     for i = 1:3
@@ -29,7 +29,7 @@ function [plots] = plot_state(dataset, varargin)
         hold(plots.w, 'on')
     end
     %legend(plots.w, 'show')
-    ylabel(plots.w, "Angular Rates [rad/s]")
+    title(plots.w, "Rates [rad/s]",'FontWeight','Normal')
 
     names = append(["vx","vy","vz"],name);
     for i = 1:3
@@ -37,15 +37,15 @@ function [plots] = plot_state(dataset, varargin)
         hold(plots.v, 'on')
     end
     %legend(plots.v, 'show')
-    ylabel(plots.v, "Velocity [m/s]")
+    title(plots.v, "Velocity [m/s]",'FontWeight','Normal')
 
     names = append("alt",name);
     for i = 1
-        stairs(plots.alt, dataset.Time, dataset.alt(:,i), 'DisplayName', names(i))
+        stairs(plots.alt, dataset.Time, dataset.alt(:,i) / 1000, 'DisplayName', names(i))
         hold(plots.alt, 'on')
     end
     %legend(plots.alt, 'show')
-    ylabel(plots.alt, "Altitude [m]")
+    title(plots.alt, "Altitude [km]",'FontWeight','Normal')
 
     names = append("CL",name);
     for i = 1
@@ -53,15 +53,15 @@ function [plots] = plot_state(dataset, varargin)
         hold(plots.cl, 'on')
     end
     %legend(plots.cl, 'show')
-    ylabel(plots.cl, "Canard Coefficient")
+    title(plots.cl, "Canard Coefficient",'FontWeight','Normal')
 
     names = append("delta",name);
     for i = 1
-        stairs(plots.delta, dataset.Time, dataset.delta(:,i), 'DisplayName', names(i))
+        stairs(plots.delta, dataset.Time, rad2deg(dataset.delta(:,i)), 'DisplayName', names(i))
         hold(plots.delta, 'on')
     end
     %legend(plots.delta, 'show')
-    ylabel(plots.delta, "Canard Angle [rad]")
+    title(plots.delta, "Canard Angle [deg]",'FontWeight','Normal')
 
     if  nargin == 3 || nargin == 4
         enablehold = varargin{2};

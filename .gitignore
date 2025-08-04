@@ -32,3 +32,6 @@ octave-workspace
 
 # Large files
 *.mp4
+
+# Simulation results
+monte-carlo/*/*.mat
