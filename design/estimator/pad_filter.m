@@ -72,6 +72,7 @@ function [x_init, bias_1, bias_2] = pad_filter(IMU_1, IMU_2, sensor_select)
         qz = -0.5 * A(2) / qw;
     end
     q = [qw; qx; qy; qz];
+    q = q / norm(q);
 
     %%% launch altitude
     alt = param.elevation;
@@ -110,7 +111,6 @@ function [x_init, bias_1, bias_2] = pad_filter(IMU_1, IMU_2, sensor_select)
     
     %%% earth magnetic field
     ST = transpose(quaternion_rotmatrix(q)); % launch attitude
-    % TODO: add iron corrections. Maybe in IMU handler, next to rotation correction??
     if sensor_select(1) == 1
         bias_1(7:9) = ST * filtered_1(7:9);
     end
@@ -119,7 +119,7 @@ function [x_init, bias_1, bias_2] = pad_filter(IMU_1, IMU_2, sensor_select)
     end
 
     %%% barometer
-    pressure = model_airdata(param.elevation).pressure; % what the pressure should be at this elevation
+    pressure = model_airdata(param.elevation).pressure; % what the pressure should be at launch elevation
     if sensor_select(1) == 1
         bias_1(10) = filtered_1(10) - pressure;
     end
