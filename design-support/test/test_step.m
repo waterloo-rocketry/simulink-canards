@@ -3,7 +3,7 @@ CL = 4; % canard coefficient
 alt = 1000; % altitude for dyn pressure
 rho = model_airdata(alt).density;
 
-V = linspace(20, 900, 20);
+V = linspace(30, 900, 20);
 P = 0.5 * rho * V.^2;
 steptime = 20;
 T_sample = 0.005; % sampling time of the loop

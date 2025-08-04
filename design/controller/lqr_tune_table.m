@@ -19,7 +19,7 @@ C = [1, 0, 0]; % output channel
 % calculate air data
 rho_max= model_airdata(0).density;
 
-P_min = 20;
+P_min = 250;
 P_max = rho_max/2*V_max^2;
 
 % Dimensions are (dynamic pressure, coefficent of lift)
