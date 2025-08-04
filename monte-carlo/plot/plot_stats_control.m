@@ -91,9 +91,9 @@ function plot_stats_control(sdt_array, type, commontitle, percentiles)
             plot(T_ref, lower_mid, ':', 'Color', color, 'LineWidth', 1, 'Parent', ax);
             plot(T_ref, upper_mid, ':', 'Color', color, 'LineWidth', 1, 'Parent', ax);
         end
-        title(ax, name);
+        title(ax, name,'FontWeight','Normal');
         grid(ax, 'on');
-        xlabel(ax, 'Time [s]');
+        % xlabel(ax, 'Time [s]');
     end
 
 

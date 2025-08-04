@@ -21,7 +21,7 @@ function [plots] = plot_state(dataset, varargin)
         hold(plots.q, 'on')
     end
     %legend(plots.q, 'show', 'FontSize', 7)
-    ylabel(plots.q, "Quaternion")
+    title(plots.q, "Quaternion",'FontWeight','Normal')
 
     names = append(["wx","wy","wz"],name);
     for i = 1:3
@@ -29,7 +29,7 @@ function [plots] = plot_state(dataset, varargin)
         hold(plots.w, 'on')
     end
     %legend(plots.w, 'show')
-    ylabel(plots.w, "Rates [rad/s]")
+    title(plots.w, "Rates [rad/s]",'FontWeight','Normal')
 
     names = append(["vx","vy","vz"],name);
     for i = 1:3
@@ -37,7 +37,7 @@ function [plots] = plot_state(dataset, varargin)
         hold(plots.v, 'on')
     end
     %legend(plots.v, 'show')
-    ylabel(plots.v, "Velocity [m/s]")
+    title(plots.v, "Velocity [m/s]",'FontWeight','Normal')
 
     names = append("alt",name);
     for i = 1
@@ -45,7 +45,7 @@ function [plots] = plot_state(dataset, varargin)
         hold(plots.alt, 'on')
     end
     %legend(plots.alt, 'show')
-    ylabel(plots.alt, "Altitude [km]")
+    title(plots.alt, "Altitude [km]",'FontWeight','Normal')
 
     names = append("CL",name);
     for i = 1
@@ -53,7 +53,7 @@ function [plots] = plot_state(dataset, varargin)
         hold(plots.cl, 'on')
     end
     %legend(plots.cl, 'show')
-    ylabel(plots.cl, "Canard Coefficient")
+    title(plots.cl, "Canard Coefficient",'FontWeight','Normal')
 
     names = append("delta",name);
     for i = 1
@@ -61,7 +61,7 @@ function [plots] = plot_state(dataset, varargin)
         hold(plots.delta, 'on')
     end
     %legend(plots.delta, 'show')
-    ylabel(plots.delta, "Canard Angle [deg]")
+    title(plots.delta, "Canard Angle [deg]",'FontWeight','Normal')
 
     if  nargin == 3 || nargin == 4
         enablehold = varargin{2};
