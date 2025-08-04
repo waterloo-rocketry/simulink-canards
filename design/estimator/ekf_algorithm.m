@@ -9,7 +9,7 @@ function [x, P] = ekf_algorithm(x, P, b, t, T, IMU_1, IMU_2, cmd, encoder, senso
     %% Prediction step
     %%% Q is a square 13 matrix, tuning for prediction E(noise)
     %%% x = [   q(4),           w(3),         v(3),    alt(1), Cl(1), delta(1)]
-    Q = diag([[1,1,1,1]*1e-10, [0.001, 0.1, 0.1], [1,1,1]*1e-6, 0.001,  0.3,  0.1]);
+    Q = diag([[1,1,1,1]*1e-10, [0.001, 0.01, 0.01], [1,1,1]*1e-6, 0.001,  0.3,  0.1]);
     
     u.accel = model_acceleration(x, IMU_1, IMU_2, sensor_select(1:2));
     u.cmd = cmd;
@@ -31,7 +31,7 @@ function [x, P] = ekf_algorithm(x, P, b, t, T, IMU_1, IMU_2, cmd, encoder, senso
     % Encoder
     if sensor_select(3) == 1
         %%% y = [enc(1)]
-        R = 0.01;
+        R = 0.001;
         [xhat, Phat] = ekf_correct(@model_meas_encoder, @model_meas_encoder_jacobian, x, P, encoder, 0, R);
         x = xhat; P = Phat;
     end
