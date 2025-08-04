@@ -1,7 +1,7 @@
 %% Configure
 batch_name = '_ascent_200';
 number_simulations = 200;
-P_threshold = 2000;
+P_threshold = 5000;
 stop_time = 55; % 55 is apogee, 240 is after main deploy
 
 %% load baseline
