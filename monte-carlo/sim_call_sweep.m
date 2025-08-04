@@ -1,8 +1,8 @@
 %% Configure
-batch_name = '_ascent_200';
-number_simulations = 200;
+batch_name = '_chute_100';
+number_simulations = 100;
 P_threshold = 5000;
-stop_time = 55; % 55 is apogee, 240 is after main deploy
+stop_time = 220; % 55 is apogee, 240 is after main deploy
 
 %% load baseline
 clearvars -except batch_name number_simulations P_threshold stop_time
