@@ -3,7 +3,7 @@ CL = 4; % canard coefficient
 alt = 1000; % altitude for dyn pressure
 rho = model_airdata(alt).density;
 
-V = linspace(20, 300, 20);
+V = linspace(30, 900, 20);
 P = 0.5 * rho * V.^2;
 steptime = 20;
 T_sample = 0.005; % sampling time of the loop
@@ -22,10 +22,10 @@ for i=1:length(P)
     [phi, gamma] = ssdata(sys_plant);
 
     %%% rolloff filter
-    f_rolloff = 50; % [rad/s] rolloff frequency
+    f_rolloff = 100; % [rad/s] rolloff frequency
     lowpass = c2d(tf(f_rolloff, [1, f_rolloff]), T_sample);
 
-    sys_ol = K_pre * K * ss(phi, gamma, eye(3), 0, T_sample) * lowpass;
+    sys_ol = K_pre * K * ss(phi, gamma, eye(3), 0, T_sample);% * lowpass;
     sys_cl = K_pre * ss(phi+gamma*K, gamma, eye(3), 0, T_sample);
     
 
@@ -44,20 +44,20 @@ for i=1:length(P)
 end
 
 %% Figure
-% figure(1)
-% step(sys_array, steptime)
-% hold on
-% step(sys_min, 'g', sys_max, 'r', steptime)
-% hold off
-% 
-% figure(2)
-% bode(sys_array(1,1))
-% hold on
-% bode(sys_min(1,1), 'g', sys_max(1,1), 'r')
-% hold off
+figure(1)
+step(sys_array, steptime)
+hold on
+step(sys_min, 'g', sys_max, 'r', steptime)
+hold off
+
+figure(2)
+bode(sys_array(1,1))
+hold on
+bode(sys_min(1,1), 'g', sys_max(1,1), 'r')
+hold off
 %%
 figure(3)
-for i=length(P)-10:length(P)   
+for i=1:length(P)   
     checkloopshape(sys_array_open(1,1,1,i), 20, 0.1, -20, 50)
     hold on
 end

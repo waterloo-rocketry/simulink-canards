@@ -1,14 +1,15 @@
 %% Configure
-batch_name = '_fixaccel_300';
-number_simulations = 300;
+batch_name = '_chute_100';
+number_simulations = 100;
 P_threshold = 5000;
+stop_time = 220; % 55 is apogee, 240 is after main deploy
 
 %% load baseline
-clearvars -except batch_name number_simulations P_threshold
+clearvars -except batch_name number_simulations P_threshold stop_time
 run('configure_plant_model');
 mkdir(sprintf('monte-carlo/batch%s/', batch_name))
 save(sprintf('monte-carlo/batch%s/plant_model_baseline.mat', batch_name))
-clearvars -except batch_name number_simulations P_threshold
+clearvars -except batch_name number_simulations P_threshold stop_time
 model_name = 'plant-model/CC_Flight_Simulation';
 
 %% Sweep parameters
@@ -18,17 +19,17 @@ rocket_thrust_exp = 1;
 wind_const_exp = 10;
 wind_gust_exp = 10;
 canard_coefficient_exp = 1;
-canard_backlash_exp = 0.5;
+canard_backlash_exp = 0.25;
 canard_cant_exp = 0.1;
 
 
 %%% sweeps
-rocket_thrust_var = 0.9 :0.05: 1.1;
+rocket_thrust_var = 0.85 :0.05: 1.05;
 wind_const_var = 0 :1: 20;
-wind_gust_var = 0 :1: 30;
-canard_coefficient_var = -1 :0.1: 3;
-canard_backlash_var = 0 :0.1: 2;
-canard_cant_var = 0 :0.1: 1;
+wind_gust_var = 0 :1: 20;
+canard_coefficient_var = -1 :0.1: 2;
+canard_backlash_var = 0 :0.1: 1;
+canard_cant_var = 0 :0.1: 0.5;
 
 % Sweep create
 % possible_combinations = length(rocket_thrust_var) * length(wind_const_var) * ...
@@ -37,6 +38,7 @@ canard_cant_var = 0 :0.1: 1;
 
 for i = 1:number_simulations
     simin(i) = Simulink.SimulationInput(model_name);
+    simin(i) = setModelParameter(simin(i),"StopTime", num2str(stop_time));
 
     simin(i) = simin(i).loadVariablesFromMATFile(sprintf('monte-carlo/batch%s/plant_model_baseline.mat', batch_name));
 
@@ -97,6 +99,3 @@ unstable_ratio = unstable_count / number_simulations
 
 filename = sprintf('monte-carlo/batch%s/result_summary.mat', batch_name);
 save(filename, 'number_simulations', 'error_id', 'error_count', 'error_ratio', 'unstable_id', 'unstable_count', 'unstable_ratio');
-
-%% Plot
-% plot_sweep

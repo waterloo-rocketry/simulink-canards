@@ -4,7 +4,7 @@
 % grid scaling and offset for input variables
 
 %% load table
-table = load("controller\gains.mat", "Ks", "info");
+table = load("design/controller/gains.mat", "Ks", "info");
 
 gain_amount = size(table.Ks, 3);
 

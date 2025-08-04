@@ -59,7 +59,7 @@ function plot_stats_state(sdt_array, type, commontitle, percentiles)
     var_colors(4,:) = [0.60, 0.20, 0.50];  % Warmer Purple (less blue, more magenta)
 
     % Plotting
-    tlo = tiledlayout(2,3,'TileSpacing','Compact','Padding','Compact');
+    tlo = tiledlayout(3, 2,'TileSpacing','Compact','Padding','Compact');
     axes_list = [];
     for f = 1:numel(fields)
         ax = nexttile;
@@ -91,9 +91,9 @@ function plot_stats_state(sdt_array, type, commontitle, percentiles)
             plot(T_ref, lower_mid, ':', 'Color', color, 'LineWidth', 1, 'Parent', ax);
             plot(T_ref, upper_mid, ':', 'Color', color, 'LineWidth', 1, 'Parent', ax);
         end
-        title(ax, name);
+        title(ax, name,'FontWeight','Normal');
         grid(ax, 'on');
-        xlabel(ax, 'Time [s]');
+        % xlabel(ax, 'Time [s]');
     end
 
 
