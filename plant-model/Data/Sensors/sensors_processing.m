@@ -19,7 +19,7 @@ imu1_gyro_limit = deg2rad(2000);
 imu1_gyro_bias = deg2rad(8/3600);
 imu1_gyro_noise = (deg2rad(0.007))^2;
 
-imu1_mag_limit = 8; % not yet used in Sim
+imu1_mag_limit = 8;
 imu1_mag_noise = (1e-3)^2 * samplingrate;
 
 imu1_baro_limit = [300e2, 1250e2]; % not yet used in Sim
@@ -36,7 +36,7 @@ imu2_gyro_limit = deg2rad(2000);
 imu2_gyro_bias = deg2rad(1);
 imu2_gyro_noise = (deg2rad(3.8e-3))^2;
 
-imu2_mag_limit = 16; % not yet used in Sim
+imu2_mag_limit = 16; 
 imu2_mag_noise = (4.1e-3)^2 * samplingrate;
 
 imu2_baro_limit = [260e2, 1260e2]; % not yet used in Sim
