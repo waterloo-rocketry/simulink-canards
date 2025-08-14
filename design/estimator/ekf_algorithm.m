@@ -9,11 +9,7 @@ function [x, P] = ekf_algorithm(x, P, b, t, T, IMU_1, IMU_2, cmd, encoder, senso
     %% Prediction step
     %%% Q is a square 13 matrix, tuning for prediction E(noise)
     %%% x = [   q(4),           w(3),         v(3),    alt(1), Cl(1), delta(1)]
-<<<<<<< Updated upstream
     Q = diag([[1,1,1,1]*1e-10, [0.001, 0.01, 0.01], [1,1,1]*1e-6, 0.001,  0.3,  0.1]);
-=======
-    Q = diag([[1,1,1,1]*1e-8, [0.5, 5, 5], [1,1,1]*1e-4, 10,  100,  50]);
->>>>>>> Stashed changes
     
     u.accel = model_acceleration(x, IMU_1, IMU_2, sensor_select(1:2));
     u.cmd = cmd;
@@ -27,10 +23,6 @@ function [x, P] = ekf_algorithm(x, P, b, t, T, IMU_1, IMU_2, cmd, encoder, senso
     if sensor_select(1) == 1 % only correct with alive IMUs
         %%% y = [   W(3),          Mag(3),      P(1)]
         R = diag([[1, 1, 1]*1e-6, [1, 1, 1]*0.01, 1]);
-
-        if x(11) > 10e3
-            R(7) = R(7) * 1e6;
-        end
 
         [xhat, Phat] = ekf_correct(@model_meas_imu, @model_meas_imu_jacobian, x, P, IMU_1(4:end), b.bias_1, R);
         x = xhat; P = Phat;
@@ -48,10 +40,6 @@ function [x, P] = ekf_algorithm(x, P, b, t, T, IMU_1, IMU_2, cmd, encoder, senso
     if sensor_select(2) == 1
         %%% y = [   W(3),          Mag(3),      P(1)]
         R = diag([[1, 1, 1]*1e-6, [1, 1, 1]*0.01, 1]);
-
-        if x(11) > 10e3
-            R(7) = R(7) * 1e6;
-        end
 
         [xhat, Phat] = ekf_correct(@model_meas_imu, @model_meas_imu_jacobian, x, P, IMU_2(4:end), b.bias_2, R);
         x = xhat; P = Phat;

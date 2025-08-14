@@ -35,7 +35,7 @@ function [x_init, bias_1, bias_2] = pad_filter(IMU_1, IMU_2, sensor_select)
 
     %% lowpass filter
 
-    alpha = 0.001; % low pass time constant
+    alpha = 0.0005; % low pass time constant
     % filtered = filtered + alpha*(measured-filtered);
 
     if sensor_select(1) == 1
